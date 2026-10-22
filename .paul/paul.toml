@@ -17,16 +17,18 @@ phases = 11
 [phase]
 number = 2
 name = "Onboarding, perfil e modos"
-status = "not_started"
-plans_completed = 0
+status = "in_progress"
+plans_completed = 1
 
 [loop]
-position = "IDLE"
+position = "PLAN"
+plan = "02-02"
+plan_path = "phases/02-onboarding/02-02-PLAN.md"
 
 [satellite]
 groom = true
 
 [stats]
-total_plans = 4
+total_plans = 5
 total_phases = 11
-last_activity = "2026-10-22T17:30:00Z"
+last_activity = "2026-10-22T18:00:00Z"

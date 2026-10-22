@@ -23,7 +23,7 @@ Phases: 1 of 11 complete
 | Phase | Name | Plans | Status | Completed |
 |-------|------|-------|--------|-----------|
 | 1 | Fundação | 4 | ✅ Complete | 2026-10-22 |
-| 2 | Onboarding, perfil e modos | TBD | Not started | - |
+| 2 | Onboarding, perfil e modos | 3 | In progress | - |
 | 3 | Registro diário | TBD | Not started | - |
 | 4 | Motor de previsão + calendário | TBD | Not started | - |
 | 5 | Análise | TBD | Not started | - |
