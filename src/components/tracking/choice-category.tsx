@@ -1,7 +1,6 @@
 import { Text, View } from 'react-native';
 
 import type { ChoiceCategory } from '@/domain/tracking/catalog';
-import { ptBR } from '@/i18n/pt-BR';
 import { categoryLabels } from '@/i18n/pt-BR-tracking';
 
 import { OptionChip } from './option-chip';

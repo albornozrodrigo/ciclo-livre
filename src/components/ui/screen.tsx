@@ -1,11 +1,19 @@
-import type { ReactNode } from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useIsFocused } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { type ReactNode, useState } from "react";
+import {
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { type Territory } from '@/constants/theme';
-import { ptBR, type ScreenKey } from '@/i18n/pt-BR';
+import { type Territory } from "@/constants/theme";
+import { ptBR, type ScreenKey } from "@/i18n/pt-BR";
 
-import { Lobe, type LobeShape, useLobeHeight } from './lobe';
+import { Lobe, type LobeShape, useLobeHeight } from "./lobe";
 
 type Props = {
   screen: ScreenKey;
@@ -20,34 +28,74 @@ export function Screen({ screen, territory, shape = 0, children }: Props) {
   const insets = useSafeAreaInsets();
   const lobeHeight = useLobeHeight();
   const copy = ptBR.screens[screen];
+  const focused = useIsFocused();
+  // Depois que o lobo sai por baixo da barra de status, o texto passaria sob os ícones.
+  const [pastLobe, setPastLobe] = useState(false);
+  const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const past = e.nativeEvent.contentOffset.y > lobeHeight - insets.top;
+    if (past !== pastLobe) setPastLobe(past);
+  };
 
   return (
-    <ScrollView
-      className="flex-1 bg-water dark:bg-water-night"
-      contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
-      <Lobe territory={territory} shape={shape} />
+    <View className="flex-1 bg-water dark:bg-water-night">
+      {/* Sobre o lobo os ícones são escuros; sobre a água seguem o tema. Só a aba em foco decide. */}
+      {focused ? <StatusBar style={pastLobe ? "auto" : "dark"} /> : null}
+      <ScrollView
+        testID="screen-scroll"
+        onScroll={onScroll}
+        scrollEventThrottle={32}
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
+      >
+        <Lobe territory={territory} shape={shape} />
 
-      <View style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }} className="px-5">
-        <Text
-          accessibilityRole="header"
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          className="text-[44px] font-bold leading-[42px] tracking-[-1.76px] text-ink">
-          {copy.title}
-        </Text>
-      </View>
+        <View
+          style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }}
+          className="px-5"
+        >
+          <Text
+            accessibilityRole="header"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            className="text-[44px] font-bold leading-[42px] tracking-[-1.76px] text-ink"
+          >
+            {copy.title}
+          </Text>
+        </View>
 
-      <View className="gap-3 px-5 pt-8">
-        {/* Cápsula de contorno: o sol fica reservado para ações e "hoje". */}
-        {'phase' in copy ? (
-          <View className="self-start rounded-full border-[1.5px] border-ink px-3.5 py-1.5 dark:border-ink-night">
-            <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{copy.phase}</Text>
-          </View>
-        ) : null}
-        {'lead' in copy ? <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{copy.lead}</Text> : null}
-      </View>
+        <View className="gap-3 px-5 pt-8">
+          {/* Cápsula de contorno: o sol fica reservado para ações e "hoje". */}
+          {"phase" in copy ? (
+            <View className="self-start rounded-full border-[1.5px] border-ink px-3.5 py-1.5 dark:border-ink-night">
+              <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">
+                {copy.phase}
+              </Text>
+            </View>
+          ) : null}
+          {"lead" in copy ? (
+            <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">
+              {copy.lead}
+            </Text>
+          ) : null}
+        </View>
 
-      {children ? <View className="px-5 pt-8">{children}</View> : null}
-    </ScrollView>
+        {children ? <View className="px-5 pt-8">{children}</View> : null}
+      </ScrollView>
+      {pastLobe ? (
+        <View
+          testID="status-scrim"
+          pointerEvents="none"
+          importantForAccessibility="no-hide-descendants"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: insets.top,
+          }}
+          className="bg-water dark:bg-water-night"
+        />
+      ) : null}
+    </View>
   );
 }

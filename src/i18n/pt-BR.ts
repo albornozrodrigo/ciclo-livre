@@ -19,8 +19,7 @@ export const ptBR = {
     },
     analise: {
       title: 'Análise',
-      lead: 'Padrões do seu ciclo, fluxo, dor, sono e humor. Tudo liberado.',
-      phase: 'Em construção — etapa 5',
+      lead: 'Padrões do seu ciclo, sintomas e medições. Tudo liberado, calculado neste aparelho.',
     },
     explorar: {
       title: 'Explorar',
@@ -31,6 +30,55 @@ export const ptBR = {
       title: 'Mais',
       lead: 'Seu perfil e sua privacidade. Lembretes e exportação de dados chegam nas próximas etapas.',
     },
+  },
+  analysis: {
+    cycles: { title: 'Seus ciclos' },
+    stats: {
+      cycle: 'Ciclo médio',
+      cycleValue: (n: number) => `${n} dias`,
+      range: 'Variação',
+      rangeValue: (min: number, max: number) => (min === max ? `${min} dias` : `${min} a ${max} dias`),
+      period: 'Menstruação média',
+      periodValue: (n: number) => `${n} ${n === 1 ? 'dia' : 'dias'}`,
+    },
+    chartTitle: 'Duração dos ciclos',
+    chartSummary: (count: number, mean: number, min: number, max: number) =>
+      `Duração dos últimos ${count} ciclos: média de ${mean} dias, entre ${min} e ${max}.`,
+    barPrefix: 'Ciclo de',
+    barValue: (date: string, n: number) => `Ciclo de ${date}: ${n} dias`,
+    mean: (n: number) => `média ${n}`,
+    tapHint: 'Toque numa barra para ver o valor.',
+    history: {
+      title: 'Histórico',
+      ongoing: 'Em andamento',
+      length: (n: number) => `${n} dias`,
+      period: (n: number) => `menstruação de ${n} ${n === 1 ? 'dia' : 'dias'}`,
+      started: (date: string) => `Começou em ${date}`,
+    },
+    symptoms: {
+      title: 'Sintomas frequentes',
+      row: (label: string, cycles: number, total: number) => `${label}: em ${cycles} de ${total} ciclos`,
+      mostIn: 'Mais na fase:',
+      empty: 'Aparece quando houver ao menos dois ciclos completos com registros.',
+    },
+    bbt: {
+      title: 'Temperatura basal do ciclo atual',
+      confirmed: (day: number) => `Subida confirmada: ovulação estimada no dia ${day} do ciclo.`,
+      notYet: 'Ainda sem subida confirmada neste ciclo.',
+      empty: 'Registre a temperatura ao acordar, todos os dias, para ver a curva.',
+      chartSummary: (count: number, min: string, max: string) => `Temperatura em ${count} dias deste ciclo, de ${min} a ${max} °C.`,
+    },
+    measures: {
+      title: 'Medições (90 dias)',
+      names: { weight: 'Peso', resting_heart_rate: 'Frequência cardíaca em repouso', hrv: 'Variabilidade da frequência cardíaca', sleep: 'Sono' },
+      last: (value: string, unit: string) => `Último: ${value} ${unit}`,
+      mean: (value: string, unit: string) => `Média: ${value} ${unit}`,
+      empty: 'Sem registros nos últimos 90 dias.',
+      chartSummary: (name: string, count: number, min: string, max: string, unit: string) =>
+        `${name} em ${count} registros: de ${min} a ${max} ${unit}.`,
+    },
+    emptyCycles: 'Registre ao menos duas menstruações para ver seus ciclos aqui.',
+    noCycleMode: 'No modo atual não há análise de ciclo. Suas medições continuam aqui.',
   },
   calendar: {
     previousMonth: 'Mês anterior',
