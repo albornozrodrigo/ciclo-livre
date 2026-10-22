@@ -1,5 +1,6 @@
-import { getCycleSignals } from '@/db/cycle-repo';
-import { setMeasure, setSelection } from '@/db/log-repo';
+import { getCycleSignals, getLoggedDates } from '@/db/cycle-repo';
+import { setMeasure, setNote, setSelection } from '@/db/log-repo';
+import { createTag, setDayTags } from '@/db/tag-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 
 import { openMemoryDatabase } from './node-sqlite-adapter';
@@ -38,5 +39,21 @@ describe('getCycleSignals', () => {
     await expect(getCycleSignals(db)).resolves.toEqual({
       flowDates: [], temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], painDates: [],
     });
+  });
+});
+
+describe('getLoggedDates', () => {
+  it('dias com qualquer registro (opção, medição, nota ou tag) dentro do intervalo', async () => {
+    const db = await migratedDb();
+    await setSelection(db, '2026-10-01', 'energy', ['low']);
+    await setMeasure(db, '2026-10-02', 'weight', 60);
+    await setNote(db, '2026-10-03', 'nota');
+    const tag = await createTag(db, 'Viagem');
+    await setDayTags(db, '2026-10-04', [tag.id]);
+    await setSelection(db, '2026-11-01', 'energy', ['low']);
+
+    await expect(getLoggedDates(db, '2026-10-01', '2026-10-31')).resolves.toEqual([
+      '2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04',
+    ]);
   });
 });

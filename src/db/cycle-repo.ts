@@ -22,3 +22,17 @@ export async function getCycleSignals(db: SqlExecutor): Promise<CycleSignals> {
   for (const t of temps) temperatures[t.date] = t.value;
   return { flowDates, temperatures, eggWhiteDates, positiveOvulationTests, painDates };
 }
+
+/** Dias com qualquer registro (opção, medição, nota ou tag) no intervalo, para marcar no calendário. */
+export async function getLoggedDates(db: SqlExecutor, from: IsoDate, to: IsoDate): Promise<IsoDate[]> {
+  const rows = await db.getAllAsync<{ date: string }>(
+    `SELECT date FROM log_selection WHERE date BETWEEN ?1 AND ?2
+     UNION SELECT date FROM log_measure WHERE date BETWEEN ?1 AND ?2
+     UNION SELECT date FROM log_note WHERE date BETWEEN ?1 AND ?2
+     UNION SELECT date FROM log_tag WHERE date BETWEEN ?1 AND ?2
+     ORDER BY date`,
+    from,
+    to,
+  );
+  return rows.map((r) => r.date);
+}

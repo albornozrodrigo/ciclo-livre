@@ -16,7 +16,6 @@ export const ptBR = {
     calendario: {
       title: 'Calendário',
       lead: 'Seus registros e previsões, mês a mês, sem limite de horizonte.',
-      phase: 'Em construção — etapa 4',
     },
     analise: {
       title: 'Análise',
@@ -31,6 +30,31 @@ export const ptBR = {
     mais: {
       title: 'Mais',
       lead: 'Seu perfil e sua privacidade. Lembretes e exportação de dados chegam nas próximas etapas.',
+    },
+  },
+  calendar: {
+    previousMonth: 'Mês anterior',
+    nextMonth: 'Próximo mês',
+    goToday: 'Voltar para hoje',
+    todayLabel: 'Hoje',
+    logged: 'com registro',
+    predicted: 'prevista',
+    ovulation: 'ovulação estimada',
+    phase: {
+      menstruation: 'menstruação',
+      follicular: 'fase folicular',
+      fertile: 'janela fértil',
+      luteal: 'fase lútea',
+    },
+    weekdays: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
+    weekdayNames: ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'],
+    legend: {
+      menstruation: 'Menstruação',
+      fertile: 'Janela fértil',
+      ovulation: 'Anel: ovulação estimada',
+      predicted: 'Contorno tracejado: previsão',
+      logged: 'Ponto: dia com registro',
+      today: 'Sublinhado: hoje',
     },
   },
   cycle: {
