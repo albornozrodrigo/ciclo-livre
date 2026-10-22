@@ -6,7 +6,7 @@ module.exports = {
       preset: 'jest-expo',
       testPathIgnorePatterns: ['/node_modules/', '<rootDir>/src/db/', '<rootDir>/src/lib/', '<rootDir>/src/domain/'],
       transformIgnorePatterns: [
-        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|native-base|react-native-svg|nativewind|react-native-css)',
+        'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|native-base|react-native-svg|nativewind|react-native-css|standard-navigation)',
       ],
     },
     {

@@ -1,4 +1,4 @@
-import { type ProfileInput, validateProfile } from '@/domain/profile';
+import { type ProfileInput, validateBirthYear, validateProfile } from '@/domain/profile';
 
 const TODAY = '2026-10-22';
 
@@ -148,5 +148,13 @@ describe('validateProfile', () => {
       { field: 'lastPeriodStart', code: 'in_future' },
       { field: 'dueDate', code: 'required' },
     ]);
+  });
+});
+
+describe('validateBirthYear', () => {
+  it('devolve o código de erro do ano isoladamente', () => {
+    expect(validateBirthYear(2010, TODAY)).toBe('under_18');
+    expect(validateBirthYear(1800, TODAY)).toBe('out_of_range');
+    expect(validateBirthYear(1990, TODAY)).toBeNull();
   });
 });

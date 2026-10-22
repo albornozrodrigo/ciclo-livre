@@ -72,6 +72,11 @@ function withDefaults(input: ProfileInput): Profile {
   };
 }
 
+/** Erro do ano de nascimento sozinho, para validar na própria tela do ano. */
+export function validateBirthYear(birthYear: number, today: IsoDate): ProfileErrorCode | null {
+  return checkBirthYear(birthYear, today)[0]?.code ?? null;
+}
+
 function checkBirthYear(birthYear: number, today: IsoDate): ProfileError[] {
   const age = yearOf(today) - birthYear;
   if (!Number.isInteger(birthYear) || age > LIMITS.maxAge) return [{ field: 'birthYear', code: 'out_of_range' }];

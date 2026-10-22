@@ -4,10 +4,11 @@ import { DarkTheme, DefaultTheme, type ErrorBoundaryProps, ThemeProvider } from 
 import { StatusBar } from 'expo-status-bar';
 import { Alert, useColorScheme } from 'react-native';
 
-import AppTabs from '@/components/app-tabs';
 import { AppError } from '@/components/ui/app-error';
 import { DatabaseRoot, resetUnopenableDatabase } from '@/db/database-root';
 import { ptBR } from '@/i18n/pt-BR';
+import { RootNavigator } from '@/navigation/root-navigator';
+import { ProfileProvider, useProfile } from '@/profile/profile-context';
 
 /** Falhas ao abrir o banco (ou qualquer erro não tratado) caem aqui, sem detalhes técnicos. */
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
@@ -34,11 +35,20 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      {/* Ícones escuros: toda tela tem um lobo saturado atrás da barra de status. */}
+      {/* Ícones escuros: toda tela tem um lobo saturado atrás da barra de status (abas e onboarding). */}
       <StatusBar style="dark" />
       <DatabaseRoot>
-        <AppTabs />
+        <ProfileProvider>
+          <ProfileGate />
+        </ProfileProvider>
       </DatabaseRoot>
     </ThemeProvider>
   );
+}
+
+/** Espera o perfil carregar e escolhe entre onboarding e abas. */
+function ProfileGate() {
+  const { state } = useProfile();
+  if (state.status !== 'ready') return null;
+  return <RootNavigator onboarded={state.profile !== null} />;
 }

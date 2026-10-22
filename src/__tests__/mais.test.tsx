@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react-nativ
 import { Alert, ToastAndroid } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import MaisScreen from '@/app/mais';
+import MaisScreen from '@/app/(tabs)/mais';
 import { ptBR } from '@/i18n/pt-BR';
 
 const mockErase = jest.fn();

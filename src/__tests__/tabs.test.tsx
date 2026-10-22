@@ -2,11 +2,11 @@ import { render, screen } from '@testing-library/react-native';
 import type { ComponentType } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import AnaliseScreen from '@/app/analise';
-import CalendarioScreen from '@/app/calendario';
-import ExplorarScreen from '@/app/explorar';
-import HojeScreen from '@/app/index';
-import MaisScreen from '@/app/mais';
+import AnaliseScreen from '@/app/(tabs)/analise';
+import CalendarioScreen from '@/app/(tabs)/calendario';
+import ExplorarScreen from '@/app/(tabs)/explorar';
+import HojeScreen from '@/app/(tabs)/index';
+import MaisScreen from '@/app/(tabs)/mais';
 import { ptBR, type ScreenKey } from '@/i18n/pt-BR';
 
 // O banco nativo (SQLCipher) não existe no Jest; as telas só precisam do hook.

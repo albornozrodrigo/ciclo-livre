@@ -26,3 +26,23 @@ export function daysBetween(a: IsoDate, b: IsoDate): number {
 export function yearOf(value: IsoDate): number {
   return Number(value.slice(0, 4));
 }
+
+const pad = (n: number) => String(n).padStart(2, '0');
+
+/** Data de calendário local (a que a pessoa vê no aparelho) como ISO. */
+export function isoFromDate(date: Date): IsoDate {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** Date local ao meio-dia: margem contra mudanças de horário de verão e fuso. */
+export function dateFromIso(value: IsoDate): Date {
+  const [year, month, day] = value.split('-').map(Number);
+  return new Date(year, month - 1, day, 12);
+}
+
+export function addDays(value: IsoDate, days: number): IsoDate {
+  const dayNumber = toDayNumber(value);
+  if (dayNumber === null) throw new RangeError('Data inválida.');
+  const d = new Date((dayNumber + days) * MS_PER_DAY);
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+}
