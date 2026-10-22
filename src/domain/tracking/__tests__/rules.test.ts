@@ -72,9 +72,19 @@ describe('orderCategories', () => {
     expect(orderCategories(ids, prefs)).toEqual(['sleep', 'period', 'feelings']);
   });
 
-  it('categorias sem preferência entram no fim, na ordem padrão', () => {
-    expect(orderCategories(ids, [{ category: 'feelings', position: 0, hidden: false }])).toEqual([
-      'feelings', 'period', 'pain', 'sleep',
+  it('categorias sem preferência mantêm a posição padrão relativa (não vão para o fim)', () => {
+    // Personalizado em outro modo (sem "period"): ao voltar, "period" não fica enterrada no fim.
+    const prefs = [
+      { category: 'pain', position: 0, hidden: false },
+      { category: 'feelings', position: 1, hidden: false },
+      { category: 'sleep', position: 2, hidden: false },
+    ];
+    expect(orderCategories(ids, prefs)).toEqual(['period', 'pain', 'feelings', 'sleep']);
+  });
+
+  it('respeita a ordem escolhida entre as personalizadas e encaixa as outras antes da próxima no padrão', () => {
+    expect(orderCategories(ids, [{ category: 'sleep', position: 0, hidden: false }, { category: 'pain', position: 1, hidden: false }])).toEqual([
+      'period', 'sleep', 'pain', 'feelings',
     ]);
   });
 

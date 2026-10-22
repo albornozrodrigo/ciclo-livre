@@ -31,12 +31,21 @@ export function validateNote(text: string): 'empty' | 'too_long' | null {
 
 export type CategoryPref = { category: string; position: number; hidden: boolean };
 
-/** Ordem final: preferências salvas primeiro (sem as ocultas), depois as demais na ordem padrão. */
+/**
+ * Ordem final: as personalizadas na ordem escolhida (sem as ocultas); cada categoria sem preferência
+ * (ex.: de outro modo) entra logo depois da vizinha anterior na ordem padrão — nunca enterrada no fim.
+ */
 export function orderCategories(visibleIds: readonly string[], prefs: readonly CategoryPref[]): string[] {
   const visible = new Set(visibleIds);
   const relevant = prefs.filter((p) => visible.has(p.category)).sort((a, b) => a.position - b.position);
   const hidden = new Set(relevant.filter((p) => p.hidden).map((p) => p.category));
-  const ordered = relevant.filter((p) => !p.hidden).map((p) => p.category);
-  const placed = new Set([...ordered, ...hidden]);
-  return [...ordered, ...visibleIds.filter((id) => !placed.has(id))];
+  const result = relevant.filter((p) => !p.hidden).map((p) => p.category);
+  const known = new Set(relevant.map((p) => p.category));
+
+  visibleIds.forEach((id, index) => {
+    if (known.has(id) || hidden.has(id)) return;
+    const previous = visibleIds.slice(0, index).reverse().find((candidate) => result.includes(candidate));
+    result.splice(previous ? result.indexOf(previous) + 1 : 0, 0, id);
+  });
+  return result;
 }
