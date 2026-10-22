@@ -18,7 +18,7 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 Milestone: v0.1 Initial Release
 Phase: 8 of 11 (Conteúdo + busca + resumo IA + importar do Clue) — Planned
 Plan: 08-01 (artigos + busca), 08-02 (resumo IA BYOK), 08-03 (importar do Clue)
-Status: 08-01 complete; next APPLY 08-02 (resumo IA BYOK)
+Status: 08-02 complete; next APPLY 08-03 (importar do Clue)
 Last activity: 2026-10-22 — Phase 7 complete (relatório PDF, exportação, backup/restauração, Drive pelo compartilhar; reviews aplicados)
 
 Progress:
@@ -29,7 +29,7 @@ Progress:
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [08-01 fechado; próximo: 08-02]
+  ✓        ○        ○     [08-02 fechado; próximo: 08-03]
 ```
 
 ## Accumulated Context
@@ -61,6 +61,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Lógica de ordem duplicada em personalizar × useCategoryOrder | 03 code-review | S | Refatorar quando mexer |
 | Célula do calendário < 48dp de largura em telas de 360dp | 04-03 | S | Testar em aparelho pequeno |
 | Teto de design: lobo da próxima fase sobreposto; marca de sol para hoje no calendário | 04 review | M | Fase 11 |
+| /cso novo da IA BYOK (run da 08-02 ficou parcial sem cobertura registrada) | 08 | S | Antes do release |
 | KDF nativo para backup < 3 s (hoje scrypt 2^13 em JS ≈ 6,7 s no S21 FE) | 07 | M | Fase 11 |
 | Backup automático no Drive (OAuth/Drive API) | 07 plan | L | Só se pedido |
 | `lastInsertRowId` na restauração de tags | 07 code-review | S | Polimento |
@@ -83,8 +84,8 @@ None yet.
 
 Last session: 2026-10-22
 Stopped at: Phase 7 complete
-Next action: /paul:apply .paul/phases/08-conteudo-ia/08-02-PLAN.md
-Resume file: .paul/phases/08-conteudo-ia/08-02-PLAN.md
+Next action: /paul:apply .paul/phases/08-conteudo-ia/08-03-PLAN.md
+Resume file: .paul/phases/08-conteudo-ia/08-03-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
