@@ -64,6 +64,16 @@ describe('summarize', () => {
     expect(init.headers['anthropic-beta']).toBeUndefined();
   });
 
+  it('conta que não aceita o fallback (400): tenta uma vez sem ele', async () => {
+    mockFetch
+      .mockResolvedValueOnce(reply(400))
+      .mockResolvedValueOnce(reply(200, { stop_reason: 'end_turn', content: [{ type: 'text', text: 'ok' }] }));
+    expect(await summarize({ apiKey: KEY, model: 'claude-opus-5-5', query: 'x', articles: [art('a')] })).toMatchObject({ ok: true });
+    const second = mockFetch.mock.calls[1][1];
+    expect(JSON.parse(second.body).fallbacks).toBeUndefined();
+    expect(second.headers['anthropic-beta']).toBeUndefined();
+  });
+
   it('recusa vira erro "refusal"', async () => {
     mockFetch.mockResolvedValue(reply(200, { stop_reason: 'refusal', content: [] }));
     expect(await summarize({ apiKey: KEY, model: 'claude-opus-5-5', query: 'x', articles: [art('a')] })).toEqual({

@@ -50,11 +50,8 @@ type MessageResponse = { stop_reason?: string; content?: { type: string; text?: 
 /** Resume os artigos encontrados para a pergunta. Vai só a pergunta e trechos dos artigos. */
 export async function summarize({ apiKey, model, query, articles }: SummaryInput): Promise<SummaryResult> {
   const prompt = buildSummaryPrompt(query, articles);
-  // Haiku não tem fallback do lado do servidor; os outros caem no modelo recomendado se recusarem.
-  const withFallback = model !== 'claude-haiku-5-5';
-  let response: Response;
-  try {
-    response = await call('/messages', apiKey, {
+  const request = (withFallback: boolean) =>
+    call('/messages', apiKey, {
       method: 'POST',
       beta: withFallback ? 'server-side-fallback-2026-07-01' : undefined,
       body: {
@@ -66,6 +63,13 @@ export async function summarize({ apiKey, model, query, articles }: SummaryInput
         ...(withFallback ? { fallbacks: 'default' } : {}),
       },
     });
+  // Haiku não tem fallback do lado do servidor; os outros caem no modelo recomendado se recusarem.
+  const wantsFallback = model !== 'claude-haiku-5-5';
+  let response: Response;
+  try {
+    response = await request(wantsFallback);
+    // Conta que não aceita o cabeçalho beta do fallback responde 400: uma tentativa sem ele.
+    if (wantsFallback && response.status === 400) response = await request(false);
   } catch {
     // Sem rede ou tempo esgotado.
     return { ok: false, error: 'offline' };
