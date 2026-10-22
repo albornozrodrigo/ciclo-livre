@@ -1,4 +1,7 @@
+import { trackingPtBR } from './pt-BR-tracking';
+
 export const ptBR = {
+  tracking: trackingPtBR,
   tabs: {
     hoje: 'Hoje',
     calendario: 'Calendário',

@@ -32,6 +32,33 @@ export const MIGRATIONS: Migration[] = [
       ) STRICT`,
     ],
   },
+  {
+    // Registro diário. Ids de categoria/opção vêm do catálogo (validados no repositório).
+    version: 3,
+    statements: [
+      `CREATE TABLE log_selection (
+        date TEXT NOT NULL CHECK (date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        category TEXT NOT NULL,
+        option TEXT NOT NULL,
+        PRIMARY KEY (date, category, option)
+      ) STRICT`,
+      `CREATE TABLE log_measure (
+        date TEXT NOT NULL CHECK (date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        category TEXT NOT NULL,
+        value REAL NOT NULL,
+        PRIMARY KEY (date, category)
+      ) STRICT`,
+      `CREATE TABLE log_note (
+        date TEXT PRIMARY KEY NOT NULL CHECK (date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        text TEXT NOT NULL CHECK (length(text) BETWEEN 1 AND 1000)
+      ) STRICT`,
+      `CREATE TABLE category_pref (
+        category TEXT PRIMARY KEY NOT NULL,
+        position INTEGER NOT NULL CHECK (position >= 0),
+        hidden INTEGER NOT NULL CHECK (hidden IN (0, 1))
+      ) STRICT`,
+    ],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

@@ -13,6 +13,7 @@ export type SqlParam = string | number | null;
 export interface SqlExecutor {
   execAsync(source: string): Promise<void>;
   getFirstAsync<T>(source: string, ...params: SqlParam[]): Promise<T | null>;
+  getAllAsync<T>(source: string, ...params: SqlParam[]): Promise<T[]>;
   /** Instrução com parâmetros ligados (`?`): dados nunca entram no texto do SQL. */
   runAsync(source: string, ...params: SqlParam[]): Promise<unknown>;
   withTransactionAsync(task: () => Promise<void>): Promise<void>;
