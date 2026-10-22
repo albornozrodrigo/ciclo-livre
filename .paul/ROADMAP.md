@@ -7,22 +7,120 @@ about: "ciclo-livre"
 # Roadmap: Ciclo Livre
 
 ## Overview
-App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clue (incluindo todo o Clue Plus). É grátis, local-first e usa IA BYOK. O rascunho de fases está em PROJECT.md › Planned (Next).
+App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clue 274.0, incluindo todo o Clue Plus. É grátis, local-first e usa IA BYOK. A jornada:
+- fundação técnica e de privacidade;
+- registro, previsão e análise, o núcleo de valor;
+- extras que no Clue são pagos (lembrete fértil, PDF, IA, wearables, ícones);
+- build de release.
 
 ## Current Milestone
 **v0.1 Initial Release** (v0.1.0)
-Status: Not started
-Phases: 0 of TBD complete
+Status: In progress
+Phases: 0 of 11 complete
 
 ## Phases
 
 | Phase | Name | Plans | Status | Completed |
 |-------|------|-------|--------|-----------|
-| 1 | TBD | TBD | Not started | - |
+| 1 | Fundação | 3 | Planning | - |
+| 2 | Onboarding, perfil e modos | TBD | Not started | - |
+| 3 | Registro diário | TBD | Not started | - |
+| 4 | Motor de previsão + calendário | TBD | Not started | - |
+| 5 | Análise | TBD | Not started | - |
+| 6 | Lembretes | TBD | Not started | - |
+| 7 | Relatório médico + backup | TBD | Not started | - |
+| 8 | Conteúdo + busca + resumo IA | TBD | Not started | - |
+| 9 | Chat com seus dados (IA BYOK) | TBD | Not started | - |
+| 10 | Wearables (Health Connect) | TBD | Not started | - |
+| 11 | Personalização + release | TBD | Not started | - |
 
 ## Phase Details
 
-Phases will be defined during `/paul:plan`.
+### Phase 1: Fundação
+
+**Goal:** O app abre no Android real com a casca de navegação, o tema do Ciclo Livre e um banco SQLite comprovadamente criptografado, e tem testes rodando.
+**Depends on:** Nothing (first phase)
+**Research:** Likely. NativeWind 5 RC no SDK 58 ainda não tem validação oficial, e o SQLCipher do expo-sqlite exige development build.
+
+**Scope:**
+- Infra de testes (jest-expo + Testing Library) e remoção das telas de exemplo do template.
+- Tema (tokens claro/escuro no Tailwind 4) e abas: Hoje, Calendário, Análise, Explorar, Mais.
+- Development build Android rodando no aparelho, com NativeWind validado visualmente.
+- SQLite + SQLCipher com a chave no secure-store, executor de migrations e verificação de `cipher_version`.
+- Base de privacidade: log sem dados sensíveis, aviso "não é contraceptivo" e "apagar todos os dados".
+
+**Plans:**
+- [ ] 01-01: Ferramentas, casca de navegação e tema + dev build no aparelho
+- [ ] 01-02: Banco criptografado + migrations (TDD)
+- [ ] 01-03: Base de privacidade (logger seguro, aviso médico, apagar tudo)
+
+### Phase 2: Onboarding, perfil e modos
+**Goal:** No primeiro uso, a pessoa informa a última menstruação, a duração média do ciclo e da menstruação, e escolhe o modo: Período, Sem sangramento, Tentando engravidar, Gravidez ou Perimenopausa. Todos os modos são livres e trocáveis em Mais.
+**Depends on:** Phase 1 (banco + abas)
+**Research:** Unlikely
+
+### Phase 3: Registro diário
+**Goal:**
+- Registrar qualquer dia em 40+ categorias (sangramento, dor com intensidade, humor, sono, BBT, muco, sexo, testes etc.).
+- Notas e tags personalizadas ilimitadas.
+- Personalizar e reordenar categorias.
+**Depends on:** Phase 2
+**Research:** Unlikely (catálogo de categorias derivado do estudo, com textos próprios)
+
+### Phase 4: Motor de previsão + calendário
+**Goal:**
+- Prever a próxima menstruação, a janela fértil/ovulação (com BBT e muco quando houver) e a dor.
+- Calendário sem limite de horizonte.
+- Visão "Hoje" com a fase do ciclo e cards de fase liberados.
+- TDD obrigatório, com cobertura ≥ 90%.
+**Depends on:** Phase 3 (dados registrados)
+**Research:** Likely (algoritmos de previsão e literatura sobre detecção de ovulação por BBT)
+
+### Phase 5: Análise
+**Goal:**
+- Duração e variação do ciclo, fluxo, dor, sentimentos, BBT, sono, peso e FC.
+- Histórico e visão geral por ciclo.
+- Tudo liberado.
+**Depends on:** Phase 4
+**Research:** Likely (biblioteca de gráficos compatível com RN 0.88/Skia)
+
+### Phase 6: Lembretes
+**Goal:** Lembretes locais (menstruação, janela fértil, pílula, BBT, registro etc.), incluindo o de janela fértil, que no Clue é pago.
+**Depends on:** Phase 4
+**Research:** Unlikely
+
+### Phase 7: Relatório médico + backup
+**Goal:**
+- PDF de 6 ciclos para levar ao médico, ilimitado.
+- Exportar e importar backup local criptografado.
+**Depends on:** Phase 5
+**Research:** Unlikely
+
+### Phase 8: Conteúdo + busca + resumo IA
+**Goal:**
+- Artigos próprios ou de licença aberta, todos liberados.
+- Busca.
+- Resumo por IA usando a chave da própria pessoa (BYOK).
+**Depends on:** Phase 1
+**Research:** Likely (fontes de conteúdo com licença aberta; APIs Claude/OpenAI)
+
+### Phase 9: Chat com seus dados (IA BYOK)
+**Goal:** Conversar com os próprios dados do ciclo. A pessoa vê e consente com exatamente o que será enviado ao provedor antes de enviar.
+**Depends on:** Phases 5 and 8
+**Research:** Likely
+
+### Phase 10: Wearables (Health Connect)
+**Goal:** Importar sono, temperatura, FC e peso do Health Connect e mostrá-los na Análise.
+**Depends on:** Phase 5
+**Research:** Likely (biblioteca Health Connect compatível com Expo SDK 58)
+
+### Phase 11: Personalização + release
+**Goal:**
+- Ícones alternativos e temas, todos liberados.
+- Build de release via EAS rodando em aparelho real.
+**Depends on:** Phases 1–10
+**Research:** Likely (ícone alternativo no Android via config plugin)
 
 ---
 *Roadmap created: 2026-10-22*
+*Last updated: 2026-10-22*

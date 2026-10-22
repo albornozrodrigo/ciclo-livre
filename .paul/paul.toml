@@ -9,24 +9,26 @@ version = "1.4"
 source = "https://chrisai.cv/skool"
 
 [milestone]
-name = "None"
-version = "0.0.0"
-status = "not_started"
-phases = 0
+name = "v0.1 Initial Release"
+version = "0.1.0"
+status = "in_progress"
+phases = 11
 
 [phase]
-number = 0
-name = "None"
-status = "not_started"
+number = 1
+name = "Fundação"
+status = "planning"
 plans_completed = 0
 
 [loop]
-position = "IDLE"
+position = "PLAN"
+plan = "01-01"
+plan_path = "phases/01-fundacao/01-01-PLAN.md"
 
 [satellite]
 groom = true
 
 [stats]
 total_plans = 0
-total_phases = 0
-last_activity = "2026-10-22T13:40:00Z"
+total_phases = 11
+last_activity = "2026-10-22T14:10:00Z"

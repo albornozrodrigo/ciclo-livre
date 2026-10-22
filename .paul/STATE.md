@@ -11,25 +11,26 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** Project initialized — ready for planning
+**Current focus:** v0.1 — Fase 1 Fundação (plano 01-01)
 
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: Not yet defined
-Plan: None yet
-Status: Ready to create roadmap and first PLAN
-Last activity: 2026-10-22 — Project initialized (scaffold Expo 58 + NativeWind 5 RC commitado)
+Phase: 1 of 11 (Fundação) — Planning
+Plan: 01-01 created, awaiting approval
+Status: PLAN created, ready for APPLY
+Last activity: 2026-10-22 — Created .paul/phases/01-fundacao/01-01-PLAN.md
 
 Progress:
 - Milestone: [░░░░░░░░░░] 0%
+- Phase 1: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [Ready for first PLAN]
+  ✓        ○        ○     [Plan created, awaiting approval]
 ```
 
 ## Accumulated Context
@@ -49,12 +50,17 @@ PLAN ──▶ APPLY ──▶ UNIFY
 ### Blockers/Concerns
 None yet.
 
+## Boundaries (Active)
+
+- metro.config.js, postcss.config.mjs, nativewind-env.d.ts e versões fixadas (nativewind/react-native-css/tailwindcss/lightningcss)
+- android/ (gerado — CNG)
+
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Project initialization complete
-Next action: Run /paul:plan to define phases and first plan
-Resume file: .paul/PROJECT.md
+Stopped at: Plan 01-01 created
+Next action: Review and approve plan, then run /paul:apply .paul/phases/01-fundacao/01-01-PLAN.md
+Resume file: .paul/phases/01-fundacao/01-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
