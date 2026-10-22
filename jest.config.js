@@ -12,6 +12,7 @@ module.exports = {
         '<rootDir>/src/onboarding/',
         '<rootDir>/src/tracking/',
         '<rootDir>/src/i18n/',
+        '<rootDir>/src/content/',
       ],
       transformIgnorePatterns: [
         'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|native-base|react-native-svg|nativewind|react-native-css|standard-navigation|@noble/.*)',
@@ -28,6 +29,7 @@ module.exports = {
         '<rootDir>/src/onboarding/**/*.test.ts',
         '<rootDir>/src/tracking/**/*.test.ts',
         '<rootDir>/src/i18n/**/*.test.ts',
+        '<rootDir>/src/content/**/*.test.ts',
       ],
       transform: { '^.+\\.[jt]sx?$': ['babel-jest', { presets: ['babel-preset-expo'] }] },
       // @noble/* só publica ESM.

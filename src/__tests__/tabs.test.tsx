@@ -48,7 +48,7 @@ const cases: [ScreenKey, ComponentType][] = [
 ];
 
 describe('telas das abas', () => {
-  it.each(cases)('%s mostra título, etapa (quando em construção) e texto vindos do pt-BR', async (key, Component) => {
+  it.each(cases)('%s mostra título e texto vindos do pt-BR', async (key, Component) => {
     await render(
       <SafeAreaProvider initialMetrics={metrics}>
         <Component />
@@ -56,7 +56,6 @@ describe('telas das abas', () => {
     );
     const copy = ptBR.screens[key];
     expect(await screen.findByRole('header', { name: copy.title })).toBeOnTheScreen();
-    if ('phase' in copy) expect(screen.getByText(copy.phase)).toBeOnTheScreen();
     if ('lead' in copy) expect(screen.getByText(copy.lead)).toBeOnTheScreen();
   });
 

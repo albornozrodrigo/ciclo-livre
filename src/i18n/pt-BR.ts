@@ -23,8 +23,7 @@ export const ptBR = {
     },
     explorar: {
       title: 'Explorar',
-      lead: 'Conteúdo sobre saúde menstrual e reprodutiva, com busca.',
-      phase: 'Em construção — etapa 8',
+      lead: 'Artigos curtos sobre ciclo, sintomas e fertilidade. Todos liberados e disponíveis sem internet.',
     },
     mais: {
       title: 'Mais',
@@ -92,6 +91,23 @@ export const ptBR = {
     },
     emptyCycles: 'Registre ao menos duas menstruações para ver seus ciclos aqui.',
     noCycleMode: 'No modo atual não há análise de ciclo. Suas medições continuam aqui.',
+  },
+  content: {
+    search: 'Buscar artigos',
+    searchPlaceholder: 'Ex.: cólica, ovulação, corrimento',
+    results: (n: number) => (n === 0 ? 'Nenhum artigo encontrado' : n === 1 ? '1 artigo encontrado' : `${n} artigos encontrados`),
+    noResultsHint: 'Tente outra palavra, sem se preocupar com acento.',
+    topics: {
+      ciclo: 'Ciclo',
+      menstruacao: 'Menstruação',
+      sintomas: 'Sintomas',
+      fertilidade: 'Fertilidade e contracepção',
+      fases: 'Fases da vida',
+    },
+    minutes: (n: number) => `${n} min de leitura`,
+    sources: 'Fontes',
+    disclaimer: 'Texto informativo, escrito sem revisão de profissional de saúde. Não substitui consulta.',
+    notFound: 'Artigo não encontrado.',
   },
   reminders: {
     title: 'Lembretes',
