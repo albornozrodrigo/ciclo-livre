@@ -78,9 +78,13 @@ export function validateBirthYear(birthYear: number, today: IsoDate): ProfileErr
 }
 
 function checkBirthYear(birthYear: number, today: IsoDate): ProfileError[] {
-  const age = yearOf(today) - birthYear;
-  if (!Number.isInteger(birthYear) || age > LIMITS.maxAge) return [{ field: 'birthYear', code: 'out_of_range' }];
-  if (age < LIMITS.minAge) return [{ field: 'birthYear', code: 'under_18' }];
+  const yearsApart = yearOf(today) - birthYear;
+  if (!Number.isInteger(birthYear) || yearsApart < 0 || yearsApart > LIMITS.maxAge) {
+    return [{ field: 'birthYear', code: 'out_of_range' }];
+  }
+  // Só com o ano não dá para saber se o aniversário já passou: conta a idade mínima garantida.
+  const guaranteedAge = yearsApart - 1;
+  if (guaranteedAge < LIMITS.minAge) return [{ field: 'birthYear', code: 'under_18' }];
   return [];
 }
 
@@ -115,4 +119,25 @@ function checkModeFields(profile: Profile, today: IsoDate): ProfileError[] {
   const daysAhead = daysBetween(today, profile.dueDate);
   const inRange = daysAhead >= 0 && daysAhead <= LIMITS.dueDateMaxDaysAhead;
   return inRange ? [] : [{ field: 'dueDate', code: 'out_of_range' }];
+}
+
+/** Erros que dependem só da passagem do tempo (a data envelhece sozinha). */
+const TIME_DEPENDENT: Partial<Record<ProfileField, ProfileErrorCode[]>> = {
+  lastPeriodStart: ['too_old'],
+  dueDate: ['out_of_range'],
+};
+
+/**
+ * Validação para editar um perfil já salvo: uma data que envelheceu e não foi mexida
+ * não impede salvar outras mudanças. Datas novas continuam validadas por inteiro.
+ */
+export function validateProfileEdit(next: ProfileInput, previous: Profile, today: IsoDate): ValidationResult {
+  const result = validateProfile(next, today);
+  if (result.ok) return result;
+  const errors = result.errors.filter((error) => {
+    const unchanged = next[error.field] === previous[error.field];
+    return !(unchanged && TIME_DEPENDENT[error.field]?.includes(error.code));
+  });
+  if (errors.length > 0) return { ok: false, errors };
+  return { ok: true, profile: withDefaults(next) };
 }

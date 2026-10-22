@@ -1,8 +1,7 @@
 import { FormScreen } from '@/components/form-screen';
 import { ChoiceList } from '@/components/ui/choice-list';
-import { DateField } from '@/components/ui/date-field';
-import { addDays, isoFromDate } from '@/domain/dates';
-import { LIMITS, MODES, TRYING_SINCE } from '@/domain/profile';
+import { DueDateField } from '@/components/fields/due-date-field';
+import { MODES, TRYING_SINCE } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 import { useProfileEditor } from '@/profile/use-profile-editor';
 
@@ -14,22 +13,11 @@ const tryingOptions = TRYING_SINCE.map((value) => ({ value, label: ptBR.onboardi
 export default function ChangeModeScreen() {
   const { draft, update, save, canSave } = useProfileEditor();
   if (!draft) return null;
-  const today = isoFromDate(new Date());
 
   return (
     <FormScreen title={ptBR.profile.modeTitle} hint={ptBR.profile.modeHint} actionLabel={ptBR.profile.save} onAction={save} actionDisabled={!canSave}>
       <ChoiceList label={ptBR.profile.modeTitle} options={modeOptions} value={draft.mode} onChange={(mode) => update({ mode })} />
-      {draft.mode === 'pregnancy' ? (
-        <DateField
-          label={ptBR.onboarding.dueDate.label}
-          value={draft.dueDate}
-          placeholder={ptBR.onboarding.dueDate.pick}
-          min={today}
-          max={addDays(today, LIMITS.dueDateMaxDaysAhead)}
-          initial={addDays(today, 140)}
-          onChange={(dueDate) => update({ dueDate })}
-        />
-      ) : null}
+      {draft.mode === 'pregnancy' ? <DueDateField value={draft.dueDate} onChange={(dueDate) => update({ dueDate })} /> : null}
       {draft.mode === 'conceive' ? (
         <ChoiceList
           label={ptBR.onboarding.tryingSince.title}

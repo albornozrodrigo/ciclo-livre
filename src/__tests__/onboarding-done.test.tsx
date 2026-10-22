@@ -8,8 +8,8 @@ import { type OnboardingDraft, OnboardingDraftProvider } from '@/onboarding/draf
 const mockSaveProfile = jest.fn();
 jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ saveProfile: mockSaveProfile }) }));
 
-const mockPush = jest.fn();
-jest.mock('expo-router', () => ({ router: { push: (href: unknown) => mockPush(href) } }));
+const mockDismissTo = jest.fn();
+jest.mock('expo-router', () => ({ router: { dismissTo: (href: unknown) => mockDismissTo(href) } }));
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 24, left: 0, right: 0, bottom: 0 } };
 const copy = ptBR.onboarding.done;
@@ -26,7 +26,7 @@ const renderDone = (initial: Partial<OnboardingDraft>) =>
 describe('Onboarding › pronto', () => {
   beforeEach(() => {
     mockSaveProfile.mockReset().mockResolvedValue(undefined);
-    mockPush.mockReset();
+    mockDismissTo.mockReset();
   });
 
   it('mostra o aviso de que não é contraceptivo nem dispositivo médico', async () => {
@@ -36,25 +36,25 @@ describe('Onboarding › pronto', () => {
   });
 
   it('salva o perfil validado, com padrões e sem campos de outros modos', async () => {
-    await renderDone({ birthYear: '1995', mode: 'period', lastPeriodStart: null, dueDate: '2027-01-01' });
+    await renderDone({ birthYear: '1995', mode: 'period', lastPeriodStart: null, dueDate: '2027-01-01', tryingSince: '1_3m' });
 
     await fireEvent.press(screen.getByRole('button', { name: copy.start }));
 
     await waitFor(() =>
       expect(mockSaveProfile).toHaveBeenCalledWith(
-        expect.objectContaining({ birthYear: 1995, mode: 'period', cycleLength: 28, periodLength: 5, dueDate: null }),
+        expect.objectContaining({ birthYear: 1995, mode: 'period', cycleLength: 28, periodLength: 5, dueDate: null, tryingSince: null }),
       ),
     );
   });
 
-  it('com dado inválido não salva e oferece corrigir no passo certo', async () => {
+  it('com dado inválido não salva e volta (sem empilhar) ao passo certo', async () => {
     await renderDone({ birthYear: '1995', mode: 'pregnancy', dueDate: null });
 
     await fireEvent.press(screen.getByRole('button', { name: copy.start }));
     await fireEvent.press(await screen.findByRole('button', { name: copy.fixButton }));
 
     expect(mockSaveProfile).not.toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith('/onboarding/data-prevista');
+    expect(mockDismissTo).toHaveBeenCalledWith('/onboarding/data-prevista');
   });
 });
 

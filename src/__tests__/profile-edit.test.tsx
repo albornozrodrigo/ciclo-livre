@@ -18,7 +18,11 @@ jest.mock('@/profile/profile-context', () => ({
 const mockShow = jest.fn();
 jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: mockShow }) }));
 const mockBack = jest.fn();
-jest.mock('expo-router', () => ({ router: { back: () => mockBack() }, Stack: { Screen: () => null } }));
+const mockReplace = jest.fn();
+let mockCanGoBack = true;
+jest.mock('expo-router', () => ({
+  router: { back: () => mockBack(), canGoBack: () => mockCanGoBack, replace: (href: unknown) => mockReplace(href) },
+}));
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 24, left: 0, right: 0, bottom: 0 } };
 const wrap = (node: React.ReactNode) => render(<SafeAreaProvider initialMetrics={metrics}>{node}</SafeAreaProvider>);
@@ -28,6 +32,8 @@ beforeEach(() => {
   mockSave.mockReset().mockResolvedValue(undefined);
   mockShow.mockReset();
   mockBack.mockReset();
+  mockReplace.mockReset();
+  mockCanGoBack = true;
 });
 
 describe('Trocar modo', () => {
@@ -94,6 +100,19 @@ describe('Dados do ciclo', () => {
     await save();
 
     await waitFor(() => expect(mockShow).toHaveBeenCalledWith(ptBR.profile.saveFailed));
+    expect(mockBack).not.toHaveBeenCalled();
+  });
+});
+
+describe('Editor sem tela anterior (aberto por link)', () => {
+  it('depois de salvar vai para Mais em vez de tentar voltar', async () => {
+    mockCanGoBack = false;
+    await wrap(<ChangeModeScreen />);
+
+    await fireEvent.press(screen.getByRole('radio', { name: /Perimenopausa/ }));
+    await save();
+
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/mais'));
     expect(mockBack).not.toHaveBeenCalled();
   });
 });

@@ -2,8 +2,8 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 
 import { useSnackbar } from '@/components/ui/snackbar';
-import { isoFromDate } from '@/domain/dates';
-import { type Profile, validateProfile } from '@/domain/profile';
+import { todayIso } from '@/domain/dates';
+import { type Profile, validateProfileEdit } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
 
@@ -19,15 +19,19 @@ export function useProfileEditor() {
 
   const update = (patch: Partial<Profile>) => setDraft((current) => (current ? { ...current, ...patch } : current));
 
+  // Datas guardadas que envelheceram sozinhas não travam a edição de outros campos.
+  const validation = draft && initial ? validateProfileEdit(draft, initial, todayIso()) : null;
+
   async function save() {
-    if (!draft) return;
-    const result = validateProfile(draft, isoFromDate(new Date()));
-    if (!result.ok) return;
+    if (!validation?.ok) return;
+    const result = validation;
     setSaving(true);
     try {
       await saveProfile(result.profile);
       show(ptBR.profile.saved);
-      router.back();
+      // Aberto por link, pode não haver tela anterior.
+      if (router.canGoBack()) router.back();
+      else router.replace('/mais');
     } catch (error) {
       log.error('profile_save_failed', error);
       show(ptBR.profile.saveFailed);
@@ -36,6 +40,5 @@ export function useProfileEditor() {
     }
   }
 
-  const valid = draft !== null && validateProfile(draft, isoFromDate(new Date())).ok;
-  return { draft, update, save, canSave: valid && !saving };
+  return { draft, update, save, canSave: Boolean(validation?.ok) && !saving };
 }

@@ -16,21 +16,20 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 2 of 11 (Onboarding, perfil e modos) — In progress
-Plan: 02-01 completo; 02-02 (telas de onboarding) em planejamento
-Status: PLAN 02-02
-Last activity: 2026-10-22 — Phase 1 complete (4 planos; /code-review e /cso feitos)
+Phase: 3 of 11 (Registro diário) — Not started
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-22 — Phase 2 complete (onboarding, perfil editável; /code-review aplicado)
 
 Progress:
-- Milestone: [█░░░░░░░░░] 9%
-- Phase 2: [███░░░░░░░] 33%
+- Milestone: [██░░░░░░░░] 18%
+- Phase 3: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
-Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [Pronto para planejar a fase 2]
+  ○        ○        ○     [Pronto para planejar a fase 3]
 ```
 
 ## Accumulated Context
@@ -48,9 +47,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 ### Deferred Issues
 | Issue | Origin | Effort | Revisit |
 |-------|--------|--------|---------|
-| Tokens repetidos em `@theme`/`:root`/`theme.ts` | 01-01 review | S | Teste de paridade ou remover `:root` |
+| Tokens repetidos em `@theme`/`:root`/`theme.ts` (agora com `line`) | 01-01 review | S | Teste de paridade ou remover `:root` |
+| Movimento (transições de território) e chip que cruza na cápsula | 02-02 review | M | Fase 11 / polimento |
 | `npm audit`: 19 high vulnerabilities vindas do template (não triadas; /cso sem OSV) | Init | S | Fase 2 |
-| Diálogo nativo com acento teal padrão (fora da paleta) | 01-03 | S | Fase 11 |
 | FLAG_SECURE / ocultar miniatura em Recentes | /cso | S | Fase 3 (quando houver dados na tela) |
 
 ### Blockers/Concerns
@@ -64,8 +63,8 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: 02-01 completo
-Next action: planejar e aplicar 02-02 (rotas protegidas + telas de onboarding, Impeccable)
+Stopped at: Phase 2 complete, ready to plan Phase 3
+Next action: /paul:plan para a fase 3 (Registro diário: 40+ categorias, tags, notas)
 Resume file: .paul/ROADMAP.md
 
 ---

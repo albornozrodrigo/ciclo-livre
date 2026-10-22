@@ -46,3 +46,8 @@ export function addDays(value: IsoDate, days: number): IsoDate {
   const d = new Date((dayNumber + days) * MS_PER_DAY);
   return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 }
+
+/** Hoje, como data de calendário local. */
+export function todayIso(now: Date = new Date()): IsoDate {
+  return isoFromDate(now);
+}

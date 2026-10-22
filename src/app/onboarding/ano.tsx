@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Keyboard, Text, TextInput, View } from 'react-native';
 
 import { OnboardingStep } from '@/components/onboarding-step';
-import { isoFromDate } from '@/domain/dates';
+import { todayIso } from '@/domain/dates';
 import { validateBirthYear } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 import { useOnboardingDraft } from '@/onboarding/draft';
@@ -16,7 +16,7 @@ export default function BirthYearScreen() {
   const [error, setError] = useState<string | null>(null);
 
   function handleContinue() {
-    const code = validateBirthYear(Number(draft.birthYear), isoFromDate(new Date()));
+    const code = validateBirthYear(Number(draft.birthYear), todayIso());
     if (code === 'under_18' || code === 'out_of_range') {
       // Fecha o teclado para a mensagem não ficar escondida atrás dele.
       Keyboard.dismiss();

@@ -79,7 +79,7 @@ export const ptBR = {
       label: 'Ano de nascimento',
       placeholder: 'AAAA',
       errors: {
-        under_18: 'O Ciclo Livre é só para maiores de 18 anos. Se você tem menos, converse com alguém de confiança ou um serviço de saúde sobre o seu ciclo.',
+        under_18: 'O Ciclo Livre é para quem já tem 18 anos completos. Se ainda não tem, converse com alguém de confiança ou um serviço de saúde sobre o seu ciclo.',
         out_of_range: 'Confira o ano: use quatro dígitos, como 1995.',
       },
     },

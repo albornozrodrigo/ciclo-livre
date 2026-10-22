@@ -1,4 +1,5 @@
-import { type ProfileInput, validateBirthYear, validateProfile } from '@/domain/profile';
+import { todayIso } from '@/domain/dates';
+import { type ProfileInput, validateBirthYear, validateProfile, validateProfileEdit } from '@/domain/profile';
 
 const TODAY = '2026-10-22';
 
@@ -40,12 +41,16 @@ describe('validateProfile', () => {
   });
 
   describe('idade', () => {
-    it('recusa quem completa menos de 18 anos no ano atual', () => {
-      expect(errorsOf({ ...base, birthYear: 2009 })).toEqual([{ field: 'birthYear', code: 'under_18' }]);
+    it('recusa quem pode ainda ter 17 anos (completa 18 neste ano)', () => {
+      expect(errorsOf({ ...base, birthYear: 2008 })).toEqual([{ field: 'birthYear', code: 'under_18' }]);
     });
 
-    it('aceita quem completa 18 anos no ano atual', () => {
-      expect(errorsOf({ ...base, birthYear: 2008 })).toEqual([]);
+    it('aceita quem com certeza já tem 18 anos completos', () => {
+      expect(errorsOf({ ...base, birthYear: 2007 })).toEqual([]);
+    });
+
+    it('ano no futuro é ano inválido, não menor de idade', () => {
+      expect(errorsOf({ ...base, birthYear: 2030 })).toEqual([{ field: 'birthYear', code: 'out_of_range' }]);
     });
 
     it('recusa ano de nascimento implausível (mais de 100 anos)', () => {
@@ -153,8 +158,35 @@ describe('validateProfile', () => {
 
 describe('validateBirthYear', () => {
   it('devolve o código de erro do ano isoladamente', () => {
-    expect(validateBirthYear(2010, TODAY)).toBe('under_18');
+    expect(validateBirthYear(2008, TODAY)).toBe('under_18');
     expect(validateBirthYear(1800, TODAY)).toBe('out_of_range');
     expect(validateBirthYear(1990, TODAY)).toBeNull();
+  });
+});
+
+describe('validateProfileEdit', () => {
+  const saved = { ...base, lastPeriodStart: '2025-10-25', periodLength: 5, cycleLength: 28, regularity: 'unknown' as const, dueDate: null, tryingSince: null, birthControl: null };
+
+  it('não bloqueia por uma data guardada que envelheceu e não foi mexida', () => {
+    expect(validateProfileEdit({ ...saved, mode: 'perimenopause' }, saved, '2026-11-01').ok).toBe(true);
+  });
+
+  it('continua recusando a data antiga se a pessoa acabou de escolhê-la', () => {
+    const previous = { ...saved, lastPeriodStart: '2026-10-01' };
+    const result = validateProfileEdit({ ...saved }, previous, '2026-11-01');
+
+    expect(result.ok ? [] : result.errors).toEqual([{ field: 'lastPeriodStart', code: 'too_old' }]);
+  });
+
+  it('data prevista que já passou e não foi mexida não bloqueia edições', () => {
+    const pregnant = { ...saved, mode: 'pregnancy' as const, lastPeriodStart: null, dueDate: '2026-10-01' };
+
+    expect(validateProfileEdit({ ...pregnant, cycleLength: 30 }, pregnant, '2026-11-01').ok).toBe(true);
+  });
+});
+
+describe('todayIso', () => {
+  it('é a data local de hoje', () => {
+    expect(todayIso(new Date(2026, 9, 22, 23, 30))).toBe('2026-10-22');
   });
 });
