@@ -32,7 +32,8 @@ export function Screen({ screen, territory, shape = 0, children }: Props) {
   // Depois que o lobo sai por baixo da barra de status, o texto passaria sob os ícones.
   const [pastLobe, setPastLobe] = useState(false);
   const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const past = e.nativeEvent.contentOffset.y > lobeHeight - insets.top;
+    // A borda esquerda do lobo sobe antes da parte mais funda: o relógio fica sobre a água antes.
+    const past = e.nativeEvent.contentOffset.y > lobeHeight * 0.75 - insets.top;
     if (past !== pastLobe) setPastLobe(past);
   };
 

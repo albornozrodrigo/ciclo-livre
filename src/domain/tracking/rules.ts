@@ -38,12 +38,11 @@ export type CategoryPref = { category: string; position: number; hidden: boolean
 export function orderCategories(visibleIds: readonly string[], prefs: readonly CategoryPref[]): string[] {
   const visible = new Set(visibleIds);
   const relevant = prefs.filter((p) => visible.has(p.category)).sort((a, b) => a.position - b.position);
-  const hidden = new Set(relevant.filter((p) => p.hidden).map((p) => p.category));
   const result = relevant.filter((p) => !p.hidden).map((p) => p.category);
   const known = new Set(relevant.map((p) => p.category));
 
   visibleIds.forEach((id, index) => {
-    if (known.has(id) || hidden.has(id)) return;
+    if (known.has(id)) return;
     const previous = visibleIds.slice(0, index).reverse().find((candidate) => result.includes(candidate));
     result.splice(previous ? result.indexOf(previous) + 1 : 0, 0, id);
   });

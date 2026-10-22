@@ -4,6 +4,7 @@ import type { Period } from './periods';
 
 /** Fora desta faixa o "ciclo" provavelmente é registro esquecido ou duplicado. */
 export const PLAUSIBLE_CYCLE = { min: 15, max: 90 } as const;
+export const isPlausibleCycle = (length: number) => length >= PLAUSIBLE_CYCLE.min && length <= PLAUSIBLE_CYCLE.max;
 /** Quantos ciclos recentes entram na média: equilibra estabilidade e mudanças recentes. */
 export const RECENT_CYCLES = 6;
 
@@ -15,7 +16,7 @@ export function cycleLengths(periods: readonly Period[]): number[] {
 
 /** Média e desvio-padrão (populacional) dos ciclos válidos mais recentes; sem dados, a duração do perfil. */
 export function cycleStats(lengths: readonly number[], fallbackLength: number): CycleStats {
-  const valid = lengths.filter((l) => l >= PLAUSIBLE_CYCLE.min && l <= PLAUSIBLE_CYCLE.max).slice(-RECENT_CYCLES);
+  const valid = lengths.filter(isPlausibleCycle).slice(-RECENT_CYCLES);
   if (valid.length === 0) return { mean: fallbackLength, sd: null, count: 0, lengths: [] };
   const mean = valid.reduce((a, b) => a + b, 0) / valid.length;
   if (valid.length === 1) return { mean, sd: null, count: 1, lengths: valid };

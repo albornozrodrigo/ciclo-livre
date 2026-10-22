@@ -22,11 +22,43 @@ describe('cycleHistory', () => {
       { start: '2026-07-04', length: 28, periodLength: 3, ovulation: { date: '2026-07-18', method: 'calendar' } },
     ]);
   });
+
+  it('menstruação em andamento mostra só os dias registrados, não a duração estendida', () => {
+    const ongoing = buildCycleModel(
+      { flowDates: ['2026-09-24', '2026-09-25', '2026-09-26', '2026-10-21', '2026-10-22'], seed: null, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      TODAY,
+    )!;
+    expect(cycleHistory(ongoing)[0]).toMatchObject({ start: '2026-10-21', length: null, periodLength: 2 });
+  });
+
+  it('menstruação só informada no cadastro (semente) não tem duração medida', () => {
+    const seeded = buildCycleModel(
+      { flowDates: ['2026-10-01', '2026-10-02'], seed: { start: '2026-09-03', length: 5 }, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      TODAY,
+    )!;
+    expect(cycleHistory(seeded).map((r) => r.periodLength)).toEqual([2, null]);
+  });
 });
 
 describe('cycleSummary', () => {
   it('média, mínima, máxima, desvio, menstruação média e contagem', () => {
     expect(cycleSummary(model)).toEqual({ count: 3, mean: 28, min: 27, max: 29, sd: expect.closeTo(0.816, 3), periodMean: 4 });
+  });
+
+  it('ignora durações implausíveis (menstruação esquecida), como a previsão', () => {
+    const gap = buildCycleModel(
+      { flowDates: ['2026-03-06', '2026-03-07', '2026-03-08', ...flow], seed: null, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      TODAY,
+    )!;
+    expect(cycleSummary(gap)).toMatchObject({ count: 3, mean: 28, min: 27, max: 29 });
+  });
+
+  it('menstruação média só com menstruações registradas; sem nenhuma terminada, null', () => {
+    const seeded = buildCycleModel(
+      { flowDates: ['2026-10-01'], seed: { start: '2026-09-03', length: 5 }, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      '2026-10-02',
+    )!;
+    expect(cycleSummary(seeded)).toMatchObject({ count: 1, periodMean: null });
   });
 
   it('sem ciclos completos não há resumo', () => {
@@ -56,6 +88,25 @@ describe('symptomFrequency', () => {
       { category: 'feelings', option: 'anxious', cycles: 2, total: 3, phase: 'luteal' },
       { category: 'skin', option: 'breakouts', cycles: 1, total: 3, phase: 'follicular' },
     ]);
+  });
+
+  it('ignora estados neutros ou bons (corrimento normal, energia boa, calma), mantém o atípico', () => {
+    const neutral = [
+      { date: '2026-07-04', category: 'discharge', option: 'creamy' },
+      { date: '2026-08-01', category: 'discharge', option: 'creamy' },
+      { date: '2026-07-05', category: 'feelings', option: 'calm' },
+      { date: '2026-08-02', category: 'energy', option: 'good' },
+      { date: '2026-07-06', category: 'discharge', option: 'atypical' },
+    ];
+    expect(symptomFrequency(model, neutral, TODAY).map((r) => r.option)).toEqual(['atypical']);
+  });
+
+  it('o total conta só os ciclos desde o primeiro sintoma registrado', () => {
+    const late = [
+      { date: '2026-08-20', category: 'pain', option: 'cramps' },
+      { date: '2026-09-01', category: 'pain', option: 'cramps' },
+    ];
+    expect(symptomFrequency(model, late, TODAY)).toEqual([{ category: 'pain', option: 'cramps', cycles: 2, total: 2, phase: expect.any(String) }]);
   });
 
   it('ignora categorias que não são sintomas (fluxo, coleta, testes, contracepção)', () => {

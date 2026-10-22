@@ -81,6 +81,24 @@ describe("Análise", () => {
     ).toBeOnTheScreen();
   });
 
+  it("diz em quantos ciclos completos os números se baseiam", async () => {
+    await seed();
+    await renderAnalise();
+
+    expect(await screen.findByText(a.basis(3))).toBeOnTheScreen();
+  });
+
+  it("com ciclos completos mas sem sintomas, pede registros de sintoma (não mais ciclos)", async () => {
+    const today = todayIso();
+    for (const start of [-84, -56, -28, 0])
+      for (const d of [0, 1, 2])
+        if (start + d <= 0) await setSelection(mockDb, addDays(today, start + d), "period", ["medium"]);
+    await renderAnalise();
+
+    expect(await screen.findByText(a.symptoms.noLogs)).toBeOnTheScreen();
+    expect(screen.queryByText(a.symptoms.empty)).toBeNull();
+  });
+
   it("o gráfico tem descrição acessível e tocar numa barra mostra o valor", async () => {
     await seed();
     await renderAnalise();
