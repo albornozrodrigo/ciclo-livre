@@ -18,7 +18,7 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 Milestone: v0.1 Initial Release
 Phase: 8 of 11 (Conteúdo + busca + resumo IA + importar do Clue) — Planned
 Plan: 08-01 (artigos + busca), 08-02 (resumo IA BYOK), 08-03 (importar do Clue)
-Status: Ready to apply 08-01
+Status: 08-01 complete; next APPLY 08-02 (resumo IA BYOK)
 Last activity: 2026-10-22 — Phase 7 complete (relatório PDF, exportação, backup/restauração, Drive pelo compartilhar; reviews aplicados)
 
 Progress:
@@ -29,7 +29,7 @@ Progress:
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [08-01 planejado; pronto para APPLY]
+  ✓        ○        ○     [08-01 fechado; próximo: 08-02]
 ```
 
 ## Accumulated Context
@@ -83,8 +83,8 @@ None yet.
 
 Last session: 2026-10-22
 Stopped at: Phase 7 complete
-Next action: /paul:apply .paul/phases/08-conteudo-ia/08-01-PLAN.md
-Resume file: .paul/phases/08-conteudo-ia/08-01-PLAN.md
+Next action: /paul:apply .paul/phases/08-conteudo-ia/08-02-PLAN.md
+Resume file: .paul/phases/08-conteudo-ia/08-02-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
