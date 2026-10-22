@@ -1,4 +1,4 @@
-import { getCycleSignals, getLoggedDates } from '@/db/cycle-repo';
+import { getAnalysisData, getCycleSignals, getLoggedDates } from '@/db/cycle-repo';
 import { setMeasure, setNote, setSelection } from '@/db/log-repo';
 import { createTag, setDayTags } from '@/db/tag-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
@@ -55,5 +55,19 @@ describe('getLoggedDates', () => {
     await expect(getLoggedDates(db, '2026-10-01', '2026-10-31')).resolves.toEqual([
       '2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04',
     ]);
+  });
+});
+
+describe('getAnalysisData', () => {
+  it('todas as seleções e as medições por categoria', async () => {
+    const db = await migratedDb();
+    await setSelection(db, '2026-10-01', 'pain', ['cramps']);
+    await setMeasure(db, '2026-10-01', 'weight', 60);
+    await setMeasure(db, '2026-10-02', 'temperature', 36.5);
+
+    const data = await getAnalysisData(db);
+
+    expect(data.selections).toEqual([{ date: '2026-10-01', category: 'pain', option: 'cramps' }]);
+    expect(data.measures).toEqual({ weight: { '2026-10-01': 60 }, temperature: { '2026-10-02': 36.5 } });
   });
 });

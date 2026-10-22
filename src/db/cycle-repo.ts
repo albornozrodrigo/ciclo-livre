@@ -36,3 +36,19 @@ export async function getLoggedDates(db: SqlExecutor, from: IsoDate, to: IsoDate
   );
   return rows.map((r) => r.date);
 }
+
+export type AnalysisData = {
+  selections: { date: IsoDate; category: string; option: string }[];
+  measures: Record<string, Record<IsoDate, number>>;
+};
+
+/** Tudo o que a Análise usa: seleções e medições (lido de uma vez, só no aparelho). */
+export async function getAnalysisData(db: SqlExecutor): Promise<AnalysisData> {
+  const [selections, measureRows] = await Promise.all([
+    db.getAllAsync<{ date: string; category: string; option: string }>('SELECT date, category, option FROM log_selection ORDER BY date'),
+    db.getAllAsync<{ date: string; category: string; value: number }>('SELECT date, category, value FROM log_measure ORDER BY date'),
+  ]);
+  const measures: Record<string, Record<IsoDate, number>> = {};
+  for (const m of measureRows) (measures[m.category] ??= {})[m.date] = m.value;
+  return { selections, measures };
+}
