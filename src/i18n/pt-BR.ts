@@ -38,7 +38,7 @@ export const ptBR = {
   today: {
     logToday: 'Registrar hoje',
     empty: 'Nada registrado hoje ainda. Leva poucos segundos.',
-    count: (n: number) => (n === 1 ? '1 registro hoje' : `${n} registros hoje`),
+    count: (n: number) => (n === 1 ? '1 categoria registrada hoje' : `${n} categorias registradas hoje`),
     phaseSoon: 'Previsões e fase do ciclo chegam na etapa 4',
   },
   profile: {

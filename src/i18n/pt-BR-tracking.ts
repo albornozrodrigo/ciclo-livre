@@ -9,6 +9,7 @@ export const trackingPtBR = {
     counter: (used: number, max: number) => `${used} de ${max}`,
   },
   measureErrors: {
+    prefix: 'Erro:',
     out_of_range: (min: number, max: number, unit: string) => `Use um valor entre ${min} e ${max} ${unit}.`,
     too_precise: (decimals: number) => (decimals === 0 ? 'Use um número inteiro.' : `Use até ${decimals} casas decimais.`),
     not_a_number: 'Use só números, como 36,5.',
@@ -28,7 +29,7 @@ export const trackingPtBR = {
     spotting: { label: 'Escape', options: { red: 'Vermelho', brown: 'Marrom' } },
     collection_method: {
       label: 'Coleta',
-      options: { pad: 'Absorvente', tampon: 'Interno', cup: 'Coletor', disc: 'Disco', period_underwear: 'Calcinha absorvente', liner: 'Protetor diário' },
+      options: { pad: 'Absorvente', tampon: 'Interno', cup: 'Coletor', disc: 'Disco', period_underwear: 'Roupa íntima absorvente', liner: 'Protetor diário' },
     },
     pain: {
       label: 'Dor',
@@ -62,7 +63,7 @@ export const trackingPtBR = {
       },
     },
     hot_flashes: { label: 'Calores', options: { hot_flash: 'Onda de calor', night_sweats: 'Suor noturno', chills: 'Calafrios' } },
-    energy: { label: 'Energia', options: { exhausted: 'Esgotada', low: 'Baixa', good: 'Boa', high: 'Alta' } },
+    energy: { label: 'Energia', options: { exhausted: 'Muito baixa', low: 'Baixa', good: 'Boa', high: 'Alta' } },
     sleep: { label: 'Sono', options: { under_3h: 'Menos de 3 h', '3_6h': '3 a 6 h', '6_9h': '6 a 9 h', over_9h: 'Mais de 9 h' } },
     sleep_quality: { label: 'Qualidade do sono', options: { restless: 'Agitado', ok: 'Normal', restful: 'Reparador' } },
     digestion: { label: 'Digestão', options: { nausea: 'Enjoo', bloating: 'Inchaço', constipation: 'Intestino preso', diarrhea: 'Diarreia', gas: 'Gases' } },
@@ -73,8 +74,8 @@ export const trackingPtBR = {
       label: 'Exercício',
       options: { walking: 'Caminhada', running: 'Corrida', cycling: 'Bicicleta', swimming: 'Natação', yoga: 'Yoga', strength: 'Musculação', team_sport: 'Esporte coletivo', dance: 'Dança' },
     },
-    feelings: { label: 'Sentimentos', options: { happy: 'Feliz', calm: 'Tranquila', sensitive: 'Sensível', sad: 'Triste', anxious: 'Ansiosa', irritable: 'Irritada' } },
-    mind: { label: 'Cabeça', options: { focused: 'Focada', distracted: 'Distraída', motivated: 'Motivada', unmotivated: 'Desanimada', creative: 'Criativa', foggy: 'Nublada' } },
+    feelings: { label: 'Sentimentos', options: { happy: 'Felicidade', calm: 'Calma', sensitive: 'Sensibilidade', sad: 'Tristeza', anxious: 'Ansiedade', irritable: 'Irritação' } },
+    mind: { label: 'Cabeça', options: { focused: 'Foco', distracted: 'Distração', motivated: 'Motivação', unmotivated: 'Desânimo', creative: 'Criatividade', foggy: 'Mente nublada' } },
     stress: { label: 'Estresse', options: { low: 'Baixo', moderate: 'Moderado', high: 'Alto' } },
     meditation: { label: 'Meditação', options: { under_15m: 'Até 15 min', '15_30m': '15 a 30 min', over_30m: 'Mais de 30 min' } },
     social: { label: 'Relações', options: { supportive: 'Apoio', conflict: 'Conflito', social: 'Sociável', withdrawn: 'Na minha' } },

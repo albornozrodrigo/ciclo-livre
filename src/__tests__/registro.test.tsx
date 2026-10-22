@@ -84,7 +84,7 @@ describe('Registrar o dia', () => {
 
     await fireEvent.changeText(field, '50');
     await fireEvent(field, 'blur');
-    expect(await screen.findByText(ptBR.tracking.measureErrors.out_of_range(34, 42, '°C'))).toBeOnTheScreen();
+    expect(await screen.findByText(new RegExp(ptBR.tracking.measureErrors.out_of_range(34, 42, '°C')))).toBeOnTheScreen();
     expect((await getDay(mockDb, DAY)).measures).toEqual({});
 
     await fireEvent.changeText(field, '36,55');
@@ -126,5 +126,25 @@ describe('Registrar o dia', () => {
     await screen.unmount();
 
     await waitFor(async () => expect((await getDay(mockDb, DAY)).note).toBe('Saí rápido.'));
+  });
+
+  it('a vírgula digitada não some quando o valor parcial é salvo', async () => {
+    await renderRegistro();
+    const field = screen.getByLabelText(new RegExp(t.temperature.label));
+
+    await fireEvent.changeText(field, '36,');
+    await waitFor(async () => expect((await getDay(mockDb, DAY)).measures).toEqual({ temperature: 36 }), { timeout: 3000 });
+
+    expect(field).toHaveDisplayValue('36,');
+  });
+
+  it('valor inválido mostra o erro sozinho depois de uma pausa, mesmo sem sair do campo', async () => {
+    await renderRegistro();
+
+    await fireEvent.changeText(screen.getByLabelText(new RegExp(t.temperature.label)), '50');
+
+    expect(
+      await screen.findByText(new RegExp(ptBR.tracking.measureErrors.out_of_range(34, 42, '°C')), undefined, { timeout: 3000 }),
+    ).toBeOnTheScreen();
   });
 });

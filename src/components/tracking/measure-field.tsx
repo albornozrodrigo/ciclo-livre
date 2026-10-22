@@ -29,18 +29,29 @@ export function MeasureField({ category, value, onSave }: { category: MeasureCat
   const [text, setText] = useState(format(value));
   const [error, setError] = useState<string | null>(null);
   const { schedule, flush, cancel } = useDebouncedSave(onSave);
+  // Erro aparece sozinho após uma pausa: no Android, fechar o teclado não dispara blur nem submit.
+  const errorDisplay = useDebouncedSave(setError);
 
-  // Valor salvo mudou (ex.: desfeito após erro): recomeça o texto a partir dele.
+  // Valor salvo mudou por fora (ex.: desfeito após erro). Só reescreve o texto se ele não
+  // representa já esse valor, para não apagar o que está sendo digitado ("36," continua "36,").
   const [syncedValue, setSyncedValue] = useState(value);
   if (value !== syncedValue) {
     setSyncedValue(value);
-    setText(format(value));
+    const current = parse(text, category);
+    const matches = current.kind === 'value' ? current.value === value : current.kind === 'empty' && value === undefined;
+    if (!matches) setText(format(value));
   }
 
   function handleChange(next: string) {
     setText(next);
     setError(null);
     const parsed = parse(next, category);
+    if (parsed.kind === 'error') {
+      cancel();
+      errorDisplay.schedule(parsed.message);
+      return;
+    }
+    errorDisplay.cancel();
     if (parsed.kind === 'value' && parsed.value !== value) schedule(parsed.value);
     else if (parsed.kind === 'empty' && value !== undefined) schedule(null);
     else cancel();
@@ -48,14 +59,23 @@ export function MeasureField({ category, value, onSave }: { category: MeasureCat
 
   function handleCommit() {
     const parsed = parse(text, category);
-    if (parsed.kind === 'error') setError(parsed.message);
+    if (parsed.kind === 'error') {
+      errorDisplay.cancel();
+      setError(parsed.message);
+    }
     flush();
   }
 
   return (
     <View className="gap-2">
       <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{label}</Text>
-      <View className="min-h-14 flex-row items-center rounded-full border-[1.5px] border-ink pr-5 dark:border-ink-night">
+      {/* Com erro, contorno mais grosso: sinal visível que não depende de cor. */}
+      <View
+        className={
+          error
+            ? 'min-h-14 flex-row items-center rounded-full border-[3px] border-ink pr-5 dark:border-ink-night'
+            : 'min-h-14 flex-row items-center rounded-full border-[1.5px] border-ink pr-5 dark:border-ink-night'
+        }>
         <TextInput
           accessibilityLabel={`${label}, ${category.unit}`}
           accessibilityHint={error ?? undefined}
@@ -71,8 +91,8 @@ export function MeasureField({ category, value, onSave }: { category: MeasureCat
         <Text className="text-base text-ink-muted dark:text-ink-muted-night">{category.unit}</Text>
       </View>
       {error ? (
-        <Text accessibilityLiveRegion="polite" className="text-sm leading-5 text-ink dark:text-ink-night">
-          {error}
+        <Text accessibilityLiveRegion="polite" className="text-sm font-bold leading-5 text-ink dark:text-ink-night">
+          {`${ptBR.tracking.measureErrors.prefix} ${error}`}
         </Text>
       ) : null}
     </View>

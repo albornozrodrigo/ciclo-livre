@@ -1,10 +1,14 @@
 import { summarizeDay } from '@/tracking/summary';
 
 describe('summarizeDay', () => {
-  it('opções de várias escolhas aparecem sozinhas; escolha única leva o nome da categoria', () => {
+  it('agrupa por categoria, na ordem do catálogo, com o nome da categoria', () => {
     expect(
-      summarizeDay({ selections: { pain: ['cramps'], pain_intensity: ['severe'] }, measures: {}, note: null }),
-    ).toEqual(['Cólica', 'Intensidade da dor: Forte']);
+      summarizeDay({
+        selections: { hair: ['good'], pain: ['back', 'cramps'], skin: ['good'], pain_intensity: ['severe'] },
+        measures: {},
+        note: null,
+      }),
+    ).toEqual(['Dor: Cólica, Costas', 'Intensidade da dor: Forte', 'Pele: Bem', 'Cabelo: Bem']);
   });
 
   it('medições levam nome, valor com vírgula e unidade; nota aparece como "Nota do dia"', () => {

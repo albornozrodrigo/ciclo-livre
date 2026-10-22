@@ -11,6 +11,19 @@ import { log } from '@/lib/logger';
 
 const EMPTY: DayLog = { selections: {}, measures: {}, note: null };
 
+function withSelection(day: DayLog, categoryId: string, options: string[]): DayLog {
+  const selections = { ...day.selections, [categoryId]: options };
+  if (options.length === 0) delete selections[categoryId];
+  return { ...day, selections };
+}
+
+function withMeasure(day: DayLog, categoryId: string, value: number | null): DayLog {
+  const measures = { ...day.measures };
+  if (value === null) delete measures[categoryId];
+  else measures[categoryId] = value;
+  return { ...day, measures };
+}
+
 /** Estado do registro de um dia: lê do banco e grava a cada toque (otimista, com desfazer em erro). */
 export function useDayLog(date: IsoDate) {
   const db = useSQLiteContext();
@@ -31,14 +44,15 @@ export function useDayLog(date: IsoDate) {
     };
   }, [db, date]);
 
+  /** Aplica a mudança na hora; se a gravação falhar, desfaz só aquela mudança (não o dia inteiro). */
   const persist = useCallback(
-    async (previous: DayLog, next: DayLog, write: () => Promise<void>) => {
-      setDay(next);
+    async (apply: (d: DayLog) => DayLog, revert: (d: DayLog) => DayLog, write: () => Promise<void>) => {
+      setDay((d) => (d ? apply(d) : d));
       try {
         await write();
       } catch (error) {
         log.error('day_log_save_failed', error);
-        setDay(previous);
+        setDay((d) => (d ? revert(d) : d));
         show(ptBR.tracking.saveFailed);
       }
     },
@@ -49,10 +63,13 @@ export function useDayLog(date: IsoDate) {
     (categoryId: string, option: string) => {
       if (!day) return;
       const category = categoryById(categoryId) as ChoiceCategory;
-      const options = toggleOption(category, day.selections[categoryId] ?? [], option);
-      const selections = { ...day.selections, [categoryId]: options };
-      if (options.length === 0) delete selections[categoryId];
-      void persist(day, { ...day, selections }, () => setSelection(db, date, categoryId, options));
+      const before = day.selections[categoryId] ?? [];
+      const options = toggleOption(category, before, option);
+      void persist(
+        (d) => withSelection(d, categoryId, options),
+        (d) => withSelection(d, categoryId, before),
+        () => setSelection(db, date, categoryId, options),
+      );
     },
     [day, db, date, persist],
   );
@@ -60,11 +77,11 @@ export function useDayLog(date: IsoDate) {
   const saveMeasure = useCallback(
     (categoryId: string, value: number | null) => {
       if (!day) return;
-      const measures = { ...day.measures };
-      if (value === null) delete measures[categoryId];
-      else measures[categoryId] = value;
-      void persist(day, { ...day, measures }, () =>
-        value === null ? clearMeasure(db, date, categoryId) : setMeasure(db, date, categoryId, value),
+      const before = day.measures[categoryId] ?? null;
+      void persist(
+        (d) => withMeasure(d, categoryId, value),
+        (d) => withMeasure(d, categoryId, before),
+        () => (value === null ? clearMeasure(db, date, categoryId) : setMeasure(db, date, categoryId, value)),
       );
     },
     [day, db, date, persist],
@@ -73,8 +90,13 @@ export function useDayLog(date: IsoDate) {
   const saveNote = useCallback(
     (text: string) => {
       if (!day) return;
+      const before = day.note;
       const note = text.trim() ? text : null;
-      void persist(day, { ...day, note }, () => setNote(db, date, text));
+      void persist(
+        (d) => ({ ...d, note }),
+        (d) => ({ ...d, note: before }),
+        () => setNote(db, date, text),
+      );
     },
     [day, db, date, persist],
   );

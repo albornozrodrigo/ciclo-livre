@@ -46,13 +46,13 @@ describe('Hoje', () => {
     expect(await screen.findByText(ptBR.today.empty)).toBeOnTheScreen();
   });
 
-  it('com registros mostra quantos e quais', async () => {
+  it('com registros mostra quantas categorias e quais, agrupadas', async () => {
     await setSelection(mockDb, todayIso(), 'pain', ['cramps', 'headache']);
     await setSelection(mockDb, todayIso(), 'energy', ['low']);
 
     await renderHoje();
 
-    expect(await screen.findByText(ptBR.today.count(3))).toBeOnTheScreen();
-    expect(screen.getByText(/Cólica/)).toBeOnTheScreen();
+    expect(await screen.findByText(ptBR.today.count(2))).toBeOnTheScreen();
+    expect(screen.getByText(/Dor: Cólica, Dor de cabeça/)).toBeOnTheScreen();
   });
 });

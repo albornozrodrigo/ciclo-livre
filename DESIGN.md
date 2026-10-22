@@ -148,7 +148,7 @@ Fonte da verdade em código: as classes vêm de `src/global.css` (`@theme`); cor
 
 - Margem lateral de 20dp, pilha de 12dp e seção de 32dp. Há mais espaço acima de um título do que abaixo.
 - Composição "um lobo domina": cada tela de aba tem um território principal sangrando por duas bordas e conteúdo sobre a água ou dentro do lobo.
-- **Exceção — telas de pergunta e formulário** (passos do onboarding, edição de perfil): só água, headline e controles. Sem lobo, para a pergunta ser a única coisa na tela. A boas-vindas mantém um lobo de sol (começo = "hoje").
+- **Exceção — telas de pergunta, formulário e registro** (passos do onboarding, edição de perfil, registro do dia): só água, headline e controles. Sem lobo, para a pergunta ser a única coisa na tela. A boas-vindas mantém um lobo de sol (começo = "hoje").
 - Dentro de um lobo fica só o título (que encolhe para caber); texto de apoio fica na água, para crescer com a fonte do sistema sem sair do território.
 - Ação primária na metade inferior, na zona do polegar.
 - Edge-to-edge com insets de sistema (safe area) em todas as telas.
@@ -170,6 +170,8 @@ Plano. Não há sombras. A profundidade vem da sobreposição de territórios (u
 - **Cápsula de contorno:** borda de 1.5dp em `ink`, sem fundo.
 - **Chip de fase:** cápsula pequena na cor do território, com o nome da fase sempre escrito.
 - **Escolha única (rádio):** linhas de contorno 1.5dp, raio 28dp, ≥56dp. Selecionada = preenchida de `ink` (texto em `water`) com check num círculo de sol. Nunca cor de fase.
+- **Chip de opção (registro):** cápsula de contorno 1.5dp, ≥48dp, rótulo 14sp/700 nos dois estados (a largura não muda ao marcar); selecionado = `ink` cheio com texto `water`. Rádio (escolha única) ou caixa (várias); nome acessível "Categoria: opção". Salva ao toque.
+- **Campo de medição:** cápsula de contorno com o número à esquerda e a unidade em `ink-muted` à direita; salva enquanto digita (quando válido). Erro: contorno 3dp + texto "Erro: …" em negrito, aparecendo após uma pausa (no Android fechar o teclado não tira o foco).
 - **Ajuste numérico:** cápsula de contorno com botões redondos de `ink` (− e +) e o valor no meio, que é o elemento "ajustável" para o TalkBack.
 - **Campo de data:** cápsula de contorno com a data por extenso; abre o diálogo nativo do Android tingido de tinta (plugin `with-android-accent`).
 - **Progresso de passos:** "Passo N de M" + segmentos de 8dp: feitos em `ink` cheio, restantes em contorno de `ink`.
