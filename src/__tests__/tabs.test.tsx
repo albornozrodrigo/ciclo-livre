@@ -11,6 +11,10 @@ import { ptBR, type ScreenKey } from '@/i18n/pt-BR';
 
 // O banco nativo (SQLCipher) não existe no Jest; as telas só precisam do hook.
 jest.mock('@/db/database-root', () => ({ useEraseAllData: () => jest.fn() }));
+// Hoje lê o resumo do dia; nesta suíte basta um banco vazio.
+const mockEmptyDb = { getAllAsync: async () => [], getFirstAsync: async () => null };
+jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockEmptyDb }));
+jest.mock('expo-router', () => ({ router: { push: jest.fn() }, useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]) }));
 jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: jest.fn() }) }));
 jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile: null } }) }));
 

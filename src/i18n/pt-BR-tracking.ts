@@ -1,5 +1,18 @@
 /** Rótulos do registro diário. Redação própria (nada copiado do app de referência). */
 export const trackingPtBR = {
+  today: 'Hoje',
+  autosave: 'Toque para registrar. Tudo é salvo na hora, só neste aparelho.',
+  saveFailed: 'Não deu para salvar este registro. Tente de novo.',
+  note: {
+    label: 'Nota do dia',
+    placeholder: 'O que mais você quer lembrar sobre hoje?',
+    counter: (used: number, max: number) => `${used} de ${max}`,
+  },
+  measureErrors: {
+    out_of_range: (min: number, max: number, unit: string) => `Use um valor entre ${min} e ${max} ${unit}.`,
+    too_precise: (decimals: number) => (decimals === 0 ? 'Use um número inteiro.' : `Use até ${decimals} casas decimais.`),
+    not_a_number: 'Use só números, como 36,5.',
+  },
   groups: {
     cycle: 'Ciclo',
     body: 'Corpo',

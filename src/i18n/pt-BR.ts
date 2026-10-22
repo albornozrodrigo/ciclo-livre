@@ -12,8 +12,8 @@ export const ptBR = {
   screens: {
     hoje: {
       title: 'Hoje',
-      lead: 'Aqui você vai ver em que fase do ciclo está e registrar o seu dia.',
-      phase: 'Em construção — etapa 2',
+      lead: 'Registre como foi seu dia. Em breve, aqui também aparecem a fase do ciclo e as previsões.',
+      phase: 'Previsões na etapa 4',
     },
     calendario: {
       title: 'Calendário',
@@ -34,6 +34,12 @@ export const ptBR = {
       title: 'Mais',
       lead: 'Seu perfil e sua privacidade. Lembretes e exportação de dados chegam nas próximas etapas.',
     },
+  },
+  today: {
+    logToday: 'Registrar hoje',
+    empty: 'Nada registrado hoje ainda. Leva poucos segundos.',
+    count: (n: number) => (n === 1 ? '1 registro hoje' : `${n} registros hoje`),
+    phaseSoon: 'Previsões e fase do ciclo chegam na etapa 4',
   },
   profile: {
     title: 'Seu perfil',
