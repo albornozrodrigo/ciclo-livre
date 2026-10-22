@@ -17,20 +17,20 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 
 Milestone: v0.1 Initial Release
 Phase: 1 of 11 (Fundação) — In progress
-Plan: 01-02 em APPLY (01-01 completo)
-Status: APPLY 01-02 — código e testes prontos, aguardando rebuild nativo com SQLCipher
-Last activity: 2026-10-22 — 01-01 unificado; 01-02 Tasks 1–2 (TDD) concluídas
+Plan: 01-03 em APPLY (01-01 e 01-02 completos)
+Status: APPLY 01-03 — código e testes prontos; prova no emulador em andamento (celular ocupado por outra sessão)
+Last activity: 2026-10-22 — 01-02 unificado (SQLCipher provado no aparelho)
 
 Progress:
-- Milestone: [░░░░░░░░░░] 3%
-- Phase 1: [███░░░░░░░] 33%
+- Milestone: [░░░░░░░░░░] 6%
+- Phase 1: [██████░░░░] 67%
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ◐        ○     [01-02 em execução]
+  ✓        ◐        ○     [01-03 em execução]
 ```
 
 ## Accumulated Context
@@ -41,6 +41,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Local-first, sem conta; IA BYOK; Android primeiro | Init | Sem backend; Connect/comunidade fora da v0.1 |
 | NativeWind 5 RC + Tailwind 4.3; lightningcss 1.30.1 | Init | Validado no aparelho (01-01); fallback descartado |
 | Resolver do Metro: expo-asset/expo-image usam react-native original | 01-01 | react-native-css RC não exporta AssetRegistry (RN 0.88); revisitar no estável |
+| Mudou plugin no app.json → `npx expo prebuild --platform android` antes do build | 01-02 | `expo run` não reaplica plugins em android/ existente |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -60,9 +61,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: 01-02 Task 3 (rebuild + prova no aparelho)
-Next action: concluir APPLY 01-02, depois /paul:unify; em seguida plano 01-03
-Resume file: .paul/phases/01-fundacao/01-02-PLAN.md
+Stopped at: 01-03 Task 3 (prova de "apagar tudo" no emulador)
+Next action: concluir prova 01-03, /paul:unify, depois /code-review + /cso de fechamento da fase 1
+Resume file: .paul/phases/01-fundacao/01-03-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

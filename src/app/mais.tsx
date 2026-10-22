@@ -1,4 +1,4 @@
-import { Alert } from 'react-native';
+import { Alert, ToastAndroid } from 'react-native';
 
 import { PrivacySection } from '@/components/privacy-section';
 import { Screen } from '@/components/ui/screen';
@@ -24,9 +24,15 @@ function confirmEraseAll(): Promise<boolean> {
 export default function MaisScreen() {
   const eraseAllData = useEraseAllData();
 
+  // Apagar remonta as abas (volta para Hoje), então a confirmação vai num toast nativo.
+  async function eraseAndNotify() {
+    await eraseAllData();
+    ToastAndroid.show(ptBR.privacy.erased, ToastAndroid.LONG);
+  }
+
   return (
     <Screen screen="mais" territory="coral" shape={0}>
-      <PrivacySection onErase={eraseAllData} confirm={confirmEraseAll} />
+      <PrivacySection onErase={eraseAndNotify} confirm={confirmEraseAll} />
     </Screen>
   );
 }
