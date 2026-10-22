@@ -1,6 +1,20 @@
 /** Rótulos do registro diário. Redação própria (nada copiado do app de referência). */
 export const trackingPtBR = {
   today: 'Hoje',
+  previousDay: 'Dia anterior',
+  nextDay: 'Próximo dia',
+  customize: 'Personalizar categorias',
+  customizeScreen: {
+    title: 'Personalizar categorias',
+    hint: 'Escolha o que aparece no registro e em que ordem. Tudo liberado.',
+    show: (category: string) => `Mostrar ${category}`,
+    moveUp: (category: string) => `Mover ${category} para cima`,
+    moveDown: (category: string) => `Mover ${category} para baixo`,
+    save: 'Salvar',
+    reset: 'Restaurar padrão',
+    saved: 'Categorias salvas.',
+    saveFailed: 'Não deu para salvar agora. Tente de novo.',
+  },
   autosave: 'Toque para registrar. Tudo é salvo na hora, só neste aparelho.',
   saveFailed: 'Não deu para salvar este registro. Tente de novo.',
   note: {

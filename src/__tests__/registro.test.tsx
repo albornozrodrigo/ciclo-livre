@@ -3,7 +3,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import RegistroScreen from '@/app/registro/[data]';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
-import { getDay, setSelection } from '@/db/log-repo';
+import { getDay, saveCategoryPrefs, setSelection } from '@/db/log-repo';
+import { createTag, getDayTags } from '@/db/tag-repo';
+import { todayIso } from '@/domain/dates';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
@@ -22,9 +24,24 @@ jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { st
 
 const mockShow = jest.fn();
 jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: mockShow }) }));
-jest.mock('expo-router', () => ({ useLocalSearchParams: () => ({ data: '2026-10-20' }) }));
+const mockSetParams = jest.fn();
+const mockPush = jest.fn();
+let mockDate = '2026-10-20';
+jest.mock('expo-router', () => ({
+  useLocalSearchParams: () => ({ data: mockDate }),
+  router: { setParams: (p: unknown) => mockSetParams(p), push: (h: unknown) => mockPush(h) },
+  useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]),
+}));
 
 const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top: 24, left: 0, right: 0, bottom: 0 } };
+const renderRegistroWaitingFor = async (text: string) => {
+  await render(
+    <SafeAreaProvider initialMetrics={metrics}>
+      <RegistroScreen />
+    </SafeAreaProvider>,
+  );
+  await screen.findByText(text);
+};
 const renderRegistro = async () => {
   await render(
     <SafeAreaProvider initialMetrics={metrics}>
@@ -38,6 +55,9 @@ beforeEach(async () => {
   mockDb = openMemoryDatabase();
   await runMigrations(mockDb, MIGRATIONS);
   mockShow.mockReset();
+  mockSetParams.mockReset();
+  mockPush.mockReset();
+  mockDate = '2026-10-20';
 });
 
 describe('Registrar o dia', () => {
@@ -146,5 +166,78 @@ describe('Registrar o dia', () => {
     expect(
       await screen.findByText(new RegExp(ptBR.tracking.measureErrors.out_of_range(34, 42, '°C')), undefined, { timeout: 3000 }),
     ).toBeOnTheScreen();
+  });
+});
+
+describe('Registrar o dia › tags', () => {
+  it('marca uma tag existente no dia', async () => {
+    const tag = await createTag(mockDb, 'Viagem');
+    await renderRegistro();
+
+    await fireEvent.press(await screen.findByRole('checkbox', { name: `${ptBR.tags.title}: Viagem` }));
+
+    await waitFor(async () => expect(await getDayTags(mockDb, DAY)).toEqual([{ id: tag.id, name: 'Viagem' }]));
+  });
+
+  it('cria uma tag nova e já marca no dia', async () => {
+    await renderRegistro();
+
+    await fireEvent.changeText(screen.getByLabelText(ptBR.tags.newLabel), 'Academia');
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.tags.add }));
+
+    await waitFor(async () => expect((await getDayTags(mockDb, DAY)).map((t) => t.name)).toEqual(['Academia']));
+  });
+
+  it('avisa quando a tag já existe', async () => {
+    await createTag(mockDb, 'Café');
+    await renderRegistro();
+
+    await fireEvent.changeText(screen.getByLabelText(ptBR.tags.newLabel), 'cafe');
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.tags.add }));
+
+    expect(await screen.findByText(ptBR.tags.errors.duplicate)).toBeOnTheScreen();
+  });
+});
+
+describe('Registrar o dia › outros dias', () => {
+  it('vai para o dia anterior', async () => {
+    await renderRegistro();
+
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.tracking.previousDay }));
+
+    expect(mockSetParams).toHaveBeenCalledWith({ data: '2026-10-19' });
+  });
+
+  it('não deixa ir além de hoje', async () => {
+    mockDate = todayIso();
+    await renderRegistro();
+
+    expect(screen.getByRole('button', { name: ptBR.tracking.nextDay })).toBeDisabled();
+  });
+});
+
+describe('Registrar o dia › personalização', () => {
+  it('esconde categorias ocultas e segue a ordem salva', async () => {
+    await saveCategoryPrefs(mockDb, [
+      { category: 'pain', position: 0, hidden: true },
+      { category: 'sleep', position: 1, hidden: false },
+    ]);
+
+    await render(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <RegistroScreen />
+      </SafeAreaProvider>,
+    );
+    await screen.findByText(t.sleep.label);
+
+    expect(screen.queryByText(t.pain.label)).toBeNull();
+  });
+
+  it('leva à tela de personalizar', async () => {
+    await renderRegistroWaitingFor(t.energy.label);
+
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.tracking.customize }));
+
+    expect(mockPush).toHaveBeenCalledWith('/registro/personalizar');
   });
 });

@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -6,15 +6,19 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChoiceCategoryField } from '@/components/tracking/choice-category';
 import { MeasureField } from '@/components/tracking/measure-field';
 import { NoteField } from '@/components/tracking/note-field';
+import { TagsField } from '@/components/tracking/tags-field';
+import { CapsuleButton } from '@/components/ui/capsule-button';
 import { formatLongDate } from '@/components/ui/date-field';
-import { toDayNumber, todayIso } from '@/domain/dates';
-import { type Category, type CategoryGroup, defaultVisibleCategories } from '@/domain/tracking/catalog';
+import { addDays, toDayNumber, todayIso } from '@/domain/dates';
+import type { Category, CategoryGroup } from '@/domain/tracking/catalog';
 import { ptBR } from '@/i18n/pt-BR';
 import { useProfile } from '@/profile/profile-context';
+import { useCategoryOrder } from '@/tracking/use-category-order';
 import { useDayLog } from '@/tracking/use-day-log';
 
 const t = ptBR.tracking;
 
+/** Agrupa mantendo a ordem escolhida pela pessoa (grupos na ordem em que aparecem). */
 function groupCategories(categories: Category[]): [CategoryGroup, Category[]][] {
   const groups = new Map<CategoryGroup, Category[]>();
   for (const c of categories) groups.set(c.group, [...(groups.get(c.group) ?? []), c]);
@@ -29,10 +33,13 @@ export default function RegistroScreen() {
   const { state } = useProfile();
   const { day, toggle, saveMeasure, saveNote } = useDayLog(date);
   const profile = state.status === 'ready' ? state.profile : null;
-  if (!profile || !day) return null;
+  const ordered = useCategoryOrder(profile?.mode ?? 'period', profile?.birthControl ?? null);
+  if (!profile || !day || !ordered) return null;
 
-  const title = date === todayIso() ? t.today : formatLongDate(date);
-  const groups = groupCategories(defaultVisibleCategories(profile.mode, profile.birthControl));
+  const today = todayIso();
+  const isToday = date === today;
+  const title = isToday ? t.today : formatLongDate(date);
+  const groups = groupCategories(ordered);
 
   return (
     <KeyboardAvoidingView behavior="padding" style={{ paddingTop: insets.top }} className="flex-1 bg-water dark:bg-water-night">
@@ -42,6 +49,14 @@ export default function RegistroScreen() {
           {title}
         </Text>
         <Text className="mt-3 text-base leading-6 text-ink-muted dark:text-ink-muted-night">{t.autosave}</Text>
+        <View className="mt-5 flex-row gap-3">
+          <View className="flex-1">
+            <CapsuleButton variant="outline" label={t.previousDay} onPress={() => router.setParams({ data: addDays(date, -1) })} />
+          </View>
+          <View className="flex-1">
+            <CapsuleButton variant="outline" label={t.nextDay} disabled={isToday} onPress={() => router.setParams({ data: addDays(date, 1) })} />
+          </View>
+        </View>
 
         {groups.map(([group, categories]) => (
           <View key={group} className="mt-10 gap-6">
@@ -64,7 +79,15 @@ export default function RegistroScreen() {
         ))}
 
         <View className="mt-10">
+          <TagsField key={date} date={date} />
+        </View>
+
+        <View className="mt-10">
           <NoteField value={day.note} onSave={saveNote} />
+        </View>
+
+        <View className="mt-10">
+          <CapsuleButton variant="outline" label={t.customize} onPress={() => router.push('/registro/personalizar')} />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

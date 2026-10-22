@@ -35,6 +35,19 @@ export const ptBR = {
       lead: 'Seu perfil e sua privacidade. Lembretes e exportação de dados chegam nas próximas etapas.',
     },
   },
+  tags: {
+    title: 'Suas tags',
+    hint: 'Crie tags para o que importa para você. Sem limite.',
+    newLabel: 'Nova tag',
+    placeholder: 'Ex.: viagem, plantão',
+    add: 'Adicionar',
+    errors: {
+      empty: 'Escreva um nome para a tag.',
+      too_long: 'Use até 30 caracteres.',
+      duplicate: 'Você já tem uma tag com esse nome.',
+    },
+    saveFailed: 'Não deu para salvar a tag. Tente de novo.',
+  },
   today: {
     logToday: 'Registrar hoje',
     empty: 'Nada registrado hoje ainda. Leva poucos segundos.',

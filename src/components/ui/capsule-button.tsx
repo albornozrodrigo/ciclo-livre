@@ -27,7 +27,7 @@ export function CapsuleButton({ label, onPress, variant = 'primary', disabled = 
         primary
           ? 'min-h-14 flex-row items-center justify-between rounded-full bg-sun pl-6 pr-2 active:opacity-80 dark:bg-sun-night'
           : disabled
-            ? 'min-h-14 items-center justify-center rounded-full border-[1.5px] border-dashed border-ink-muted px-5 dark:border-ink-muted-night'
+            ? `${variant === 'primary' ? 'min-h-14' : 'min-h-12'} items-center justify-center rounded-full border-[1.5px] border-dashed border-ink-muted px-5 dark:border-ink-muted-night`
             : 'min-h-12 items-center justify-center rounded-full border-[1.5px] border-ink px-5 active:opacity-70 dark:border-ink-night'
       }>
       <Text
@@ -35,7 +35,7 @@ export function CapsuleButton({ label, onPress, variant = 'primary', disabled = 
           primary
             ? 'text-base font-bold tracking-[0.32px] text-ink'
             : disabled
-              ? 'text-base font-bold tracking-[0.32px] text-ink-muted dark:text-ink-muted-night'
+              ? `${variant === 'primary' ? 'text-base tracking-[0.32px]' : 'text-sm tracking-[0.28px]'} font-bold text-ink-muted dark:text-ink-muted-night`
               : 'text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night'
         }>
         {label}
