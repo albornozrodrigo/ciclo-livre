@@ -29,8 +29,7 @@ export const ptBR = {
     },
     mais: {
       title: 'Mais',
-      lead: 'Modos, lembretes, exportação de dados e privacidade.',
-      phase: 'Em construção — etapa 2',
+      lead: 'Seu perfil e sua privacidade. Lembretes e exportação de dados chegam nas próximas etapas.',
     },
   },
   profile: {

@@ -8,6 +8,8 @@ colors:
   ink-night: "#F2EEE1"
   ink-muted: "#5B5E57"
   ink-muted-night: "#B9B5A8"
+  line: "#D9D5C8"
+  line-night: "#3A3F3B"
   land: "#8ED462"
   land-night: "#7BC04F"
   coral: "#FF705D"
@@ -171,7 +173,8 @@ Plano. Não há sombras. A profundidade vem da sobreposição de territórios (u
 - **Ajuste numérico:** cápsula de contorno com botões redondos de `ink` (− e +) e o valor no meio, que é o elemento "ajustável" para o TalkBack.
 - **Campo de data:** cápsula de contorno com a data por extenso; abre o diálogo nativo do Android tingido de tinta (plugin `with-android-accent`).
 - **Progresso de passos:** "Passo N de M" + segmentos de 8dp: feitos em `ink` cheio, restantes em contorno de `ink`.
-- **Linha de navegação:** rótulo, detalhe em `ink-muted` e seta; ≥64dp; divisória fina.
+- **Linha de navegação:** rótulo, detalhe em `ink-muted` e seta; ≥64dp; divisória de 1dp em `line`/`line-night` (decorativa; nunca o único sinal de algo).
+- **Nota técnica:** o modificador de opacidade do Tailwind (`bg-ink/15`) não funciona no NativeWind 5 RC; use tokens com hex explícito.
 - **Snackbar:** retângulo `ink` (texto `water`), raio 20dp, acima da barra de abas, anunciado ao TalkBack, some em 4s. Nunca toast.
 - **Chip de status** (ex.: "Em construção"): cápsula de contorno, sem cor de território.
 - **Movimento** (a implementar nas fases seguintes): 0.4s com leve overshoot nas transições de território; respeita "remover animações" do sistema.

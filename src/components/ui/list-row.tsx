@@ -18,7 +18,7 @@ export function ListRow({ label, detail, onPress }: Props) {
       accessibilityRole="button"
       accessibilityLabel={detail ? `${label}. ${detail}` : label}
       onPress={onPress}
-      className="min-h-16 flex-row items-center gap-3 border-b-[1.5px] border-ink/15 py-3 active:opacity-70 dark:border-ink-night/20">
+      className="min-h-16 flex-row items-center gap-3 border-b border-line py-3 active:opacity-70 dark:border-line-night">
       <View className="flex-1 gap-0.5">
         <Text className="text-base font-bold text-ink dark:text-ink-night">{label}</Text>
         {detail ? <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{detail}</Text> : null}

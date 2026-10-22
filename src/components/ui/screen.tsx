@@ -39,9 +39,11 @@ export function Screen({ screen, territory, shape = 0, children }: Props) {
 
       <View className="gap-3 px-5 pt-8">
         {/* Cápsula de contorno: o sol fica reservado para ações e "hoje". */}
-        <View className="self-start rounded-full border-[1.5px] border-ink px-3.5 py-1.5 dark:border-ink-night">
-          <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{copy.phase}</Text>
-        </View>
+        {'phase' in copy ? (
+          <View className="self-start rounded-full border-[1.5px] border-ink px-3.5 py-1.5 dark:border-ink-night">
+            <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{copy.phase}</Text>
+          </View>
+        ) : null}
         <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{copy.lead}</Text>
       </View>
 
