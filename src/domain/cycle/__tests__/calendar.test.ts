@@ -54,3 +54,11 @@ describe('monthGrid', () => {
     expect(monthGrid(2026, 2, null, new Set(), TODAY)).toHaveLength(4);
   });
 });
+
+describe('monthGrid antes de 1970', () => {
+  it('não quebra em meses antigos', () => {
+    const old = monthGrid(1969, 12, null, new Set(), TODAY);
+    expect(old[0][0].date <= '1969-12-01').toBe(true);
+    expect(old.every((w) => w.length === 7)).toBe(true);
+  });
+});

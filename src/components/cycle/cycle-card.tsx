@@ -54,7 +54,12 @@ export function CycleCard({ view }: { view: TodayView }) {
         <View className={`self-start rounded-full px-3.5 py-1.5 ${CHIP_CLASS[view.phase]}`}>
           <Text className="text-sm font-bold tracking-[0.28px] text-ink">{c.phases[view.phase]}</Text>
         </View>
-        <Text accessibilityRole="header" className="text-[32px] font-bold leading-[34px] tracking-[-0.96px] text-ink [font-variant:tabular-nums] dark:text-ink-night">
+        {/* Display (44sp): o dia do ciclo é o número de que o DESIGN.md fala. */}
+        <Text
+          accessibilityRole="header"
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          className="text-[44px] font-bold leading-[42px] tracking-[-1.76px] text-ink [font-variant:tabular-nums] dark:text-ink-night">
           {c.dayOfCycle(view.cycleDay)}
         </Text>
       </View>

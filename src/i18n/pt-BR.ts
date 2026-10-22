@@ -47,7 +47,6 @@ export const ptBR = {
       luteal: 'fase lútea',
     },
     weekdays: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
-    weekdayNames: ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'],
     legend: {
       menstruation: 'Menstruação',
       fertile: 'Janela fértil',
@@ -65,8 +64,9 @@ export const ptBR = {
       luteal: 'Fase lútea',
     },
     dayOfCycle: (n: number) => `Dia ${n} do ciclo`,
+    // Sempre aproximado: a margem vem logo abaixo (princípio de honestidade sobre incerteza).
     nextIn: (n: number) =>
-      n === 0 ? 'Menstruação prevista para hoje' : n === 1 ? 'Próxima menstruação: amanhã' : `Próxima menstruação em ${n} dias`,
+      n === 0 ? 'A menstruação pode vir hoje' : n === 1 ? 'Próxima menstruação: por volta de amanhã' : `Próxima menstruação: por volta de ${n} dias`,
     range: (from: string, to: string) => `Pode vir entre ${from} e ${to}`,
     late: (n: number) => (n === 1 ? 'Menstruação atrasada há 1 dia' : `Menstruação atrasada há ${n} dias`),
     lateHint: 'Atrasos acontecem. Se ela não vier ou se você tiver dúvida, um teste de gravidez ou um serviço de saúde podem ajudar.',
@@ -74,13 +74,17 @@ export const ptBR = {
     confidence: {
       low: 'Estimativa com poucos dados. Fica mais precisa a cada ciclo registrado.',
       medium: 'Estimativa feita com seus últimos ciclos.',
-      high: 'Estimativa firme: seus ciclos têm sido regulares.',
+      high: 'Estimativa mais confiável: seus ciclos têm sido regulares.',
     },
     pain: (dates: string) => `Dor costuma aparecer em: ${dates}`,
     disclaimer: 'Estimativas. Não servem como contracepção.',
     none: 'Registre sua menstruação para ver a fase do ciclo e as previsões.',
-    pregnancyWeeks: (week: number, day: number) => `${week} semanas e ${day} ${day === 1 ? 'dia' : 'dias'}`,
-    dueIn: (n: number) => (n <= 0 ? 'A data prevista chegou' : `Faltam ${n} dias para a data prevista`),
+    pregnancyWeeks: (week: number, day: number) => {
+      const weeks = `${week} ${week === 1 ? 'semana' : 'semanas'}`;
+      return day === 0 ? weeks : `${weeks} e ${day} ${day === 1 ? 'dia' : 'dias'}`;
+    },
+    dueIn: (n: number) =>
+      n <= 0 ? 'A data prevista chegou' : n === 1 ? 'Falta 1 dia para a data prevista' : `Faltam ${n} dias para a data prevista`,
     noBleeding: 'No modo sem sangramento não há previsões de ciclo. Registre como você está e veja seus padrões na Análise.',
   },
   tags: {

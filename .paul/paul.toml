@@ -15,8 +15,8 @@ status = "in_progress"
 phases = 11
 
 [phase]
-number = 4
-name = "Motor de previsão + calendário"
+number = 5
+name = "Análise"
 status = "not_started"
 plans_completed = 0
 
@@ -27,6 +27,6 @@ position = "IDLE"
 groom = true
 
 [stats]
-total_plans = 10
+total_plans = 13
 total_phases = 11
-last_activity = "2026-10-22T21:00:00Z"
+last_activity = "2026-10-22T23:00:00Z"

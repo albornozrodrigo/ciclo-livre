@@ -1,45 +1,53 @@
 import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getCycleSignals, getLoggedDates } from '@/db/cycle-repo';
 import { type CalendarCell, monthGrid } from '@/domain/cycle/calendar';
-import { buildCycleModel } from '@/domain/cycle/model';
-import { addDays, todayIso } from '@/domain/dates';
+import { cycleModelFor } from '@/domain/cycle/for-profile';
+import type { CycleSignals } from '@/domain/cycle/signals';
+import { addDays, firstOfMonth, type IsoDate, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { log } from '@/lib/logger';
 
-const pad = (n: number) => String(n).padStart(2, '0');
-
-/** Grade do mês com fases (quando o modo tem ciclo) e dias registrados; recarrega ao ganhar foco. */
+/**
+ * Grade do mês. O histórico (sinais e modelo) é lido uma vez por foco; trocar de mês só busca os
+ * dias registrados daquele mês. Enquanto o mês novo carrega, devolve null (nada de grade antiga).
+ */
 export function useCalendar(profile: Profile | null, year: number, month: number): CalendarCell[][] | null {
   const db = useSQLiteContext();
-  const [grid, setGrid] = useState<CalendarCell[][] | null>(null);
+  const [signals, setSignals] = useState<CycleSignals | null>(null);
+  const [logged, setLogged] = useState<{ key: string; dates: Set<IsoDate> } | null>(null);
+  const key = `${year}-${month}`;
 
   useFocusEffect(
     useCallback(() => {
-      if (!profile) return undefined;
       let active = true;
-      const today = todayIso();
-      const from = addDays(`${year}-${pad(month)}-01`, -7);
-      const to = addDays(`${year}-${pad(month)}-28`, 14);
-      Promise.all([getCycleSignals(db), getLoggedDates(db, from, to)]).then(
-        ([signals, logged]) => {
-          if (!active) return;
-          const withCycle = profile.mode !== 'pregnancy' && profile.mode !== 'no_bleeding';
-          const seed = profile.lastPeriodStart ? { start: profile.lastPeriodStart, length: profile.periodLength } : null;
-          const model = withCycle
-            ? buildCycleModel({ ...signals, seed, profileCycleLength: profile.cycleLength, profilePeriodLength: profile.periodLength }, today)
-            : null;
-          setGrid(monthGrid(year, month, model, new Set(logged), today));
-        },
-        (error: unknown) => log.error('calendar_load_failed', error),
+      getCycleSignals(db).then(
+        (loaded) => active && setSignals(loaded),
+        (error: unknown) => log.error('calendar_signals_failed', error),
       );
       return () => {
         active = false;
       };
-    }, [db, profile, year, month]),
+    }, [db]),
   );
 
-  return grid;
+  useEffect(() => {
+    let active = true;
+    const first = firstOfMonth(year, month);
+    getLoggedDates(db, addDays(first, -7), addDays(first, 42)).then(
+      (dates) => active && setLogged({ key, dates: new Set(dates) }),
+      (error: unknown) => log.error('calendar_logged_failed', error),
+    );
+    return () => {
+      active = false;
+    };
+  }, [db, key, year, month]);
+
+  const today = todayIso();
+  const model = useMemo(() => (profile && signals ? cycleModelFor(profile, signals, today) : null), [profile, signals, today]);
+
+  if (!profile || !signals || logged?.key !== key) return null;
+  return monthGrid(year, month, model, logged.dates, today);
 }

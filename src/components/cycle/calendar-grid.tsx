@@ -12,9 +12,10 @@ const FILL: Partial<Record<Phase, string>> = {
   menstruation: 'bg-coral dark:bg-coral-night',
   fertile: 'bg-land dark:bg-land-night',
 };
-const OUTLINE: Partial<Record<Phase, string>> = {
-  menstruation: 'border-2 border-dashed border-coral dark:border-coral-night',
-  fertile: 'border-2 border-dashed border-land dark:border-land-night',
+/** Previsto = mesma cor + contorno tracejado em tinta (contraste ≥ 3:1; cor clara sozinha não passa). */
+const PREDICTED: Partial<Record<Phase, string>> = {
+  menstruation: 'bg-coral border-2 border-dashed border-ink dark:bg-coral-night dark:border-ink-night',
+  fertile: 'bg-land border-2 border-dashed border-ink dark:bg-land-night dark:border-ink-night',
 };
 
 function cellLabel(cell: CalendarCell): string {
@@ -26,8 +27,16 @@ function cellLabel(cell: CalendarCell): string {
   return parts.join(', ');
 }
 
-function DayCell({ cell, onPress }: { cell: CalendarCell; onPress: (cell: CalendarCell) => void }) {
-  const tint = cell.phase ? (cell.predicted ? OUTLINE[cell.phase] : FILL[cell.phase]) : undefined;
+/** Sobre cor de território o número é sempre `ink`, também no escuro (DESIGN.md). */
+function dayTextClass(cell: CalendarCell, onTerritory: boolean): string {
+  const weight = cell.today ? 'font-bold underline' : '';
+  if (onTerritory) return `text-base text-ink ${weight} [font-variant:tabular-nums]`;
+  if (!cell.inMonth) return 'text-base text-ink-muted [font-variant:tabular-nums] dark:text-ink-muted-night';
+  return `text-base text-ink ${weight} [font-variant:tabular-nums] dark:text-ink-night`;
+}
+
+function DayCell({ cell, onPress, disabled }: { cell: CalendarCell; onPress: (cell: CalendarCell) => void; disabled: boolean }) {
+  const tint = cell.phase ? (cell.predicted ? PREDICTED[cell.phase] : FILL[cell.phase]) : undefined;
   // O anel da ovulação é uma camada própria: duas bordas na mesma View brigariam.
   const ring = cell.ovulation ? 'border-[2.5px] border-ink dark:border-ink-night' : 'border-[2.5px] border-transparent';
   const day = Number(cell.date.slice(8, 10));
@@ -35,17 +44,14 @@ function DayCell({ cell, onPress }: { cell: CalendarCell; onPress: (cell: Calend
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={cellLabel(cell)}
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       onPress={() => onPress(cell)}
-      style={{ opacity: cell.inMonth ? 1 : 0.35 }}
       className="h-16 flex-1 items-center justify-center active:opacity-70">
       <View className={`h-12 w-12 items-center justify-center rounded-full ${ring}`}>
         <View className={`h-10 w-10 items-center justify-center rounded-full ${tint ?? ''}`}>
         <Text
-          className={
-            cell.today
-              ? 'text-base font-bold text-ink underline [font-variant:tabular-nums] dark:text-ink-night'
-              : 'text-base text-ink [font-variant:tabular-nums] dark:text-ink-night'
-          }>
+          className={dayTextClass(cell, Boolean(tint))}>
           {day}
         </Text>
         </View>
@@ -55,7 +61,16 @@ function DayCell({ cell, onPress }: { cell: CalendarCell; onPress: (cell: Calend
   );
 }
 
-export function CalendarGrid({ weeks, onPressDay }: { weeks: CalendarCell[][]; onPressDay: (cell: CalendarCell) => void }) {
+/** `isDisabled`: dias que não abrem nada (ex.: futuro) são anunciados como desativados. */
+export function CalendarGrid({
+  weeks,
+  onPressDay,
+  isDisabled,
+}: {
+  weeks: CalendarCell[][];
+  onPressDay: (cell: CalendarCell) => void;
+  isDisabled: (cell: CalendarCell) => boolean;
+}) {
   return (
     <View>
       <View className="flex-row" importantForAccessibility="no-hide-descendants">
@@ -68,7 +83,7 @@ export function CalendarGrid({ weeks, onPressDay }: { weeks: CalendarCell[][]; o
       {weeks.map((week) => (
         <View key={week[0].date} className="flex-row">
           {week.map((cell) => (
-            <DayCell key={cell.date} cell={cell} onPress={onPressDay} />
+            <DayCell key={cell.date} cell={cell} onPress={onPressDay} disabled={isDisabled(cell)} />
           ))}
         </View>
       ))}
@@ -90,7 +105,7 @@ export function CalendarLegend() {
       {item('h-5 w-5 bg-coral dark:bg-coral-night', cal.legend.menstruation)}
       {item('h-5 w-5 bg-land dark:bg-land-night', cal.legend.fertile)}
       {item('h-5 w-5 border-[2.5px] border-ink dark:border-ink-night', cal.legend.ovulation)}
-      {item('h-5 w-5 border-2 border-dashed border-ink dark:border-ink-night', cal.legend.predicted)}
+      {item('h-5 w-5 bg-coral border-2 border-dashed border-ink dark:bg-coral-night dark:border-ink-night', cal.legend.predicted)}
       {item('h-1.5 w-1.5 bg-ink dark:bg-ink-night', cal.legend.logged)}
       <Text className="text-sm font-bold text-ink underline dark:text-ink-night">{cal.legend.today}</Text>
     </View>

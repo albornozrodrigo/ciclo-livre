@@ -16,20 +16,20 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 4 of 11 (Motor de previsão + calendário) — Not started
+Phase: 5 of 11 (Análise) — Not started
 Plan: Not started
 Status: Ready to plan
-Last activity: 2026-10-22 — Phase 3 complete (registro diário; /code-review aplicado)
+Last activity: 2026-10-22 — Phase 4 complete (motor de previsão, Hoje com fase, calendário; reviews aplicados)
 
 Progress:
-- Milestone: [███░░░░░░░] 27%
-- Phase 4: [░░░░░░░░░░] 0%
+- Milestone: [████░░░░░░] 36%
+- Phase 5: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [Pronto para planejar a fase 4]
+  ○        ○        ○     [Pronto para planejar a fase 5]
 ```
 
 ## Accumulated Context
@@ -51,6 +51,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Movimento (transições de território) e chip que cruza na cápsula | 02-02 review | M | Fase 11 / polimento |
 | Erro de medição atrás do teclado (rolar até o campo) | 03-02 review | S | Polimento |
 | Lógica de ordem duplicada em personalizar × useCategoryOrder | 03 code-review | S | Refatorar quando mexer |
+| Célula do calendário < 48dp de largura em telas de 360dp | 04-03 | S | Testar em aparelho pequeno |
+| Teto de design: lobo da próxima fase sobreposto; marca de sol para hoje no calendário | 04 review | M | Fase 11 |
 | `npm audit`: 19 high vulnerabilities vindas do template (não triadas; /cso sem OSV) | Init | S | Fase 2 |
 | FLAG_SECURE / ocultar miniatura em Recentes | /cso | S | Fase 3 (quando houver dados na tela) |
 
@@ -65,8 +67,8 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Phase 3 complete, ready to plan Phase 4
-Next action: /paul:plan para a fase 4 (motor de previsão TDD ≥90% + calendário + Hoje com fase)
+Stopped at: Phase 4 complete, ready to plan Phase 5
+Next action: /paul:plan para a fase 5 (Análise: gráficos de ciclo, fluxo, dor, sentimentos, BBT, sono, peso, FC)
 Resume file: .paul/ROADMAP.md
 
 ---

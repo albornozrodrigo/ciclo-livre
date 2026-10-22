@@ -86,3 +86,13 @@ describe('Calendário', () => {
     expect(mockPush).not.toHaveBeenCalled();
   });
 });
+
+describe('Calendário › acessibilidade', () => {
+  it('dias futuros são anunciados como desativados', async () => {
+    await renderCalendar();
+    await fireEvent.press(screen.getByRole('button', { name: cal.nextMonth }));
+
+    const futureDay = screen.getAllByRole('button', { name: /^\d+ de / })[10];
+    expect(futureDay).toBeDisabled();
+  });
+});

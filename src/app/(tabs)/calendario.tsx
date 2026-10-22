@@ -47,7 +47,8 @@ export default function CalendarioScreen() {
           <CalendarGrid
             weeks={weeks}
             // Registro só até hoje: não se registra o futuro.
-            onPressDay={(cell) => cell.date <= todayIso() && router.push(`/registro/${cell.date}`)}
+            onPressDay={(cell) => router.push(`/registro/${cell.date}`)}
+            isDisabled={(cell) => cell.date > todayIso()}
           />
         ) : null}
         {!isCurrent ? <CapsuleButton variant="outline" label={cal.goToday} onPress={() => setShown(current)} /> : null}

@@ -29,6 +29,9 @@ export function yearOf(value: IsoDate): number {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+/** Primeiro dia do mês (mês 1–12). */
+export const firstOfMonth = (year: number, month: number): IsoDate => `${year}-${pad(month)}-01`;
+
 /** Data de calendário local (a que a pessoa vê no aparelho) como ISO. */
 export function isoFromDate(date: Date): IsoDate {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;

@@ -20,7 +20,7 @@ Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios co
 |-----------|-------|
 | Type | Application (mobile, Android) |
 | Version | 0.0.0 |
-| Status | Fases 1–3 completas; pronto para a fase 4 (previsão + calendário) |
+| Status | Fases 1–4 completas; pronto para a fase 5 (Análise) |
 | Last Updated | 2026-10-22 |
 
 ## Requirements
@@ -48,6 +48,7 @@ Referência: `../estudo-rea-clue/00-resumo-executivo.md` e `notas/02-mapa-de-gat
 - ✓ Logger sem texto livre, aviso "não é contraceptivo", apagar todos os dados e recuperação quando o banco não abre — Phase 1
 - ✓ Onboarding por modo (5 modos livres), 18+ conservador, perfil criptografado; trocar modo e editar dados em Mais — Phase 2
 - ✓ Registro diário: 46 categorias, medições, nota, tags ilimitadas, personalizar/reordenar, outros dias — Phase 3
+- ✓ Motor de previsão local (BBT 3-sobre-6, teste, muco, calendário), Hoje com fase e calendário sem limite — Phase 4
 
 ### Active (In Progress)
 None yet.
@@ -132,6 +133,7 @@ Rascunho de fases para o milestone v0.1. A versão final é definida em `/paul:p
 | NativeWind 5 RC + Tailwind 4 | O usuário pediu as versões mais recentes; o NativeWind 4 estável só suporta Tailwind 3 | 2026-10-22 | Active (validado no aparelho; ajuste de resolver do Metro) |
 | SQLCipher com chave bruta 256 bits no secure-store; falha fechada sem cipher | Dado sensível nunca em claro | 2026-10-22 | Active |
 | Idade 18+ conservadora pelo ano (ano atual − ano − 1 ≥ 18) | Sem coletar data completa; nunca deixar 17 anos passar | 2026-10-22 | Active |
+| Previsões calculadas no aparelho; hoje nunca vira menstruação sem registro | Honestidade sobre incerteza | 2026-10-22 | Active |
 | Todas as escritas passam por uma fila por conexão | expo-sqlite não tem transação exclusiva com SQLCipher | 2026-10-22 | Active |
 | Só se guarda o que o fluxo do modo pergunta | Minimização de dado sensível | 2026-10-22 | Active |
 | Aparelho de teste: Galaxy S21 FE (RQCRC00WJMV) | Indicado pela pessoa usuária; S21 Ultra usado por outra sessão | 2026-10-22 | Active |
@@ -172,4 +174,4 @@ Rascunho de fases para o milestone v0.1. A versão final é definida em `/paul:p
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-10-22 after Phase 3*
+*Last updated: 2026-10-22 after Phase 4*

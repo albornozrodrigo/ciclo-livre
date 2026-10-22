@@ -16,7 +16,7 @@ App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clu
 ## Current Milestone
 **v0.1 Initial Release** (v0.1.0)
 Status: In progress
-Phases: 3 of 11 complete
+Phases: 4 of 11 complete
 
 ## Phases
 
@@ -25,7 +25,7 @@ Phases: 3 of 11 complete
 | 1 | Fundação | 4 | ✅ Complete | 2026-10-22 |
 | 2 | Onboarding, perfil e modos | 3 | ✅ Complete | 2026-10-22 |
 | 3 | Registro diário | 3 | ✅ Complete | 2026-10-22 |
-| 4 | Motor de previsão + calendário | TBD | Not started | - |
+| 4 | Motor de previsão + calendário | 3 | ✅ Complete | 2026-10-22 |
 | 5 | Análise | TBD | Not started | - |
 | 6 | Lembretes | TBD | Not started | - |
 | 7 | Relatório médico + exportação (Google Drive) | TBD | Not started | - |

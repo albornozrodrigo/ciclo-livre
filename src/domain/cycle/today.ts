@@ -1,7 +1,8 @@
-import { addDays, daysBetween, type IsoDate } from '@/domain/dates';
+import { daysBetween, type IsoDate } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 
-import { buildCycleModel, type Confidence, dayInfo, type Phase, pregnancyWeek } from './model';
+import { cycleModelFor } from './for-profile';
+import { type Confidence, dayInfo, fertileWindow, type Phase, pregnancyWeek } from './model';
 import { predictPainDays } from './pain';
 import type { CycleSignals } from './signals';
 
@@ -23,28 +24,18 @@ export type TodayView =
       painDays: IsoDate[];
     };
 
-const FERTILE_BEFORE = 5;
-const FERTILE_AFTER = 1;
-
-const windowAround = (ovulation: IsoDate) => ({ start: addDays(ovulation, -FERTILE_BEFORE), end: addDays(ovulation, FERTILE_AFTER) });
-
 /** O que a tela Hoje mostra sobre o ciclo, por modo. Função pura: `today` injetado. */
 export function todayCycleView(profile: Profile, signals: CycleSignals, today: IsoDate): TodayView {
   if (profile.mode === 'pregnancy' && profile.dueDate) return { kind: 'pregnancy', ...pregnancyWeek(profile.dueDate, today) };
   if (profile.mode === 'no_bleeding') return { kind: 'no_bleeding' };
 
-  const seed = profile.lastPeriodStart ? { start: profile.lastPeriodStart, length: profile.periodLength } : null;
-  const model = buildCycleModel(
-    { ...signals, seed, profileCycleLength: profile.cycleLength, profilePeriodLength: profile.periodLength },
-    today,
-  );
+  const model = cycleModelFor(profile, signals, today);
   const info = model && dayInfo(model, today, today);
   if (!model || !info) return { kind: 'none' };
 
-  const currentWindow = windowAround(model.current.ovulation.date);
+  const currentWindow = fertileWindow(model.current.ovulation.date);
   const nextInfo = dayInfo(model, model.next.start, today);
-  const fertile = today <= currentWindow.end || !nextInfo ? currentWindow : windowAround(nextInfo.ovulation.date);
-  const expected = addDays(model.current.start, model.cycleLength);
+  const fertile = today <= currentWindow.end || !nextInfo ? currentWindow : fertileWindow(nextInfo.ovulation.date);
 
   return {
     kind: 'cycle',
@@ -52,7 +43,7 @@ export function todayCycleView(profile: Profile, signals: CycleSignals, today: I
     cycleDay: info.cycleDay,
     daysToNext: daysBetween(today, model.next.start),
     late: model.late,
-    ...(model.late ? { lateDays: daysBetween(expected, today) } : {}),
+    ...(model.late ? { lateDays: daysBetween(model.expected, today) } : {}),
     next: model.next,
     fertile,
     confidence: model.confidence,

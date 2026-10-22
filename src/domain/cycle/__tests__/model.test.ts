@@ -135,3 +135,49 @@ describe('fase lútea medida', () => {
     expect(model.current.ovulation).toEqual({ date: '2026-10-11', method: 'calendar' });
   });
 });
+
+describe('honestidade: hoje nunca vira menstruação sem registro', () => {
+  it('no dia esperado, hoje continua no ciclo atual e a menstruação aparece como prevista para hoje', () => {
+    const model = buildCycleModel({ ...base, flowDates: flow28 }, '2026-10-24')!;
+
+    expect(model.next.start).toBe('2026-10-24');
+    expect(model.late).toBe(false);
+    expect(dayInfo(model, '2026-10-24', '2026-10-24')).toEqual(
+      expect.objectContaining({ cycleDay: 29, phase: 'luteal', predicted: false }),
+    );
+  });
+
+  it('atrasada: hoje segue no ciclo atual, sem virar dia 1', () => {
+    const model = buildCycleModel({ ...base, flowDates: flow28 }, '2026-10-27')!;
+
+    expect(dayInfo(model, '2026-10-27', '2026-10-27')).toEqual(expect.objectContaining({ cycleDay: 32, phase: 'luteal' }));
+  });
+
+  it('atrasada: a ovulação estimada do ciclo atual não anda com os dias', () => {
+    const day1 = buildCycleModel({ ...base, flowDates: flow28 }, '2026-10-27')!;
+    const day2 = buildCycleModel({ ...base, flowDates: flow28 }, '2026-10-28')!;
+
+    expect(day1.current.ovulation).toEqual(day2.current.ovulation);
+    expect(day1.current.ovulation.date).toBe('2026-10-10');
+  });
+
+  it('dias em ciclos previstos são sempre marcados como previstos', () => {
+    const model = buildCycleModel({ ...base, flowDates: flow28 }, '2026-10-22')!;
+    expect(dayInfo(model, '2026-11-25', '2026-10-22')!.predicted).toBe(true);
+  });
+});
+
+describe('menstruação em andamento', () => {
+  const ongoing = [...flow28.filter((d) => d < '2026-09-26'), '2026-09-26'];
+
+  it('só o 1º dia registrado: os dias seguintes contam como menstruação pela duração média', () => {
+    const model = buildCycleModel({ ...base, flowDates: ongoing }, '2026-09-27')!;
+
+    expect(dayInfo(model, '2026-09-27', '2026-09-27')).toEqual(expect.objectContaining({ cycleDay: 2, phase: 'menstruation' }));
+  });
+
+  it('a menstruação em andamento não entra na média de duração', () => {
+    const model = buildCycleModel({ ...base, flowDates: ongoing }, '2026-09-27')!;
+    expect(model.periodLength).toBe(5);
+  });
+});
