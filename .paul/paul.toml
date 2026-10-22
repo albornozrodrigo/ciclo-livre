@@ -15,10 +15,10 @@ status = "in_progress"
 phases = 11
 
 [phase]
-number = 6
-name = "Lembretes"
+number = 7
+name = "Relatório + exportação"
 status = "in_progress"
-plans_completed = 1
+plans_completed = 0
 
 [loop]
 position = "IDLE"
@@ -27,6 +27,6 @@ position = "IDLE"
 groom = true
 
 [stats]
-total_plans = 17
+total_plans = 20
 total_phases = 11
 last_activity = "2026-10-22T23:59:00Z"

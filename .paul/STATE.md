@@ -11,25 +11,25 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.1 — Fase 6 Lembretes (plano 06-01)
+**Current focus:** v0.1 — Fase 7 Relatório + exportação (plano 07-01)
 
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 6 of 11 (Lembretes) — Planned
-Plan: 06-01 (domínio + persistência), 06-02 (telas + agendamento)
-Status: 06-01 complete; ready to apply 06-02
-Last activity: 2026-10-22 — Phase 5 complete (Análise; finish review e /code-review aplicados)
+Phase: 7 of 11 (Relatório + exportação) — Planned, applying 07-01
+Plan: 07-01 (exportação/backup), 07-02 (PDF), 07-03 (tela + Drive)
+Status: APPLY 07-01 em andamento (backup criptografado pronto; JSON/CSV/restauração com testes vermelhos)
+Last activity: 2026-10-22 — Phase 6 complete (lembretes; reviews aplicados; discreto por padrão)
 
 Progress:
-- Milestone: [█████░░░░░] 45%
-- Phase 6: [█████░░░░░] 50%
+- Milestone: [█████░░░░░] 55%
+- Phase 7: [█░░░░░░░░░] 10%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [06-01 fechado; próximo: APPLY 06-02]
+  ✓        ◐        ○     [07-01 em APPLY]
 ```
 
 ## Accumulated Context
@@ -44,6 +44,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Aparelho de teste: Galaxy S21 FE `RQCRC00WJMV` (S21 Ultra é de outra sessão) | 01-03 | Usar `-s RQCRC00WJMV` / `--device RQCRC00WJMV` |
 | "Sintomas frequentes" exclui estados neutros/bons por opção | 05 | Corrimento normal, energia boa etc. não viram sintoma |
 | Lembretes com alarme inexato (sem SCHEDULE_EXACT_ALARM) | 06 plan | Play restringe alarme exato; horário pode variar minutos |
+| Notificações discretas ligadas por padrão | 06 | Android ignorou SECRET no canal; texto de saúde só se a pessoa escolher |
+| Drive via compartilhar/SAF (sem OAuth) | 07 plan | Sem projeto Google Cloud; backup automático adiado |
+| `.prettierrc` (aspas simples, 140 col.) | 06 | Evita reformatar o projeto com padrões errados |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -55,6 +58,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Lógica de ordem duplicada em personalizar × useCategoryOrder | 03 code-review | S | Refatorar quando mexer |
 | Célula do calendário < 48dp de largura em telas de 360dp | 04-03 | S | Testar em aparelho pequeno |
 | Teto de design: lobo da próxima fase sobreposto; marca de sol para hoje no calendário | 04 review | M | Fase 11 |
+| Visibilidade SECRET por notificação (patch/plugin nativo) para quem desliga o modo discreto | 06 | M | Fase 11 |
+| Interruptor em cápsula própria do mundo (teto do finish review) | 06 review | S | Fase 11 |
 | Análise lê o banco duas vezes por foco e sem limite de data | 05 code-review | S | Unificar leitura (fase 7 ou polimento) |
 | "média 29" na ponta da linha de referência; número principal em Display | 05 review | S | Polimento |
 | `npm audit`: 19 high vulnerabilities vindas do template (não triadas; /cso sem OSV) | Init | S | Fase 2 |
@@ -71,9 +76,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Phase 5 complete; Phase 6 planned (06-01, 06-02)
-Next action: /paul:apply .paul/phases/06-lembretes/06-02-PLAN.md
-Resume file: .paul/phases/06-lembretes/06-02-PLAN.md
+Stopped at: Phase 6 complete; 07-01 em APPLY
+Next action: continuar /paul:apply .paul/phases/07-relatorio-exportacao/07-01-PLAN.md (export-repo e csv)
+Resume file: .paul/phases/07-relatorio-exportacao/07-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
