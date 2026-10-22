@@ -28,7 +28,7 @@ Phases: 0 of 11 complete
 | 4 | Motor de previsão + calendário | TBD | Not started | - |
 | 5 | Análise | TBD | Not started | - |
 | 6 | Lembretes | TBD | Not started | - |
-| 7 | Relatório médico + backup | TBD | Not started | - |
+| 7 | Relatório médico + exportação (Google Drive) | TBD | Not started | - |
 | 8 | Conteúdo + busca + resumo IA | TBD | Not started | - |
 | 9 | Chat com seus dados (IA BYOK) | TBD | Not started | - |
 | 10 | Wearables (Health Connect) | TBD | Not started | - |
@@ -89,12 +89,17 @@ Phases: 0 of 11 complete
 **Depends on:** Phase 4
 **Research:** Unlikely
 
-### Phase 7: Relatório médico + backup
+### Phase 7: Relatório médico + exportação de dados
 **Goal:**
 - PDF de 6 ciclos para levar ao médico, ilimitado.
-- Exportar e importar backup local criptografado.
+- Exportar todos os dados (formato aberto, por exemplo JSON/CSV, além de um backup criptografado para restaurar).
+- Opção de **salvar no Google Drive** (requisito do usuário, 2026-10-22).
+- Importar ou restaurar o backup.
+- A exportação é sempre uma ação explícita da pessoa.
 **Depends on:** Phase 5
-**Research:** Unlikely
+**Research:** Likely. Para o Google Drive, comparar duas opções:
+  - SAF/compartilhar do Android: o Drive aparece como destino, sem OAuth e sem custo;
+  - Drive API com OAuth: backup automático, mas exige um projeto no Google Cloud e tela de consentimento.
 
 ### Phase 8: Conteúdo + busca + resumo IA
 **Goal:**

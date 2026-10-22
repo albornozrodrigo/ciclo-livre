@@ -1,31 +1,36 @@
 import { NativeTabs } from 'expo-router/native-tabs';
 import { useColorScheme } from 'react-native';
 
-import { Colors } from '@/constants/theme';
+import { Palette } from '@/constants/theme';
+import { ptBR } from '@/i18n/pt-BR';
 
 export default function AppTabs() {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'dark' ? 'dark' : 'light'];
+  const colors = Palette[useColorScheme() === 'dark' ? 'dark' : 'light'];
 
   return (
     <NativeTabs
-      backgroundColor={colors.background}
-      indicatorColor={colors.backgroundElement}
-      labelStyle={{ selected: { color: colors.text } }}>
+      backgroundColor={colors.water}
+      indicatorColor={colors.land}
+      labelStyle={{ default: { color: colors.inkMuted }, selected: { color: colors.ink } }}>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
+        <NativeTabs.Trigger.Label>{ptBR.tabs.hoje}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="water_drop" />
       </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
+      <NativeTabs.Trigger name="calendario">
+        <NativeTabs.Trigger.Label>{ptBR.tabs.calendario}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="calendar_month" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="analise">
+        <NativeTabs.Trigger.Label>{ptBR.tabs.analise}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="insights" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="explorar">
+        <NativeTabs.Trigger.Label>{ptBR.tabs.explorar}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="explore" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="mais">
+        <NativeTabs.Trigger.Label>{ptBR.tabs.mais}</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon md="more_horiz" />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

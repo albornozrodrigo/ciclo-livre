@@ -4,12 +4,45 @@
 
 @import "nativewind/theme";
 
+/*
+ * Tokens do "Território do Ciclo" (ver DESIGN.md).
+ * Cada token claro tem o seu par "-night"; nas telas use `bg-water dark:bg-water-night`.
+ * Os valores são espelhados em src/constants/theme.ts para APIs que pedem cor em JS.
+ */
+@theme {
+  --color-water: #f5f1e4;
+  --color-water-night: #151a17;
+  --color-ink: #2c2e2a;
+  --color-ink-night: #f2eee1;
+  --color-ink-muted: #5b5e57;
+  --color-ink-muted-night: #b9b5a8;
+  --color-land: #8ed462;
+  --color-land-night: #7bc04f;
+  --color-coral: #ff705d;
+  --color-coral-night: #f0634f;
+  --color-sun: #f5e211;
+  --color-sun-night: #ebd70f;
+  --color-pond: #2ba0ff;
+  --color-pond-night: #2a93e8;
+  --color-lilac: #ebc1ff;
+  --color-lilac-night: #d9a9f2;
+}
+
 :root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+  --color-water: #f5f1e4;
+  --color-water-night: #151a17;
+  --color-ink: #2c2e2a;
+  --color-ink-night: #f2eee1;
+  --color-ink-muted: #5b5e57;
+  --color-ink-muted-night: #b9b5a8;
+  --color-land: #8ed462;
+  --color-land-night: #7bc04f;
+  --color-coral: #ff705d;
+  --color-coral-night: #f0634f;
+  --color-sun: #f5e211;
+  --color-sun-night: #ebd70f;
+  --color-pond: #2ba0ff;
+  --color-pond-night: #2a93e8;
+  --color-lilac: #ebc1ff;
+  --color-lilac-night: #d9a9f2;
 }

@@ -36,6 +36,7 @@ Referência: `../estudo-rea-clue/00-resumo-executivo.md` e `notas/02-mapa-de-gat
 - **Extras liberados:**
   - lembretes (incluindo janela fértil);
   - relatório para o médico em PDF, ilimitado;
+  - exportação dos dados, com opção de salvar no Google Drive (pedido do usuário em 2026-10-22);
   - wearables via Health Connect;
   - IA BYOK (chat com seus dados e resumo de conteúdo);
   - todos os ícones e temas.
@@ -58,7 +59,7 @@ Rascunho de fases para o milestone v0.1. A versão final é definida em `/paul:p
 4. Motor de previsão de ciclo, fertilidade e dor (TDD obrigatório) + calendário.
 5. Aba Análise (gráficos).
 6. Lembretes locais (expo-notifications).
-7. Relatório médico em PDF + exportação/backup local.
+7. Relatório médico em PDF + exportação dos dados (backup local e salvar no Google Drive).
 8. Conteúdo próprio + busca + resumo IA (BYOK).
 9. Chat com seus dados (BYOK, com consentimento explícito antes de enviar dados).
 10. Wearables via Health Connect (sono, temperatura, FC, peso).
@@ -146,6 +147,7 @@ Rascunho de fases para o milestone v0.1. A versão final é definida em `/paul:p
 | Segredos | expo-secure-store | Chave do banco + chave de IA |
 | Notificações | expo-notifications (locais) | Fase 6 |
 | PDF | expo-print + expo-sharing | Fase 7 |
+| Exportação / Google Drive | Seletor de arquivos do Android (SAF) ou Drive API | Fase 7: decidir no plano; a preferência é o SAF/compartilhar do sistema, que inclui o Drive sem OAuth e sem custo |
 | Saúde | Health Connect (react-native-health-connect ou módulo Expo) | Fase 10; exige dev build |
 | IA | APIs Claude/OpenAI via chave do usuário | Fases 8–9 |
 | Testes | jest-expo + Testing Library RN | TDD no domínio |

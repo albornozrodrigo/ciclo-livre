@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ciclo-livre",
+    "name": "Ciclo Livre",
     "slug": "ciclo-livre",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -17,7 +17,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "app.ciclolivre"
     },
     "web": {
       "output": "server",
