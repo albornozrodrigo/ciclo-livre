@@ -13,6 +13,7 @@ export function RootNavigator({ onboarded }: Props) {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="perfil" />
         <Stack.Screen name="registro" />
+        <Stack.Screen name="lembretes" />
       </Stack.Protected>
       <Stack.Protected guard={!onboarded}>
         <Stack.Screen name="onboarding" />

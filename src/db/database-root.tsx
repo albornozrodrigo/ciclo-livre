@@ -2,6 +2,8 @@ import * as SecureStore from 'expo-secure-store';
 import { deleteDatabaseAsync, SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
 import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
 
+import { cancelAllReminders } from '@/reminders/sync';
+
 import { eraseAllData } from './erase';
 import { DATABASE_KEY_NAME } from './key';
 import { DATABASE_NAME, initAppDatabase } from './open';
@@ -30,6 +32,7 @@ export function useEraseAllData(): () => Promise<void> {
   return useCallback(async () => {
     try {
       await eraseAllData({
+        cancelReminders: cancelAllReminders,
         closeDatabase: () => db.closeAsync(),
         deleteDatabase: deleteDatabaseFile,
         deleteKey: deleteDatabaseKey,
@@ -50,6 +53,7 @@ const deleteDatabaseKey = () => SecureStore.deleteItemAsync(DATABASE_KEY_NAME);
  */
 export function resetUnopenableDatabase(): Promise<void> {
   return eraseAllData({
+    cancelReminders: cancelAllReminders,
     closeDatabase: async () => {},
     deleteDatabase: deleteDatabaseFile,
     deleteKey: deleteDatabaseKey,
