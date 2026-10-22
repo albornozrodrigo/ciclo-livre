@@ -75,6 +75,20 @@ export const MIGRATIONS: Migration[] = [
       ) STRICT`,
     ],
   },
+  {
+    // Lembretes: uma linha por tipo (sem linha = padrão desligado). `options` é JSON validado no repositório.
+    version: 5,
+    statements: [
+      `CREATE TABLE reminder (
+        kind TEXT PRIMARY KEY NOT NULL,
+        enabled INTEGER NOT NULL CHECK (enabled IN (0, 1)),
+        time TEXT NOT NULL CHECK (time GLOB '[0-2][0-9]:[0-5][0-9]'),
+        options TEXT NOT NULL,
+        title TEXT CHECK (title IS NULL OR length(title) BETWEEN 1 AND 40),
+        body TEXT CHECK (body IS NULL OR length(body) BETWEEN 1 AND 100)
+      ) STRICT`,
+    ],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

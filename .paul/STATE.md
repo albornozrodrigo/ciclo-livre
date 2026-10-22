@@ -18,18 +18,18 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 Milestone: v0.1 Initial Release
 Phase: 6 of 11 (Lembretes) — Planned
 Plan: 06-01 (domínio + persistência), 06-02 (telas + agendamento)
-Status: Ready to apply 06-01
+Status: 06-01 complete; ready to apply 06-02
 Last activity: 2026-10-22 — Phase 5 complete (Análise; finish review e /code-review aplicados)
 
 Progress:
 - Milestone: [█████░░░░░] 45%
-- Phase 6: [░░░░░░░░░░] 0%
+- Phase 6: [█████░░░░░] 50%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [06-01 planejado; pronto para APPLY]
+  ✓        ✓        ✓     [06-01 fechado; próximo: APPLY 06-02]
 ```
 
 ## Accumulated Context
@@ -72,8 +72,8 @@ None yet.
 
 Last session: 2026-10-22
 Stopped at: Phase 5 complete; Phase 6 planned (06-01, 06-02)
-Next action: /paul:apply .paul/phases/06-lembretes/06-01-PLAN.md
-Resume file: .paul/phases/06-lembretes/06-01-PLAN.md
+Next action: /paul:apply .paul/phases/06-lembretes/06-02-PLAN.md
+Resume file: .paul/phases/06-lembretes/06-02-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

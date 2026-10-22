@@ -17,8 +17,8 @@ phases = 11
 [phase]
 number = 6
 name = "Lembretes"
-status = "planned"
-plans_completed = 0
+status = "in_progress"
+plans_completed = 1
 
 [loop]
 position = "IDLE"
