@@ -15,10 +15,10 @@ status = "in_progress"
 phases = 11
 
 [phase]
-number = 7
-name = "Relatório + exportação"
-status = "in_progress"
-plans_completed = 2
+number = 8
+name = "Conteúdo + busca + resumo IA"
+status = "not_started"
+plans_completed = 0
 
 [loop]
 position = "IDLE"

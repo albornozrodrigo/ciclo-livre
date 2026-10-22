@@ -11,25 +11,25 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.1 — Fase 7 Relatório + exportação (plano 07-01)
+**Current focus:** v0.1 — Fase 8 Conteúdo + busca + resumo IA (a planejar)
 
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 7 of 11 (Relatório + exportação) — Planned, applying 07-01
-Plan: 07-01 (exportação/backup), 07-02 (PDF), 07-03 (tela + Drive)
-Status: 07-02 complete; next APPLY 07-03 (tela Seus dados + Drive)
-Last activity: 2026-10-22 — Phase 6 complete (lembretes; reviews aplicados; discreto por padrão)
+Phase: 8 of 11 (Conteúdo + busca + resumo IA) — Not started
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-22 — Phase 7 complete (relatório PDF, exportação, backup/restauração, Drive pelo compartilhar; reviews aplicados)
 
 Progress:
-- Milestone: [█████░░░░░] 55%
-- Phase 7: [██████░░░░] 66%
+- Milestone: [██████░░░░] 64%
+- Phase 8: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [07-02 fechado; próximo: APPLY 07-03]
+  ○        ○        ○     [Pronto para planejar a fase 8]
 ```
 
 ## Accumulated Context
@@ -58,6 +58,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Lógica de ordem duplicada em personalizar × useCategoryOrder | 03 code-review | S | Refatorar quando mexer |
 | Célula do calendário < 48dp de largura em telas de 360dp | 04-03 | S | Testar em aparelho pequeno |
 | Teto de design: lobo da próxima fase sobreposto; marca de sol para hoje no calendário | 04 review | M | Fase 11 |
+| KDF nativo para backup < 3 s (hoje scrypt 2^13 em JS ≈ 6,7 s no S21 FE) | 07 | M | Fase 11 |
+| Backup automático no Drive (OAuth/Drive API) | 07 plan | L | Só se pedido |
+| `lastInsertRowId` na restauração de tags | 07 code-review | S | Polimento |
 | Visibilidade SECRET por notificação (patch/plugin nativo) para quem desliga o modo discreto | 06 | M | Fase 11 |
 | Interruptor em cápsula própria do mundo (teto do finish review) | 06 review | S | Fase 11 |
 | Análise lê o banco duas vezes por foco e sem limite de data | 05 code-review | S | Unificar leitura (fase 7 ou polimento) |
@@ -76,9 +79,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: 07-02 complete
-Next action: /paul:apply .paul/phases/07-relatorio-exportacao/07-03-PLAN.md
-Resume file: .paul/phases/07-relatorio-exportacao/07-03-PLAN.md
+Stopped at: Phase 7 complete
+Next action: /paul:plan para a fase 8 (conteúdo próprio/licença aberta, busca, resumo IA BYOK; /cso antes de fechar)
+Resume file: .paul/ROADMAP.md
 
 ---
 *STATE.md — Updated after every significant action*
