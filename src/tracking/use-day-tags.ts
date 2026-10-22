@@ -1,14 +1,18 @@
 import { useSQLiteContext } from 'expo-sqlite';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useSnackbar } from '@/components/ui/snackbar';
 import { createTag, getDayTags, listTags, setDayTags, type Tag } from '@/db/tag-repo';
 import type { IsoDate } from '@/domain/dates';
-import { validateTagName } from '@/domain/tracking/tags';
+import { normalizeTagKey, validateTagName } from '@/domain/tracking/tags';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
 
 type State = { all: Tag[]; selected: number[] };
+export type CreateResult = 'empty' | 'too_long' | 'duplicate' | 'failed' | null;
+
+/** Mesma ordem do banco (`ORDER BY key`), para os chips não mudarem de lugar ao reabrir. */
+const byKey = (a: Tag, b: Tag) => (normalizeTagKey(a.name) < normalizeTagKey(b.name) ? -1 : 1);
 
 /** Tags da pessoa e as marcadas no dia; marcar salva na hora. */
 export function useDayTags(date: IsoDate) {
@@ -53,21 +57,27 @@ export function useDayTags(date: IsoDate) {
     [save, state],
   );
 
-  /** Cria e já marca no dia. Devolve o erro de validação (para a UI) ou null. */
+  const creating = useRef(false);
+
+  /** Cria e já marca no dia. Devolve o erro (para a UI manter o texto) ou null em caso de sucesso. */
   const create = useCallback(
-    async (raw: string): Promise<'empty' | 'too_long' | 'duplicate' | null> => {
-      if (!state) return null;
+    async (raw: string): Promise<CreateResult> => {
+      if (!state || creating.current) return 'failed';
       const result = validateTagName(raw, state.all.map((t) => t.name));
       if (!result.ok) return result.error;
+      creating.current = true;
       try {
         const tag = await createTag(db, result.name);
-        setState((s) => (s ? { ...s, all: [...s.all, tag].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')) } : s));
+        setState((s) => (s ? { ...s, all: [...s.all, tag].sort(byKey) } : s));
         await save([...state.selected, tag.id], state.selected);
+        return null;
       } catch (error) {
         log.error('tag_create_failed', error);
         show(ptBR.tags.saveFailed);
+        return 'failed';
+      } finally {
+        creating.current = false;
       }
-      return null;
     },
     [db, save, show, state],
   );

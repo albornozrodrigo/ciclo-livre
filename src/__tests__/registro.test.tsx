@@ -170,6 +170,21 @@ describe('Registrar o dia', () => {
 });
 
 describe('Registrar o dia › tags', () => {
+  it('se criar a tag falhar, o texto digitado continua no campo', async () => {
+    await renderRegistro();
+    const realRun = mockDb.runAsync;
+    mockDb.runAsync = async (sql: string, ...params) => {
+      if (sql.startsWith('INSERT INTO tag')) throw new Error('disco cheio');
+      return realRun(sql, ...params);
+    };
+
+    await fireEvent.changeText(screen.getByLabelText(ptBR.tags.newLabel), 'Plantão');
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.tags.add }));
+
+    await waitFor(() => expect(mockShow).toHaveBeenCalledWith(ptBR.tags.saveFailed));
+    expect(screen.getByLabelText(ptBR.tags.newLabel)).toHaveDisplayValue('Plantão');
+  });
+
   it('marca uma tag existente no dia', async () => {
     const tag = await createTag(mockDb, 'Viagem');
     await renderRegistro();
@@ -200,6 +215,26 @@ describe('Registrar o dia › tags', () => {
 });
 
 describe('Registrar o dia › outros dias', () => {
+  it('texto ainda não salvo vai para o dia em que foi digitado, não para o próximo', async () => {
+    const view = await render(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <RegistroScreen />
+      </SafeAreaProvider>,
+    );
+    await screen.findByText(t.pain.label);
+    await fireEvent.changeText(screen.getByLabelText(ptBR.tracking.note.label), 'Era de ontem.');
+
+    mockDate = '2026-10-19';
+    await view.rerender(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <RegistroScreen />
+      </SafeAreaProvider>,
+    );
+
+    await waitFor(async () => expect((await getDay(mockDb, DAY)).note).toBe('Era de ontem.'));
+    expect((await getDay(mockDb, '2026-10-19')).note).toBeNull();
+  });
+
   it('vai para o dia anterior', async () => {
     await renderRegistro();
 

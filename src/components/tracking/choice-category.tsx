@@ -2,13 +2,14 @@ import { Text, View } from 'react-native';
 
 import type { ChoiceCategory } from '@/domain/tracking/catalog';
 import { ptBR } from '@/i18n/pt-BR';
+import { categoryLabels } from '@/i18n/pt-BR-tracking';
 
 import { OptionChip } from './option-chip';
 
 type Labels = { label: string; options: Record<string, string> };
 
 export function ChoiceCategoryField({ category, selected, onToggle }: { category: ChoiceCategory; selected: readonly string[]; onToggle: (option: string) => void }) {
-  const labels = (ptBR.tracking.categories as unknown as Record<string, Labels>)[category.id];
+  const labels = categoryLabels(category.id) as Labels;
   return (
     <View className="gap-3">
       <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{labels.label}</Text>

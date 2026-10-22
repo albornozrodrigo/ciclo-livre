@@ -9,11 +9,11 @@ import { getCategoryPrefs, saveCategoryPrefs } from '@/db/log-repo';
 import { defaultVisibleCategories } from '@/domain/tracking/catalog';
 import { orderCategories } from '@/domain/tracking/rules';
 import { ptBR } from '@/i18n/pt-BR';
+import { categoryLabels } from '@/i18n/pt-BR-tracking';
 import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 
 const copy = ptBR.tracking.customizeScreen;
-const labels = ptBR.tracking.categories as unknown as Record<string, { label: string }>;
 
 type Item = { id: string; hidden: boolean };
 
@@ -76,7 +76,7 @@ export default function PersonalizarScreen() {
       </Pressable>
       <View>
         {items.map((item, index) => {
-          const label = labels[item.id]?.label ?? item.id;
+          const label = categoryLabels(item.id).label;
           return (
             <View key={item.id} className="min-h-16 flex-row items-center gap-2 border-b border-line py-2 dark:border-line-night">
               <Switch

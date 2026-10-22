@@ -65,7 +65,7 @@ export default function RegistroScreen() {
             </Text>
             {categories.map((category) =>
               category.kind === 'measure' ? (
-                <MeasureField key={category.id} category={category} value={day.measures[category.id]} onSave={(v) => saveMeasure(category.id, v)} />
+                <MeasureField key={`${date}:${category.id}`} category={category} value={day.measures[category.id]} onSave={(v) => saveMeasure(category.id, v)} />
               ) : (
                 <ChoiceCategoryField
                   key={category.id}
@@ -83,7 +83,8 @@ export default function RegistroScreen() {
         </View>
 
         <View className="mt-10">
-          <NoteField value={day.note} onSave={saveNote} />
+          {/* Chave pela data: ao trocar de dia, o campo antigo salva o pendente no dia certo. */}
+          <NoteField key={date} value={day.note} onSave={saveNote} />
         </View>
 
         <View className="mt-10">

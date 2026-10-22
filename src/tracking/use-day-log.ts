@@ -1,5 +1,5 @@
 import { useSQLiteContext } from 'expo-sqlite';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useSnackbar } from '@/components/ui/snackbar';
 import { clearMeasure, type DayLog, getDay, setMeasure, setNote, setSelection } from '@/db/log-repo';
@@ -17,6 +17,10 @@ function withSelection(day: DayLog, categoryId: string, options: string[]): DayL
   return { ...day, selections };
 }
 
+function sameOptions(a: readonly string[], b: readonly string[]): boolean {
+  return a.length === b.length && a.every((x, i) => x === b[i]);
+}
+
 function withMeasure(day: DayLog, categoryId: string, value: number | null): DayLog {
   const measures = { ...day.measures };
   if (value === null) delete measures[categoryId];
@@ -28,15 +32,26 @@ function withMeasure(day: DayLog, categoryId: string, value: number | null): Day
 export function useDayLog(date: IsoDate) {
   const db = useSQLiteContext();
   const { show } = useSnackbar();
-  const [day, setDay] = useState<DayLog | null>(null);
+  // O estado guarda de qual data ele é: ao trocar de dia, o anterior nunca aparece sob a data nova.
+  const [loaded, setLoaded] = useState<{ date: IsoDate; log: DayLog } | null>(null);
+  const day = loaded?.date === date ? loaded.log : null;
+  // Estado mais recente para toques seguidos (a closure de `day` pode estar um render atrás).
+  const latest = useRef<DayLog | null>(null);
+  useEffect(() => {
+    latest.current = day;
+  }, [day]);
+  const setDay = useCallback(
+    (update: (d: DayLog) => DayLog) => setLoaded((s) => (s && s.date === date ? { date, log: update(s.log) } : s)),
+    [date],
+  );
 
   useEffect(() => {
     let active = true;
     getDay(db, date).then(
-      (loaded) => active && setDay(loaded),
+      (log) => active && setLoaded({ date, log }),
       (error: unknown) => {
         log.error('day_log_load_failed', error);
-        if (active) setDay(EMPTY);
+        if (active) setLoaded({ date, log: EMPTY });
       },
     );
     return () => {
@@ -47,27 +62,31 @@ export function useDayLog(date: IsoDate) {
   /** Aplica a mudança na hora; se a gravação falhar, desfaz só aquela mudança (não o dia inteiro). */
   const persist = useCallback(
     async (apply: (d: DayLog) => DayLog, revert: (d: DayLog) => DayLog, write: () => Promise<void>) => {
-      setDay((d) => (d ? apply(d) : d));
+      if (latest.current) latest.current = apply(latest.current);
+      setDay(apply);
       try {
         await write();
       } catch (error) {
         log.error('day_log_save_failed', error);
-        setDay((d) => (d ? revert(d) : d));
+        if (latest.current) latest.current = revert(latest.current);
+        setDay(revert);
         show(ptBR.tracking.saveFailed);
       }
     },
-    [show],
+    [setDay, show],
   );
 
   const toggle = useCallback(
     (categoryId: string, option: string) => {
-      if (!day) return;
+      const current = latest.current ?? day;
+      if (!current) return;
       const category = categoryById(categoryId) as ChoiceCategory;
-      const before = day.selections[categoryId] ?? [];
+      const before = current.selections[categoryId] ?? [];
       const options = toggleOption(category, before, option);
       void persist(
         (d) => withSelection(d, categoryId, options),
-        (d) => withSelection(d, categoryId, before),
+        // Só desfaz se ninguém mudou a categoria depois; senão manteria um valor mais novo já salvo.
+        (d) => (sameOptions(d.selections[categoryId] ?? [], options) ? withSelection(d, categoryId, before) : d),
         () => setSelection(db, date, categoryId, options),
       );
     },
@@ -76,11 +95,12 @@ export function useDayLog(date: IsoDate) {
 
   const saveMeasure = useCallback(
     (categoryId: string, value: number | null) => {
-      if (!day) return;
-      const before = day.measures[categoryId] ?? null;
+      const current = latest.current ?? day;
+      if (!current) return;
+      const before = current.measures[categoryId] ?? null;
       void persist(
         (d) => withMeasure(d, categoryId, value),
-        (d) => withMeasure(d, categoryId, before),
+        (d) => ((d.measures[categoryId] ?? null) === value ? withMeasure(d, categoryId, before) : d),
         () => (value === null ? clearMeasure(db, date, categoryId) : setMeasure(db, date, categoryId, value)),
       );
     },
@@ -89,12 +109,13 @@ export function useDayLog(date: IsoDate) {
 
   const saveNote = useCallback(
     (text: string) => {
-      if (!day) return;
-      const before = day.note;
+      const current = latest.current ?? day;
+      if (!current) return;
+      const before = current.note;
       const note = text.trim() ? text : null;
       void persist(
         (d) => ({ ...d, note }),
-        (d) => ({ ...d, note: before }),
+        (d) => (d.note === note ? { ...d, note: before } : d),
         () => setNote(db, date, text),
       );
     },

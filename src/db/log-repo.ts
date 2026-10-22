@@ -3,6 +3,7 @@ import { categoryById } from '@/domain/tracking/catalog';
 import { type CategoryPref, validateMeasure, validateNote } from '@/domain/tracking/rules';
 
 import type { SqlExecutor } from './types';
+import { enqueueWrite } from './write-queue';
 
 export type DayLog = {
   selections: Record<string, string[]>;
@@ -46,28 +47,30 @@ export async function getDay(db: SqlExecutor, date: IsoDate): Promise<DayLog> {
 export async function setSelection(db: SqlExecutor, date: IsoDate, categoryId: string, options: readonly string[]) {
   assertDate(date);
   assertSelection(categoryId, options);
-  await db.withTransactionAsync(async () => {
-    await db.runAsync('DELETE FROM log_selection WHERE date = ? AND category = ?', date, categoryId);
-    for (const option of options) {
-      await db.runAsync('INSERT INTO log_selection (date, category, option) VALUES (?, ?, ?)', date, categoryId, option);
-    }
-  });
+  await enqueueWrite(db, () =>
+    db.withTransactionAsync(async () => {
+      await db.runAsync('DELETE FROM log_selection WHERE date = ? AND category = ?', date, categoryId);
+      for (const option of options) {
+        await db.runAsync('INSERT INTO log_selection (date, category, option) VALUES (?, ?, ?)', date, categoryId, option);
+      }
+    }),
+  );
 }
 
 export async function setMeasure(db: SqlExecutor, date: IsoDate, categoryId: string, value: number) {
   assertDate(date);
   if (validateMeasure(categoryId, value) !== null) throw new Error('Medição inválida.');
-  await db.runAsync(
+  await enqueueWrite(db, () => db.runAsync(
     'INSERT INTO log_measure (date, category, value) VALUES (?, ?, ?) ON CONFLICT (date, category) DO UPDATE SET value = excluded.value',
     date,
     categoryId,
     value,
-  );
+  ));
 }
 
 export async function clearMeasure(db: SqlExecutor, date: IsoDate, categoryId: string) {
   assertDate(date);
-  await db.runAsync('DELETE FROM log_measure WHERE date = ? AND category = ?', date, categoryId);
+  await enqueueWrite(db, () => db.runAsync('DELETE FROM log_measure WHERE date = ? AND category = ?', date, categoryId));
 }
 
 /** Nota vazia (ou só espaços) apaga a nota do dia. */
@@ -75,14 +78,12 @@ export async function setNote(db: SqlExecutor, date: IsoDate, text: string) {
   assertDate(date);
   const error = validateNote(text);
   if (error === 'empty') {
-    await db.runAsync('DELETE FROM log_note WHERE date = ?', date);
+    await enqueueWrite(db, () => db.runAsync('DELETE FROM log_note WHERE date = ?', date));
     return;
   }
   if (error) throw new Error('Nota longa demais.');
-  await db.runAsync(
-    'INSERT INTO log_note (date, text) VALUES (?, ?) ON CONFLICT (date) DO UPDATE SET text = excluded.text',
-    date,
-    text,
+  await enqueueWrite(db, () =>
+    db.runAsync('INSERT INTO log_note (date, text) VALUES (?, ?) ON CONFLICT (date) DO UPDATE SET text = excluded.text', date, text),
   );
 }
 
@@ -93,11 +94,21 @@ export async function getCategoryPrefs(db: SqlExecutor): Promise<CategoryPref[]>
   return rows.map((r) => ({ category: r.category, position: r.position, hidden: r.hidden === 1 }));
 }
 
+/**
+ * Atualiza só as categorias informadas. Preferências de categorias que não estão na lista
+ * (ex.: as de outro modo) continuam guardadas.
+ */
 export async function saveCategoryPrefs(db: SqlExecutor, prefs: readonly CategoryPref[]) {
-  await db.withTransactionAsync(async () => {
-    await db.runAsync('DELETE FROM category_pref');
-    for (const p of prefs) {
-      await db.runAsync('INSERT INTO category_pref (category, position, hidden) VALUES (?, ?, ?)', p.category, p.position, p.hidden ? 1 : 0);
-    }
-  });
+  await enqueueWrite(db, () =>
+    db.withTransactionAsync(async () => {
+      for (const p of prefs) {
+        await db.runAsync(
+          'INSERT INTO category_pref (category, position, hidden) VALUES (?, ?, ?) ON CONFLICT (category) DO UPDATE SET position = excluded.position, hidden = excluded.hidden',
+          p.category,
+          p.position,
+          p.hidden ? 1 : 0,
+        );
+      }
+    }),
+  );
 }

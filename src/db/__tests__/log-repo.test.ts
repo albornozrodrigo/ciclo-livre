@@ -109,15 +109,52 @@ describe('log-repo › dia', () => {
 });
 
 describe('log-repo › preferências de categorias', () => {
-  it('salva e devolve ordem e ocultas; salvar de novo substitui', async () => {
+  it('salva e devolve ordem e ocultas; salvar de novo atualiza as mesmas categorias', async () => {
     const db = await migratedDb();
     await saveCategoryPrefs(db, [
       { category: 'sleep', position: 0, hidden: false },
       { category: 'pain', position: 1, hidden: true },
     ]);
 
-    await saveCategoryPrefs(db, [{ category: 'feelings', position: 0, hidden: false }]);
+    await saveCategoryPrefs(db, [
+      { category: 'pain', position: 0, hidden: false },
+      { category: 'sleep', position: 1, hidden: false },
+    ]);
 
-    await expect(getCategoryPrefs(db)).resolves.toEqual([{ category: 'feelings', position: 0, hidden: false }]);
+    await expect(getCategoryPrefs(db)).resolves.toEqual([
+      { category: 'pain', position: 0, hidden: false },
+      { category: 'sleep', position: 1, hidden: false },
+    ]);
+  });
+});
+
+describe('log-repo › escritas concorrentes', () => {
+  it('salvamentos disparados ao mesmo tempo não se atrapalham (sem transações aninhadas)', async () => {
+    const db = await migratedDb();
+
+    await Promise.all([
+      setSelection(db, DAY, 'pain', ['cramps', 'headache']),
+      setSelection(db, DAY, 'energy', ['low']),
+      setMeasure(db, DAY, 'weight', 60),
+      setNote(db, DAY, 'nota'),
+      setSelection(db, DAY, 'feelings', ['calm', 'happy']),
+    ]);
+
+    await expect(getDay(db, DAY)).resolves.toEqual({
+      selections: { pain: ['cramps', 'headache'], energy: ['low'], feelings: ['calm', 'happy'] },
+      measures: { weight: 60 },
+      note: 'nota',
+    });
+  });
+});
+
+describe('log-repo › preferências por modo', () => {
+  it('salvar preferências de um modo não apaga as de categorias de outro modo', async () => {
+    const db = await migratedDb();
+    await saveCategoryPrefs(db, [{ category: 'pregnancy_body', position: 0, hidden: true }]);
+
+    await saveCategoryPrefs(db, [{ category: 'pain', position: 0, hidden: false }]);
+
+    expect((await getCategoryPrefs(db)).map((p) => p.category).sort()).toEqual(['pain', 'pregnancy_body']);
   });
 });

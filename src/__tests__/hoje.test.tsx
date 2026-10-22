@@ -55,4 +55,13 @@ describe('Hoje', () => {
     expect(await screen.findByText(ptBR.today.count(2))).toBeOnTheScreen();
     expect(screen.getByText(/Dor: Cólica, Dor de cabeça/)).toBeOnTheScreen();
   });
+
+  it('a nota não conta como categoria', async () => {
+    const { setNote } = jest.requireActual('@/db/log-repo');
+    await setNote(mockDb, todayIso(), 'só uma nota');
+
+    await renderHoje();
+
+    expect(await screen.findByText(ptBR.today.noteOnly)).toBeOnTheScreen();
+  });
 });

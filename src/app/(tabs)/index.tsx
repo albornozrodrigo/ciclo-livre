@@ -13,6 +13,9 @@ import { summarizeDay } from '@/tracking/summary';
 
 const copy = ptBR.today;
 
+/** O resumo inclui "Nota do dia"; ela não é uma categoria. */
+const categoryCount = (items: string[]) => items.filter((i) => i !== ptBR.tracking.note.label).length;
+
 /** Resumo do que já foi registrado hoje; recarrega ao voltar para a aba. */
 function useTodaySummary(): string[] | null {
   const db = useSQLiteContext();
@@ -43,7 +46,7 @@ export default function HojeScreen() {
         ) : (
           <View className="gap-2">
             <Text accessibilityRole="header" className="text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
-              {copy.count(items.length)}
+              {categoryCount(items) > 0 ? copy.count(categoryCount(items)) : copy.noteOnly}
             </Text>
             <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{items.join(' · ')}</Text>
           </View>

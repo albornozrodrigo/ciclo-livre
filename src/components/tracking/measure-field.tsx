@@ -4,6 +4,7 @@ import { Text, TextInput, View } from 'react-native';
 import type { MeasureCategory } from '@/domain/tracking/catalog';
 import { type MeasureError, validateMeasure } from '@/domain/tracking/rules';
 import { ptBR } from '@/i18n/pt-BR';
+import { categoryLabels } from '@/i18n/pt-BR-tracking';
 import { useDebouncedSave } from '@/lib/use-debounced-save';
 
 const errors = ptBR.tracking.measureErrors;
@@ -25,7 +26,7 @@ function parse(text: string, category: MeasureCategory): Parsed {
 
 /** Número com unidade: salva enquanto digita (quando válido); erro aparece ao confirmar ou sair. */
 export function MeasureField({ category, value, onSave }: { category: MeasureCategory; value: number | undefined; onSave: (value: number | null) => void }) {
-  const label = (ptBR.tracking.categories as Record<string, { label: string }>)[category.id].label;
+  const label = categoryLabels(category.id).label;
   const [text, setText] = useState(format(value));
   const [error, setError] = useState<string | null>(null);
   const { schedule, flush, cancel } = useDebouncedSave(onSave);

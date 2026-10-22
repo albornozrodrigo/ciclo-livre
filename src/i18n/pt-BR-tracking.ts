@@ -126,3 +126,10 @@ export const trackingPtBR = {
     hrv: { label: 'Variabilidade da frequência cardíaca' },
   },
 } as const;
+
+type CategoryLabels = { label: string; options?: Record<string, string> };
+
+/** Rótulos de uma categoria do catálogo (um único ponto de acesso, sem casts espalhados). */
+export function categoryLabels(id: string): CategoryLabels {
+  return (trackingPtBR.categories as unknown as Record<string, CategoryLabels>)[id] ?? { label: id };
+}

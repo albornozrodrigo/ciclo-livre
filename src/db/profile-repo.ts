@@ -1,6 +1,7 @@
 import type { Profile } from '@/domain/profile';
 
 import type { SqlExecutor } from './types';
+import { enqueueWrite } from './write-queue';
 
 type ProfileRow = {
   birth_year: number;
@@ -32,7 +33,7 @@ export async function getProfile(db: SqlExecutor): Promise<Profile | null> {
 
 /** Grava (ou substitui) o perfil. Espera um perfil já validado por `validateProfile`. */
 export async function saveProfile(db: SqlExecutor, profile: Profile, now = new Date()): Promise<void> {
-  await db.runAsync(
+  await enqueueWrite(db, () => db.runAsync(
     `INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length,
        regularity, due_date, trying_since, birth_control, updated_at)
      VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -51,5 +52,5 @@ export async function saveProfile(db: SqlExecutor, profile: Profile, now = new D
     profile.tryingSince,
     profile.birthControl,
     now.toISOString(),
-  );
+  ));
 }

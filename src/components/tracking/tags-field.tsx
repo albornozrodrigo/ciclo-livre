@@ -20,6 +20,8 @@ export function TagsField({ date }: { date: IsoDate }) {
 
   async function handleAdd() {
     const problem = await create(name);
+    // Falha de gravação já avisa por snackbar; o texto fica para tentar de novo.
+    if (problem === 'failed') return;
     if (problem) return setError(copy.errors[problem]);
     setError(null);
     setName('');
