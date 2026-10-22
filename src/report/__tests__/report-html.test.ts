@@ -63,4 +63,32 @@ describe('renderReportHtml', () => {
     expect(html).toContain('<html lang="pt-BR">');
     expect(html).toContain('<th scope="col">Início</th>');
   });
+
+  it('plural certo nas medições e menstruação do cadastro com o mesmo texto do app', () => {
+    const seeded = buildCycleModel(
+      {
+        flowDates: ['2026-09-24'],
+        seed: { start: '2026-10-12', length: 5 },
+        temperatures: {},
+        eggWhiteDates: [],
+        positiveOvulationTests: [],
+        profileCycleLength: 28,
+        profilePeriodLength: 5,
+      },
+      TODAY,
+    );
+    const out = renderReportHtml(
+      buildReport({
+        model: seeded,
+        profile,
+        selections: [],
+        measures: { weight: { '2026-10-20': 64.5 } },
+        today: TODAY,
+        includeNotes: false,
+        notes: [],
+      }),
+    );
+    expect(out).toContain('(1 registro)');
+    expect(out).toContain('informada no cadastro');
+  });
 });

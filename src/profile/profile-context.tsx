@@ -4,14 +4,13 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useS
 import { getProfile, saveProfile as saveProfileRow } from '@/db/profile-repo';
 import type { Profile } from '@/domain/profile';
 
-type ProfileState =
-  | { status: 'loading' }
-  | { status: 'ready'; profile: Profile | null }
-  | { status: 'failed'; error: unknown };
+type ProfileState = { status: 'loading' } | { status: 'ready'; profile: Profile | null } | { status: 'failed'; error: unknown };
 
 type ProfileContextValue = {
   state: ProfileState;
   saveProfile: (profile: Profile) => Promise<void>;
+  /** Relê o perfil do banco (ex.: depois de restaurar um backup). */
+  reloadProfile: () => Promise<void>;
 };
 
 const ProfileContext = createContext<ProfileContextValue | null>(null);
@@ -40,10 +39,14 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     [db],
   );
 
+  const reloadProfile = useCallback(async () => {
+    setState({ status: 'ready', profile: await getProfile(db) });
+  }, [db]);
+
   // Falha de leitura sobe para o ErrorBoundary (tela de erro com "tentar de novo").
   if (state.status === 'failed') throw state.error;
 
-  return <ProfileContext.Provider value={{ state, saveProfile }}>{children}</ProfileContext.Provider>;
+  return <ProfileContext.Provider value={{ state, saveProfile, reloadProfile }}>{children}</ProfileContext.Provider>;
 }
 
 export function useProfile(): ProfileContextValue {

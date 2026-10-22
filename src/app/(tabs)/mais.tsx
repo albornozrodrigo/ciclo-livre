@@ -59,6 +59,12 @@ export default function MaisScreen() {
           </Text>
           <ListRow label={ptBR.reminders.mais} detail={ptBR.reminders.maisHint} onPress={() => router.push('/lembretes')} />
         </View>
+        <View className="gap-1">
+          <Text accessibilityRole="header" className="mb-2 text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
+            {ptBR.data.title}
+          </Text>
+          <ListRow label={ptBR.data.mais} detail={ptBR.data.maisHint} onPress={() => router.push('/dados')} />
+        </View>
         <PrivacySection onErase={eraseAndNotify} confirm={confirmEraseAll} />
       </View>
     </Screen>

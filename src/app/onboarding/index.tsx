@@ -39,7 +39,10 @@ export default function WelcomeScreen() {
             </View>
           ))}
         </View>
-        <CapsuleButton label={copy.start} onPress={() => router.push(STEP_ROUTES.birth_year)} />
+        <View className="gap-3">
+          <CapsuleButton label={copy.start} onPress={() => router.push(STEP_ROUTES.birth_year)} />
+          <CapsuleButton label={copy.restore} variant="outline" onPress={() => router.push('/onboarding/restaurar')} />
+        </View>
       </View>
     </ScrollView>
   );

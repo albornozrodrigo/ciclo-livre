@@ -1,4 +1,4 @@
-import { BACKUP_ERROR, decryptBackup, encryptBackup, MIN_PASSWORD } from '@/domain/export/backup';
+import { BACKUP_ERROR, decryptBackup, encryptBackup, MIN_PASSWORD, passwordStrength } from '@/domain/export/backup';
 
 // Parâmetros leves só nos testes (no app, os do padrão).
 const FAST = { N: 1024, r: 8, p: 1 };
@@ -45,5 +45,14 @@ describe('backup criptografado', () => {
 
   it(`senha com menos de ${MIN_PASSWORD} caracteres não cria backup`, async () => {
     await expect(encryptBackup('{}', 'curta', { random, kdf: FAST })).rejects.toThrow('Senha curta');
+  });
+});
+
+describe('passwordStrength', () => {
+  it('curta, aceitável, boa e forte', () => {
+    expect(passwordStrength('abc')).toBe('short');
+    expect(passwordStrength('abcdefgh')).toBe('ok');
+    expect(passwordStrength('Abcdefg1!')).toBe('good');
+    expect(passwordStrength('frase longa de senha')).toBe('great');
   });
 });

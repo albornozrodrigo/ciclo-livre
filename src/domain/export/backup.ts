@@ -7,8 +7,11 @@ export const MIN_PASSWORD = 8;
 export const BACKUP_ERROR = 'Senha incorreta ou arquivo danificado.';
 
 export type KdfParams = { N: number; r: number; p: number };
-/** Padrão do app (medido no aparelho; ver 07-01-SUMMARY). */
-export const DEFAULT_KDF: KdfParams = { N: 2 ** 14, r: 8, p: 1 };
+/**
+ * Padrão do app. No S21 FE, 2^14 levou ~15 s em JS (Hermes); 2^13 fica perto da metade. Os parâmetros vão no
+ * arquivo, então backups antigos continuam abrindo e dá para subir quando houver KDF nativo.
+ */
+export const DEFAULT_KDF: KdfParams = { N: 2 ** 13, r: 8, p: 1 };
 // Limites ao abrir: um arquivo forjado com N enorme travaria o app.
 const N_RANGE = { min: 2 ** 10, max: 2 ** 17 } as const;
 const SALT_BYTES = 16;
@@ -85,4 +88,15 @@ export async function decryptBackup(file: string, password: string): Promise<str
     // Detalhe do erro omitido de propósito (ver BACKUP_ERROR).
     throw new Error(BACKUP_ERROR);
   }
+}
+
+export type PasswordStrength = 'short' | 'ok' | 'good' | 'great';
+
+/** Força estimada pelo tamanho e pela variedade de caracteres (para orientar, não para bloquear). */
+export function passwordStrength(password: string): PasswordStrength {
+  if (password.length < MIN_PASSWORD) return 'short';
+  const kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((re) => re.test(password)).length;
+  if (password.length >= 16 || (password.length >= 12 && kinds >= 3)) return 'great';
+  if (password.length >= 12 || kinds >= 3) return 'good';
+  return 'ok';
 }

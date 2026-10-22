@@ -14,6 +14,7 @@ export function RootNavigator({ onboarded }: Props) {
         <Stack.Screen name="perfil" />
         <Stack.Screen name="registro" />
         <Stack.Screen name="lembretes" />
+        <Stack.Screen name="dados" />
       </Stack.Protected>
       <Stack.Protected guard={!onboarded}>
         <Stack.Screen name="onboarding" />
