@@ -1,19 +1,13 @@
-import { useIsFocused } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { type ReactNode, useState } from "react";
-import {
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useIsFocused } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { type ReactNode, useState } from 'react';
+import { type NativeScrollEvent, type NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { type Territory } from "@/constants/theme";
-import { ptBR, type ScreenKey } from "@/i18n/pt-BR";
+import { type Territory } from '@/constants/theme';
+import { ptBR, type ScreenKey } from '@/i18n/pt-BR';
 
-import { Lobe, type LobeShape, useLobeHeight } from "./lobe";
+import { Lobe, type LobeShape, useLobeHeight } from './lobe';
 
 type Props = {
   screen: ScreenKey;
@@ -40,44 +34,33 @@ export function Screen({ screen, territory, shape = 0, children }: Props) {
   return (
     <View className="flex-1 bg-water dark:bg-water-night">
       {/* Sobre o lobo os ícones são escuros; sobre a água seguem o tema. Só a aba em foco decide. */}
-      {focused ? <StatusBar style={pastLobe ? "auto" : "dark"} /> : null}
+      {focused ? <StatusBar style={pastLobe ? 'auto' : 'dark'} /> : null}
       <ScrollView
         testID="screen-scroll"
         onScroll={onScroll}
         scrollEventThrottle={32}
         className="flex-1"
-        contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}
-      >
+        contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
         <Lobe territory={territory} shape={shape} />
 
-        <View
-          style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }}
-          className="px-5"
-        >
+        <View style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }} className="px-5">
           <Text
             accessibilityRole="header"
             numberOfLines={1}
             adjustsFontSizeToFit
-            className="text-[44px] font-bold leading-[42px] tracking-[-1.76px] text-ink"
-          >
+            className="text-[44px] font-bold leading-[42px] tracking-[-1.76px] text-ink">
             {copy.title}
           </Text>
         </View>
 
         <View className="gap-3 px-5 pt-8">
           {/* Cápsula de contorno: o sol fica reservado para ações e "hoje". */}
-          {"phase" in copy ? (
+          {'phase' in copy ? (
             <View className="self-start rounded-full border-[1.5px] border-ink px-3.5 py-1.5 dark:border-ink-night">
-              <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">
-                {copy.phase}
-              </Text>
+              <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{copy.phase}</Text>
             </View>
           ) : null}
-          {"lead" in copy ? (
-            <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">
-              {copy.lead}
-            </Text>
-          ) : null}
+          {'lead' in copy ? <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{copy.lead}</Text> : null}
         </View>
 
         {children ? <View className="px-5 pt-8">{children}</View> : null}
@@ -88,7 +71,7 @@ export function Screen({ screen, territory, shape = 0, children }: Props) {
           pointerEvents="none"
           importantForAccessibility="no-hide-descendants"
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: 0,
             left: 0,
             right: 0,

@@ -1,78 +1,53 @@
-import {
-  availableKinds,
-  defaultReminder,
-  parseOptions,
-  reminderNotice,
-  validTime,
-} from "@/domain/reminders/catalog";
-import type { Profile } from "@/domain/profile";
+import { availableKinds, customMessageAllowed, defaultReminder, needsAnchor, parseOptions, reminderNotice, validTime } from '@/domain/reminders/catalog';
+import type { Profile } from '@/domain/profile';
 
 const base: Profile = {
   birthYear: 1995,
-  mode: "period",
+  mode: 'period',
   lastPeriodStart: null,
   periodLength: 5,
   cycleLength: 28,
-  regularity: "unknown",
+  regularity: 'unknown',
   dueDate: null,
   tryingSince: null,
   birthControl: null,
 };
 
-describe("availableKinds", () => {
-  it("período: todos os de ciclo e registro; contraceptivo só com método que tem agenda", () => {
-    expect(availableKinds(base)).toEqual([
-      "period_soon",
-      "period_due",
-      "period_late",
-      "fertile_soon",
-      "phase_change",
-      "daily_log",
-    ]);
-    expect(availableKinds({ ...base, birthControl: "pill" })).toContain(
-      "birth_control",
-    );
-    expect(availableKinds({ ...base, birthControl: "condom" })).not.toContain(
-      "birth_control",
-    );
+describe('availableKinds', () => {
+  it('período: todos os de ciclo e registro; contraceptivo só com método que tem agenda', () => {
+    expect(availableKinds(base)).toEqual(['period_soon', 'period_due', 'period_late', 'fertile_soon', 'phase_change', 'daily_log']);
+    expect(availableKinds({ ...base, birthControl: 'pill' })).toContain('birth_control');
+    expect(availableKinds({ ...base, birthControl: 'condom' })).not.toContain('birth_control');
   });
 
-  it("gravidez: só registro", () => {
-    expect(
-      availableKinds({ ...base, mode: "pregnancy", dueDate: "2027-03-01" }),
-    ).toEqual(["daily_log"]);
+  it('gravidez: só registro', () => {
+    expect(availableKinds({ ...base, mode: 'pregnancy', dueDate: '2027-03-01' })).toEqual(['daily_log']);
   });
 
-  it("sem sangramento: sem menstruação nem fase", () => {
-    expect(
-      availableKinds({ ...base, mode: "no_bleeding", birthControl: "ring" }),
-    ).toEqual(["birth_control", "daily_log"]);
+  it('sem sangramento: sem menstruação nem fase', () => {
+    expect(availableKinds({ ...base, mode: 'no_bleeding', birthControl: 'ring' })).toEqual(['birth_control', 'daily_log']);
   });
 });
 
-describe("reminderNotice", () => {
-  it("tentando engravidar com contraceptivo: sugere desligar, sem desligar sozinho", () => {
-    expect(
-      reminderNotice(
-        { ...base, mode: "conceive", birthControl: "pill" },
-        "birth_control",
-      ),
-    ).toBe("conceive_birth_control");
-    expect(reminderNotice(base, "birth_control")).toBeNull();
+describe('reminderNotice', () => {
+  it('tentando engravidar com contraceptivo: sugere desligar, sem desligar sozinho', () => {
+    expect(reminderNotice({ ...base, mode: 'conceive', birthControl: 'pill' }, 'birth_control')).toBe('conceive_birth_control');
+    expect(reminderNotice(base, 'birth_control')).toBeNull();
   });
 });
 
-describe("defaultReminder", () => {
-  it("desligado, com horário e opções padrão, sem mensagem própria", () => {
-    expect(defaultReminder("period_soon")).toEqual({
-      kind: "period_soon",
+describe('defaultReminder', () => {
+  it('desligado, com horário e opções padrão, sem mensagem própria', () => {
+    expect(defaultReminder('period_soon')).toEqual({
+      kind: 'period_soon',
       enabled: false,
-      time: "09:00",
+      time: '09:00',
       options: {
         daysBefore: 2,
-        pack: "cyclic",
-        frequency: "daily",
+        pack: 'cyclic',
+        frequency: 'daily',
         anchor: null,
+        anchorFor: null,
       },
       title: null,
       body: null,
@@ -80,37 +55,58 @@ describe("defaultReminder", () => {
   });
 });
 
-describe("parseOptions", () => {
-  it("mantém valores válidos e troca inválidos pelo padrão campo a campo", () => {
-    expect(
-      parseOptions(
-        '{"daysBefore":5,"pack":"continuous","frequency":"weekly","anchor":"2026-10-20"}',
-      ),
-    ).toEqual({
+describe('parseOptions', () => {
+  it('mantém valores válidos e troca inválidos pelo padrão campo a campo', () => {
+    expect(parseOptions('{"daysBefore":5,"pack":"continuous","frequency":"weekly","anchor":"2026-10-20","anchorFor":"ring"}')).toEqual({
       daysBefore: 5,
-      pack: "continuous",
-      frequency: "weekly",
-      anchor: "2026-10-20",
+      pack: 'continuous',
+      frequency: 'weekly',
+      anchor: '2026-10-20',
+      anchorFor: 'ring',
     });
-    expect(
-      parseOptions(
-        '{"daysBefore":9,"pack":"x","frequency":1,"anchor":"20/10/2026","extra":true}',
-      ),
-    ).toEqual({
+    expect(parseOptions('{"daysBefore":9,"pack":"x","frequency":1,"anchor":"20/10/2026","anchorFor":"x","extra":true}')).toEqual({
       daysBefore: 2,
-      pack: "cyclic",
-      frequency: "daily",
+      pack: 'cyclic',
+      frequency: 'daily',
       anchor: null,
+      anchorFor: null,
     });
-    expect(parseOptions("não é json")).toEqual(
-      defaultReminder("daily_log").options,
-    );
+    expect(parseOptions('não é json')).toEqual(defaultReminder('daily_log').options);
   });
 });
 
-describe("validTime", () => {
-  it("aceita HH:MM de 00:00 a 23:59", () => {
-    expect(["00:00", "09:30", "23:59"].every(validTime)).toBe(true);
-    expect(["24:00", "9:30", "12:60", ""].some(validTime)).toBe(false);
+describe('validTime', () => {
+  it('aceita HH:MM de 00:00 a 23:59', () => {
+    expect(['00:00', '09:30', '23:59'].every(validTime)).toBe(true);
+    expect(['24:00', '9:30', '12:60', ''].some(validTime)).toBe(false);
+  });
+});
+
+describe('needsAnchor', () => {
+  const withMethod = (birthControl: Profile['birthControl']) => ({ ...base, birthControl });
+  const bc = (options: Partial<ReturnType<typeof defaultReminder>['options']> = {}) => ({
+    ...defaultReminder('birth_control'),
+    options: { ...defaultReminder('birth_control').options, ...options },
+  });
+
+  it('adesivo, anel, injeção e pílula 21+7 precisam de data; pílula contínua não', () => {
+    expect(needsAnchor(bc(), withMethod('patch'))).toBe(true);
+    expect(needsAnchor(bc(), withMethod('pill'))).toBe(true);
+    expect(needsAnchor(bc({ pack: 'continuous' }), withMethod('pill'))).toBe(false);
+    expect(needsAnchor(defaultReminder('daily_log'), withMethod('patch'))).toBe(false);
+  });
+
+  it('data de outro método não vale (trocou pílula por injeção: pede a data de novo)', () => {
+    expect(needsAnchor(bc({ anchor: '2026-10-01', anchorFor: 'pill' }), withMethod('injection'))).toBe(true);
+    expect(needsAnchor(bc({ anchor: '2026-10-01', anchorFor: 'injection' }), withMethod('injection'))).toBe(false);
+  });
+});
+
+describe('customMessageAllowed', () => {
+  it('só quando todos os avisos do lembrete dizem a mesma coisa', () => {
+    expect(customMessageAllowed('period_soon', base)).toBe(true);
+    expect(customMessageAllowed('birth_control', { ...base, birthControl: 'pill' })).toBe(true);
+    expect(customMessageAllowed('phase_change', base)).toBe(false);
+    expect(customMessageAllowed('birth_control', { ...base, birthControl: 'ring' })).toBe(false);
   });
 });

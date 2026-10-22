@@ -188,6 +188,11 @@ Plano. Não há sombras. A profundidade vem da sobreposição de territórios (u
   - **Linhas:** traço de 2dp em `ink` e pontos de 8dp com contorno de `water`. A linha de cobertura é tracejada em `ink-muted`; a ovulação tem uma marca vertical.
   - **Resumo:** cada gráfico tem um resumo acessível, e a tabela (histórico) é a versão em texto.
 - **Linha de histórico ou de sintoma:** pelo menos 56dp, com divisória de 1dp em `line`. Fase em chip de fase com o nome escrito. A linha inteira é um foco só no TalkBack.
+- **Linha com interruptor:** ≥64dp, divisória de 1dp em `line`. O texto (rótulo + detalhe) abre o detalhe; o interruptor é um controle à parte e salva ao toque. Interruptor: ligado = trilho `ink` + botão `sun`; desligado = trilho `ink-muted` + botão `water` (≥3:1 nos dois temas).
+- **Campo de horário:** cápsula de contorno ≥56dp com o horário em 20sp/700 tabular; abre o relógio nativo 24h tingido de tinta. Nome acessível "Horário: 20:00", dica "Abre o relógio para mudar".
+- **Aviso de atenção** (ex.: notificações bloqueadas): contorno de 3dp em `ink` (o 3dp é o sinal de atenção, como no erro de campo), raio 28dp, botão `ink` cheio com a ação ("Abrir ajustes"), região "polite".
+- **Prévia de notificação:** cartão de contorno 1.5dp, raio 28dp: linha "Ciclo Livre · 20:00" em `ink-muted`, título e texto — exatamente o que o agendador envia. Logo abaixo, sempre, o que aparece na tela de bloqueio (privacidade visível).
+- **Tela de lista que salva a cada toque** (ex.: Lembretes): exceção a "ação primária na metade inferior" — sem cápsula de salvar; cada interruptor salva na hora. Telas de detalhe com rascunho têm "Salvar" e perguntam antes de descartar.
 - **Véu da barra de status (telas com lobo):** quando a borda do lobo passa por baixo da barra de status, aparece um véu em `water`/`water-night` da altura da barra de status, e os ícones passam a seguir o tema. Sobre o lobo, os ícones são escuros. Só a aba em foco controla a barra de status.
 - **Movimento** (a implementar nas fases seguintes): 0.4s com leve overshoot nas transições de território; respeita "remover animações" do sistema.
 

@@ -6,11 +6,11 @@ import {
   type ReminderKind,
   validOptions,
   validTime,
-} from "@/domain/reminders/catalog";
-import { validateMessage } from "@/domain/reminders/message";
+} from '@/domain/reminders/catalog';
+import { validateMessage } from '@/domain/reminders/message';
 
-import type { SqlExecutor } from "./types";
-import { enqueueWrite } from "./write-queue";
+import type { SqlExecutor } from './types';
+import { enqueueWrite } from './write-queue';
 
 type Row = {
   kind: string;
@@ -21,18 +21,13 @@ type Row = {
   body: string | null;
 };
 
-const DISCREET_KEY = "reminders_discreet";
-const isKind = (v: string): v is ReminderKind =>
-  (REMINDER_KINDS as readonly string[]).includes(v);
+const DISCREET_KEY = 'reminders_discreet';
+const isKind = (v: string): v is ReminderKind => (REMINDER_KINDS as readonly string[]).includes(v);
 
 /** Todos os tipos, na ordem do catálogo; os nunca salvos vêm com o padrão (desligados). */
 export async function listReminders(db: SqlExecutor): Promise<Reminder[]> {
-  const rows = await db.getAllAsync<Row>(
-    "SELECT kind, enabled, time, options, title, body FROM reminder",
-  );
-  const saved = new Map(
-    rows.filter((r) => isKind(r.kind)).map((r) => [r.kind, r]),
-  );
+  const rows = await db.getAllAsync<Row>('SELECT kind, enabled, time, options, title, body FROM reminder');
+  const saved = new Map(rows.filter((r) => isKind(r.kind)).map((r) => [r.kind, r]));
   return REMINDER_KINDS.map((kind) => {
     const row = saved.get(kind);
     if (!row) return defaultReminder(kind);
@@ -48,15 +43,12 @@ export async function listReminders(db: SqlExecutor): Promise<Reminder[]> {
 }
 
 /** Grava (upsert) depois de validar; nunca loga o conteúdo da mensagem. */
-export async function saveReminder(
-  db: SqlExecutor,
-  reminder: Reminder,
-): Promise<void> {
-  if (!isKind(reminder.kind)) throw new Error("Tipo de lembrete inválido.");
-  if (!validTime(reminder.time)) throw new Error("Horário inválido.");
-  if (!validOptions(reminder.options)) throw new Error("Opções inválidas.");
+export async function saveReminder(db: SqlExecutor, reminder: Reminder): Promise<void> {
+  if (!isKind(reminder.kind)) throw new Error('Tipo de lembrete inválido.');
+  if (!validTime(reminder.time)) throw new Error('Horário inválido.');
+  if (!validOptions(reminder.options)) throw new Error('Opções inválidas.');
   const message = validateMessage(reminder.title, reminder.body);
-  if (!message.ok) throw new Error("Mensagem inválida.");
+  if (!message.ok) throw new Error('Mensagem inválida.');
   await enqueueWrite(db, () =>
     db.runAsync(
       `INSERT INTO reminder (kind, enabled, time, options, title, body) VALUES (?, ?, ?, ?, ?, ?)
@@ -74,22 +66,16 @@ export async function saveReminder(
 
 /** Notificações discretas: título e texto neutros na tela de bloqueio. */
 export async function getDiscreet(db: SqlExecutor): Promise<boolean> {
-  const row = await db.getFirstAsync<{ value: string }>(
-    "SELECT value FROM app_meta WHERE key = ?",
-    DISCREET_KEY,
-  );
-  return row?.value === "1";
+  const row = await db.getFirstAsync<{ value: string }>('SELECT value FROM app_meta WHERE key = ?', DISCREET_KEY);
+  return row?.value === '1';
 }
 
-export async function setDiscreet(
-  db: SqlExecutor,
-  discreet: boolean,
-): Promise<void> {
+export async function setDiscreet(db: SqlExecutor, discreet: boolean): Promise<void> {
   await enqueueWrite(db, () =>
     db.runAsync(
-      "INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value",
+      'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
       DISCREET_KEY,
-      discreet ? "1" : "0",
+      discreet ? '1' : '0',
     ),
   );
 }

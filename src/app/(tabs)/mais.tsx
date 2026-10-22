@@ -1,14 +1,14 @@
-import { router } from "expo-router";
-import { Alert, Text, View } from "react-native";
+import { router } from 'expo-router';
+import { Alert, Text, View } from 'react-native';
 
-import { PrivacySection } from "@/components/privacy-section";
-import { ProfileSection } from "@/components/profile-section";
-import { ListRow } from "@/components/ui/list-row";
-import { useSnackbar } from "@/components/ui/snackbar";
-import { Screen } from "@/components/ui/screen";
-import { useEraseAllData } from "@/db/database-root";
-import { ptBR } from "@/i18n/pt-BR";
-import { log } from "@/lib/logger";
+import { PrivacySection } from '@/components/privacy-section';
+import { ProfileSection } from '@/components/profile-section';
+import { ListRow } from '@/components/ui/list-row';
+import { useSnackbar } from '@/components/ui/snackbar';
+import { Screen } from '@/components/ui/screen';
+import { useEraseAllData } from '@/db/database-root';
+import { ptBR } from '@/i18n/pt-BR';
+import { log } from '@/lib/logger';
 
 /** Diálogo nativo (Material) com a ação destrutiva marcada; resolve true só em "Apagar tudo". */
 function confirmEraseAll(): Promise<boolean> {
@@ -20,12 +20,12 @@ function confirmEraseAll(): Promise<boolean> {
       [
         {
           text: copy.confirmCancel,
-          style: "cancel",
+          style: 'cancel',
           onPress: () => resolve(false),
         },
         {
           text: copy.confirmErase,
-          style: "destructive",
+          style: 'destructive',
           onPress: () => resolve(true),
         },
       ],
@@ -44,7 +44,7 @@ export default function MaisScreen() {
       await eraseAllData();
       show(ptBR.privacy.erased);
     } catch (error) {
-      log.error("erase_all_failed", error);
+      log.error('erase_all_failed', error);
       show(ptBR.privacy.eraseFailed);
     }
   }
@@ -54,17 +54,10 @@ export default function MaisScreen() {
       <View className="gap-10">
         <ProfileSection />
         <View className="gap-1">
-          <Text
-            accessibilityRole="header"
-            className="mb-2 text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night"
-          >
+          <Text accessibilityRole="header" className="mb-2 text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
             {ptBR.reminders.title}
           </Text>
-          <ListRow
-            label={ptBR.reminders.mais}
-            detail={ptBR.reminders.maisHint}
-            onPress={() => router.push("/lembretes")}
-          />
+          <ListRow label={ptBR.reminders.mais} detail={ptBR.reminders.maisHint} onPress={() => router.push('/lembretes')} />
         </View>
         <PrivacySection onErase={eraseAndNotify} confirm={confirmEraseAll} />
       </View>

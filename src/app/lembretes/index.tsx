@@ -1,43 +1,27 @@
-import { router } from "expo-router";
-import { Text, View } from "react-native";
+import { router } from 'expo-router';
+import { Text, View } from 'react-native';
 
-import { FormScreen } from "@/components/form-screen";
-import { DeniedNotice } from "@/components/reminders/denied-notice";
-import { SwitchRow } from "@/components/reminders/switch-row";
-import { useSnackbar } from "@/components/ui/snackbar";
-import { todayIso } from "@/domain/dates";
-import {
-  availableKinds,
-  type Reminder,
-  type ReminderKind,
-} from "@/domain/reminders/catalog";
-import { ptBR } from "@/i18n/pt-BR";
-import { REMINDER_NAMES } from "@/i18n/pt-BR-reminders";
-import { log } from "@/lib/logger";
-import { useReminders } from "@/reminders/use-reminders";
+import { FormScreen } from '@/components/form-screen';
+import { DeniedNotice } from '@/components/reminders/denied-notice';
+import { SwitchRow } from '@/components/reminders/switch-row';
+import { useSnackbar } from '@/components/ui/snackbar';
+import { todayIso } from '@/domain/dates';
+import { availableKinds, needsAnchor, type Reminder, type ReminderKind } from '@/domain/reminders/catalog';
+import { ptBR } from '@/i18n/pt-BR';
+import { REMINDER_NAMES } from '@/i18n/pt-BR-reminders';
+import { log } from '@/lib/logger';
+import { useReminders } from '@/reminders/use-reminders';
 
 const r = ptBR.reminders;
 
 const GROUPS: { key: keyof typeof r.groups; kinds: ReminderKind[] }[] = [
   {
-    key: "cycle",
-    kinds: [
-      "period_soon",
-      "period_due",
-      "period_late",
-      "fertile_soon",
-      "phase_change",
-    ],
+    key: 'cycle',
+    kinds: ['period_soon', 'period_due', 'period_late', 'fertile_soon', 'phase_change'],
   },
-  { key: "contraception", kinds: ["birth_control"] },
-  { key: "log", kinds: ["daily_log"] },
+  { key: 'contraception', kinds: ['birth_control'] },
+  { key: 'log', kinds: ['daily_log'] },
 ];
-
-/** Precisa de data de referência antes de ligar (abre o detalhe em vez de ligar direto). */
-const needsSetup = (rem: Reminder, birthControl: string | null) =>
-  rem.kind === "birth_control" &&
-  !rem.options.anchor &&
-  !(birthControl === "pill" && rem.options.pack === "continuous");
 
 export default function LembretesScreen() {
   const { profile, data, denied, save, saveDiscreet } = useReminders();
@@ -48,22 +32,18 @@ export default function LembretesScreen() {
   const byKind = new Map(data.reminders.map((rem) => [rem.kind, rem]));
 
   async function toggle(rem: Reminder, enabled: boolean) {
-    if (enabled && needsSetup(rem, profile?.birthControl ?? null)) {
-      router.push({
-        pathname: "/lembretes/[tipo]",
-        params: { tipo: rem.kind },
-      });
+    // Precisa de data de referência: abre o detalhe já ligado, onde a data é pedida.
+    if (enabled && profile && needsAnchor(rem, profile)) {
+      router.push({ pathname: '/lembretes/[tipo]', params: { tipo: rem.kind, ligar: '1' } });
       return;
     }
     // Registro: a frequência conta a partir do dia em que foi ligado.
-    const anchor =
-      rem.kind === "daily_log" && enabled && !rem.options.anchor
-        ? todayIso()
-        : rem.options.anchor;
+    const anchor = rem.kind === 'daily_log' && enabled && !rem.options.anchor ? todayIso() : rem.options.anchor;
     try {
-      await save({ ...rem, enabled, options: { ...rem.options, anchor } });
+      // Negada: o aviso aparece no topo da lista, que pode estar fora da tela.
+      if (!(await save({ ...rem, enabled, options: { ...rem.options, anchor } }))) show(r.deniedShort);
     } catch (error) {
-      log.error("reminder_save_failed", error);
+      log.error('reminder_save_failed', error);
       show(r.saveFailed);
     }
   }
@@ -77,10 +57,7 @@ export default function LembretesScreen() {
         if (shown.length === 0) return null;
         return (
           <View key={key}>
-            <Text
-              accessibilityRole="header"
-              className="mb-1 text-sm font-bold tracking-[0.28px] text-ink-muted dark:text-ink-muted-night"
-            >
+            <Text accessibilityRole="header" className="mb-1 text-sm font-bold tracking-[0.28px] text-ink-muted dark:text-ink-muted-night">
               {r.groups[key]}
             </Text>
             {shown.map((kind) => {
@@ -95,7 +72,7 @@ export default function LembretesScreen() {
                   onValueChange={(on) => toggle(rem, on)}
                   onPress={() =>
                     router.push({
-                      pathname: "/lembretes/[tipo]",
+                      pathname: '/lembretes/[tipo]',
                       params: { tipo: kind },
                     })
                   }
@@ -113,14 +90,12 @@ export default function LembretesScreen() {
           value={data.discreet}
           onValueChange={(on) =>
             saveDiscreet(on).catch((error: unknown) => {
-              log.error("reminder_discreet_failed", error);
+              log.error('reminder_discreet_failed', error);
               show(r.saveFailed);
             })
           }
         />
-        <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">
-          {r.timing}
-        </Text>
+        <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{r.timing}</Text>
       </View>
     </FormScreen>
   );

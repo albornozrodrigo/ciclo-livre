@@ -34,16 +34,17 @@ describe('eraseAllData', () => {
     expect(calls).toEqual(['cancelReminders', 'close', 'deleteDatabase', 'deleteKey']);
   });
 
-  it('se cancelar os lembretes falha, apaga os dados mesmo assim e depois avisa o erro', async () => {
-    const failure = new Error('notificações');
+  it('se cancelar os lembretes falha, apaga os dados mesmo assim e conclui (o erro só vai para o log)', async () => {
+    const onCancelError = jest.fn();
     const { calls, deps: d } = deps({
       cancelReminders: async () => {
-        throw failure;
+        throw new Error('notificações');
       },
     });
 
-    await expect(eraseAllData(d)).rejects.toBe(failure);
+    await expect(eraseAllData({ ...d, onCancelError })).resolves.toBeUndefined();
     expect(calls).toEqual(['close', 'deleteDatabase', 'deleteKey']);
+    expect(onCancelError).toHaveBeenCalled();
   });
 
   it('mantém a chave e propaga o erro quando apagar o arquivo falha', async () => {

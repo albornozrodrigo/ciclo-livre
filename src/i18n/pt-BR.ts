@@ -78,7 +78,12 @@ export const ptBR = {
     },
     measures: {
       title: 'Medições (90 dias)',
-      names: { weight: 'Peso', resting_heart_rate: 'Frequência cardíaca em repouso', hrv: 'Variabilidade da frequência cardíaca', sleep: 'Sono' },
+      names: {
+        weight: 'Peso',
+        resting_heart_rate: 'Frequência cardíaca em repouso',
+        hrv: 'Variabilidade da frequência cardíaca',
+        sleep: 'Sono',
+      },
       last: (value: string, unit: string) => `Último: ${value} ${unit}`,
       mean: (value: string, unit: string) => `Média: ${value} ${unit}`,
       empty: 'Sem registros nos últimos 90 dias.',
@@ -94,15 +99,19 @@ export const ptBR = {
     rowDetail: (on: boolean, time: string) => (on ? `Ligado · ${time}` : 'Desligado'),
     groups: { cycle: 'Ciclo', contraception: 'Contraceptivo', log: 'Registro' },
     discreet: 'Notificações discretas',
-    discreetHint: 'Mostra só "Ciclo Livre: você tem um lembrete", sem falar de menstruação ou contraceptivo.',
+    discreetHint:
+      'Na tela de bloqueio os lembretes nunca mostram o texto. Com este modo, nem com o celular desbloqueado: aparece só "Ciclo Livre: você tem um lembrete".',
     denied: 'As notificações do Ciclo Livre estão desligadas no Android. Ative nos ajustes para receber os lembretes.',
     openSettings: 'Abrir ajustes',
-    timing: 'O horário pode variar alguns minutos. A agenda cobre os próximos 60 dias e se atualiza sempre que você abre o app.',
+    deniedShort: 'Notificações bloqueadas. Veja o aviso no topo.',
+    timing:
+      'O horário pode variar alguns minutos. A agenda cobre os próximos 60 dias e se atualiza sempre que você abre o app. Se o app ficar mais de 60 dias sem ser aberto, os lembretes param.',
     mais: 'Escolher lembretes',
     maisHint: 'Menstruação, janela fértil, contraceptivo e registro',
-    enabled: 'Ligado',
+    enabled: 'Receber este lembrete',
     time: 'Horário',
-    timeChange: (time: string) => `Horário: ${time}. Toque para mudar`,
+    timeChange: (time: string) => `Horário: ${time}`,
+    timeHint: 'Abre o relógio para mudar',
     daysBefore: 'Quantos dias antes',
     daysBeforeValue: (n: number) => `${n} ${n === 1 ? 'dia' : 'dias'}`,
     daysBeforeDecrease: 'Menos um dia',
@@ -110,8 +119,19 @@ export const ptBR = {
     pack: 'Tipo de cartela',
     packs: { cyclic: '21 dias + 7 de pausa', continuous: 'Contínua, sem pausa' },
     frequency: 'Frequência',
-    frequencies: { daily: 'Todo dia', every_3_days: 'A cada 3 dias', weekly: 'Toda semana', fortnightly: 'A cada 15 dias', monthly: 'Todo mês' },
-    anchor: { pill: 'Início da cartela atual', patch: 'Dia em que colocou o adesivo atual', ring: 'Dia em que colocou o anel', injection: 'Dia da última injeção' },
+    frequencies: {
+      daily: 'Todo dia',
+      every_3_days: 'A cada 3 dias',
+      weekly: 'Toda semana',
+      fortnightly: 'A cada 15 dias',
+      monthly: 'Todo mês',
+    },
+    anchor: {
+      pill: 'Início da cartela atual',
+      patch: 'Dia em que colocou o adesivo atual',
+      ring: 'Dia em que colocou o anel',
+      injection: 'Dia da última injeção',
+    },
     anchorPlaceholder: 'Escolher a data',
     anchorNeeded: 'Escolha a data para calcular os próximos avisos.',
     message: 'Mensagem',
@@ -121,7 +141,13 @@ export const ptBR = {
     titleTooLong: 'Erro: o título pode ter até 40 caracteres.',
     bodyTooLong: 'Erro: o texto pode ter até 100 caracteres.',
     preview: 'Como vai aparecer',
-    previewDiscreet: 'Notificações discretas estão ligadas: vai aparecer assim.',
+    previewMeta: (time: string) => `Ciclo Livre · ${time}`,
+    lockscreenPrivate: 'Na tela de bloqueio este lembrete não aparece. O texto só aparece com o celular desbloqueado.',
+    lockscreenDiscreet: 'Notificações discretas ligadas: aparece assim, inclusive na tela de bloqueio.',
+    leaveTitle: 'Sair sem salvar?',
+    leaveBody: 'As mudanças neste lembrete serão descartadas.',
+    leaveStay: 'Continuar editando',
+    leaveDiscard: 'Descartar',
     notContraception: 'A janela fértil é uma estimativa e não serve como contracepção.',
     conceiveNotice: 'Você está no modo Tentar engravidar. Talvez queira desligar este lembrete.',
     save: 'Salvar',
@@ -163,7 +189,11 @@ export const ptBR = {
     dayOfCycle: (n: number) => `Dia ${n} do ciclo`,
     // Sempre aproximado: a margem vem logo abaixo (princípio de honestidade sobre incerteza).
     nextIn: (n: number) =>
-      n === 0 ? 'A menstruação pode vir hoje' : n === 1 ? 'Próxima menstruação: por volta de amanhã' : `Próxima menstruação: por volta de ${n} dias`,
+      n === 0
+        ? 'A menstruação pode vir hoje'
+        : n === 1
+          ? 'Próxima menstruação: por volta de amanhã'
+          : `Próxima menstruação: por volta de ${n} dias`,
     range: (from: string, to: string) => `Pode vir entre ${from} e ${to}`,
     late: (n: number) => (n === 1 ? 'Menstruação atrasada há 1 dia' : `Menstruação atrasada há ${n} dias`),
     lateHint: 'Atrasos acontecem. Se ela não vier ou se você tiver dúvida, um teste de gravidez ou um serviço de saúde podem ajudar.',
@@ -219,8 +249,7 @@ export const ptBR = {
   },
   privacy: {
     title: 'Privacidade e segurança',
-    localData:
-      'Seus dados ficam só neste aparelho, num banco criptografado. Não há conta nem servidor, e nada sai daqui sem você pedir.',
+    localData: 'Seus dados ficam só neste aparelho, num banco criptografado. Não há conta nem servidor, e nada sai daqui sem você pedir.',
     medicalDisclaimer:
       'O Ciclo Livre não é método contraceptivo nem dispositivo médico. As previsões são estimativas e não substituem orientação profissional.',
     eraseButton: 'Apagar todos os dados',
@@ -251,7 +280,8 @@ export const ptBR = {
       label: 'Ano de nascimento',
       placeholder: 'AAAA',
       errors: {
-        under_18: 'O Ciclo Livre é para quem já tem 18 anos completos. Se ainda não tem, converse com alguém de confiança ou um serviço de saúde sobre o seu ciclo.',
+        under_18:
+          'O Ciclo Livre é para quem já tem 18 anos completos. Se ainda não tem, converse com alguém de confiança ou um serviço de saúde sobre o seu ciclo.',
         out_of_range: 'Confira o ano: use quatro dígitos, como 1995.',
       },
     },
@@ -339,8 +369,7 @@ export const ptBR = {
     reset: 'Apagar dados e começar de novo',
     resetHint: 'Use se tentar de novo não resolver. Remove tudo o que está guardado neste aparelho.',
     resetConfirmTitle: 'Apagar dados e começar de novo?',
-    resetConfirmBody:
-      'Os dados guardados neste aparelho não puderam ser abertos e serão removidos. Não dá para desfazer.',
+    resetConfirmBody: 'Os dados guardados neste aparelho não puderam ser abertos e serão removidos. Não dá para desfazer.',
   },
 } as const;
 

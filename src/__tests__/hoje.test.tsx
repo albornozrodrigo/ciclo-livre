@@ -1,27 +1,26 @@
-import { fireEvent, render, screen } from "@testing-library/react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { fireEvent, render, screen } from '@testing-library/react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import HojeScreen from "@/app/(tabs)/index";
-import { openMemoryDatabase } from "@/db/__tests__/node-sqlite-adapter";
-import { setSelection } from "@/db/log-repo";
-import { MIGRATIONS, runMigrations } from "@/db/migrations";
-import { addDays, todayIso } from "@/domain/dates";
-import type { Profile } from "@/domain/profile";
-import { ptBR } from "@/i18n/pt-BR";
+import HojeScreen from '@/app/(tabs)/index';
+import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
+import { setSelection } from '@/db/log-repo';
+import { MIGRATIONS, runMigrations } from '@/db/migrations';
+import { addDays, todayIso } from '@/domain/dates';
+import type { Profile } from '@/domain/profile';
+import { ptBR } from '@/i18n/pt-BR';
 
 let mockDb: ReturnType<typeof openMemoryDatabase>;
-jest.mock("expo-sqlite", () => ({ useSQLiteContext: () => mockDb }));
+jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDb }));
 let mockProfile: Profile;
-jest.mock("@/profile/profile-context", () => ({
-  useProfile: () => ({ state: { status: "ready", profile: mockProfile } }),
+jest.mock('@/profile/profile-context', () => ({
+  useProfile: () => ({ state: { status: 'ready', profile: mockProfile } }),
 }));
 const mockPush = jest.fn();
-jest.mock("expo-router", () => ({
+jest.mock('expo-router', () => ({
   useIsFocused: () => true,
   router: { push: (href: unknown) => mockPush(href) },
   // Na tela real roda ao ganhar foco; no teste, ao montar.
-  useFocusEffect: (effect: () => void) =>
-    jest.requireActual("react").useEffect(effect, [effect]),
+  useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]),
 }));
 
 const metrics = {
@@ -41,37 +40,35 @@ beforeEach(async () => {
   mockPush.mockReset();
   mockProfile = {
     birthYear: 1995,
-    mode: "period",
+    mode: 'period',
     lastPeriodStart: null,
     periodLength: 5,
     cycleLength: 28,
-    regularity: "unknown",
+    regularity: 'unknown',
     dueDate: null,
     tryingSince: null,
     birthControl: null,
   };
 });
 
-describe("Hoje", () => {
+describe('Hoje', () => {
   it('"Registrar hoje" abre o registro da data de hoje', async () => {
     await renderHoje();
 
-    await fireEvent.press(
-      await screen.findByRole("button", { name: ptBR.today.logToday }),
-    );
+    await fireEvent.press(await screen.findByRole('button', { name: ptBR.today.logToday }));
 
     expect(mockPush).toHaveBeenCalledWith(`/registro/${todayIso()}`);
   });
 
-  it("sem registros mostra o estado vazio", async () => {
+  it('sem registros mostra o estado vazio', async () => {
     await renderHoje();
 
     expect(await screen.findByText(ptBR.today.empty)).toBeOnTheScreen();
   });
 
-  it("com registros mostra quantas categorias e quais, agrupadas", async () => {
-    await setSelection(mockDb, todayIso(), "pain", ["cramps", "headache"]);
-    await setSelection(mockDb, todayIso(), "energy", ["low"]);
+  it('com registros mostra quantas categorias e quais, agrupadas', async () => {
+    await setSelection(mockDb, todayIso(), 'pain', ['cramps', 'headache']);
+    await setSelection(mockDb, todayIso(), 'energy', ['low']);
 
     await renderHoje();
 
@@ -79,9 +76,9 @@ describe("Hoje", () => {
     expect(screen.getByText(/Dor: Cólica, Dor de cabeça/)).toBeOnTheScreen();
   });
 
-  it("a nota não conta como categoria", async () => {
-    const { setNote } = jest.requireActual("@/db/log-repo");
-    await setNote(mockDb, todayIso(), "só uma nota");
+  it('a nota não conta como categoria', async () => {
+    const { setNote } = jest.requireActual('@/db/log-repo');
+    await setNote(mockDb, todayIso(), 'só uma nota');
 
     await renderHoje();
 
@@ -89,17 +86,17 @@ describe("Hoje", () => {
   });
 });
 
-describe("Hoje › ciclo", () => {
+describe('Hoje › ciclo', () => {
   const c = ptBR.cycle;
   /** Três menstruações de 2 dias, ciclos de 28; hoje é o dia 27 do ciclo atual. */
   async function seedCycles() {
     const today = todayIso();
     for (const offset of [-82, -81, -54, -53, -26, -25]) {
-      await setSelection(mockDb, addDays(today, offset), "period", ["medium"]);
+      await setSelection(mockDb, addDays(today, offset), 'period', ['medium']);
     }
   }
 
-  it("mostra a fase de hoje escrita, o dia do ciclo e a próxima menstruação", async () => {
+  it('mostra a fase de hoje escrita, o dia do ciclo e a próxima menstruação', async () => {
     await seedCycles();
 
     await renderHoje();
@@ -110,16 +107,16 @@ describe("Hoje › ciclo", () => {
     expect(screen.getByText(c.disclaimer)).toBeOnTheScreen();
   });
 
-  it("sem menstruação registrada convida a registrar", async () => {
+  it('sem menstruação registrada convida a registrar', async () => {
     await renderHoje();
 
     expect(await screen.findByText(c.none)).toBeOnTheScreen();
   });
 
-  it("na gravidez mostra semanas", async () => {
+  it('na gravidez mostra semanas', async () => {
     mockProfile = {
       ...mockProfile,
-      mode: "pregnancy",
+      mode: 'pregnancy',
       dueDate: addDays(todayIso(), 191),
     };
 

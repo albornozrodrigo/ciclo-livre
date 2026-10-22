@@ -1,14 +1,17 @@
-import * as Notifications from "expo-notifications";
-import { router } from "expo-router";
-import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useRef } from "react";
-import { AppState } from "react-native";
+import * as Notifications from 'expo-notifications';
+import { router } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useEffect } from 'react';
+import { AppState } from 'react-native';
 
-import { todayIso } from "@/domain/dates";
-import { log } from "@/lib/logger";
-import { useProfile } from "@/profile/profile-context";
+import { toDayNumber } from '@/domain/dates';
+import { log } from '@/lib/logger';
+import { useProfile } from '@/profile/profile-context';
 
-import { syncReminders } from "./sync";
+import { syncReminders } from './sync';
+
+/** Toques já tratados: no módulo, para sobreviver à remontagem da ponte (o último toque continua disponível). */
+const handled = new Set<string>();
 
 // Com o app aberto, o lembrete também aparece (sem som extra).
 Notifications.setNotificationHandler({
@@ -27,29 +30,28 @@ Notifications.setNotificationHandler({
 export function ReminderBridge() {
   const db = useSQLiteContext();
   const { state } = useProfile();
-  const profile = state.status === "ready" ? state.profile : null;
+  const profile = state.status === 'ready' ? state.profile : null;
 
   useEffect(() => {
-    const sync = () =>
-      syncReminders(db, profile).catch((error: unknown) =>
-        log.error("reminders_sync_failed", error),
-      );
+    const sync = () => syncReminders(db, profile).catch((error: unknown) => log.error('reminders_sync_failed', error));
     sync();
-    const subscription = AppState.addEventListener("change", (status) => {
-      if (status === "active" || status === "background") sync();
+    const subscription = AppState.addEventListener('change', (status) => {
+      if (status === 'active' || status === 'background') sync();
     });
     return () => subscription.remove();
   }, [db, profile]);
 
   const response = Notifications.useLastNotificationResponse();
-  const handled = useRef<string | null>(null);
   useEffect(() => {
     if (!response) return;
     const id = response.notification.request.identifier;
-    if (handled.current === id) return;
-    handled.current = id;
-    if (response.notification.request.content.data?.kind === "daily_log")
-      router.push(`/registro/${todayIso()}`);
+    if (handled.has(id)) return;
+    handled.add(id);
+    const data = response.notification.request.content.data ?? {};
+    // Dado vindo de fora do JS: só segue com uma data de calendário válida.
+    if (data.kind === 'daily_log' && typeof data.date === 'string' && toDayNumber(data.date) !== null) {
+      router.push(`/registro/${data.date}`);
+    }
   }, [response]);
 
   return null;
