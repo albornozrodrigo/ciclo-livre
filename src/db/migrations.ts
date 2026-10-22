@@ -13,6 +13,25 @@ export const MIGRATIONS: Migration[] = [
     version: 1,
     statements: ['CREATE TABLE app_meta (key TEXT PRIMARY KEY NOT NULL, value TEXT NOT NULL) STRICT'],
   },
+  {
+    // Perfil do onboarding: linha única (id = 1). CHECKs espelham src/domain/profile.ts.
+    version: 2,
+    statements: [
+      `CREATE TABLE profile (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        birth_year INTEGER NOT NULL CHECK (birth_year BETWEEN 1900 AND 2100),
+        mode TEXT NOT NULL CHECK (mode IN ('period','no_bleeding','conceive','pregnancy','perimenopause')),
+        last_period_start TEXT CHECK (last_period_start GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        period_length INTEGER NOT NULL CHECK (period_length BETWEEN 1 AND 15),
+        cycle_length INTEGER NOT NULL CHECK (cycle_length BETWEEN 15 AND 90),
+        regularity TEXT NOT NULL CHECK (regularity IN ('regular','irregular','unknown')),
+        due_date TEXT CHECK (due_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        trying_since TEXT CHECK (trying_since IN ('lt_1m','1_3m','4_6m','7_9m','10_12m','gt_12m')),
+        birth_control TEXT CHECK (birth_control IN ('none','pill','iud_hormonal','iud_copper','implant','injection','ring','patch','condom','other','prefer_not_to_say')),
+        updated_at TEXT NOT NULL
+      ) STRICT`,
+    ],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

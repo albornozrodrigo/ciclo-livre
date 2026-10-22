@@ -23,6 +23,9 @@ function spyExecutor(opts: { cipherVersion: string | null }) {
       return null;
     },
     withTransactionAsync: async (task) => task(),
+    runAsync: async (sql) => {
+      log.push(sql);
+    },
   };
   return { db, log };
 }

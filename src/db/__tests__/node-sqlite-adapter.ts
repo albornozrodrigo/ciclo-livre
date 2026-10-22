@@ -1,6 +1,6 @@
 import { DatabaseSync } from 'node:sqlite';
 
-import type { SqlExecutor } from '@/db/types';
+import type { SqlExecutor, SqlParam } from '@/db/types';
 
 /** SqlExecutor sobre node:sqlite, para testar SQL real fora do aparelho. */
 export function openMemoryDatabase(): SqlExecutor & { raw: DatabaseSync } {
@@ -10,8 +10,9 @@ export function openMemoryDatabase(): SqlExecutor & { raw: DatabaseSync } {
     execAsync: async (source) => {
       raw.exec(source);
     },
-    getFirstAsync: async <T,>(source: string, ...params: (string | number | null)[]) =>
+    getFirstAsync: async <T,>(source: string, ...params: SqlParam[]) =>
       (raw.prepare(source).get(...params) as T | undefined) ?? null,
+    runAsync: async (source: string, ...params: SqlParam[]) => raw.prepare(source).run(...params),
     withTransactionAsync: async (task) => {
       raw.exec('BEGIN');
       try {
