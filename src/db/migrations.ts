@@ -59,6 +59,22 @@ export const MIGRATIONS: Migration[] = [
       ) STRICT`,
     ],
   },
+  {
+    // Tags próprias, ilimitadas. `key` (normalizado) garante unicidade sem acento/maiúscula.
+    version: 4,
+    statements: [
+      `CREATE TABLE tag (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL CHECK (length(name) BETWEEN 1 AND 30),
+        key TEXT NOT NULL UNIQUE
+      ) STRICT`,
+      `CREATE TABLE log_tag (
+        date TEXT NOT NULL CHECK (date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        tag_id INTEGER NOT NULL REFERENCES tag (id) ON DELETE CASCADE,
+        PRIMARY KEY (date, tag_id)
+      ) STRICT`,
+    ],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {
