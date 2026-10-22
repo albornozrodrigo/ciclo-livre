@@ -164,6 +164,8 @@ export function parseExport(raw: unknown): ExportData {
     check(isObject(raw) && raw.format === 'ciclo-livre' && raw.version === 1);
     check(typeof raw.exportedAt === 'string' && isInt(raw.schema, 1, 1000));
     check(isObject(raw.settings) && typeof raw.settings.remindersDiscreet === 'boolean');
+    // Sem perfil o app voltaria ao cadastro com lembretes antigos agendados: arquivo assim é recusado.
+    check(raw.profile !== null);
     const tags = tagsOf(raw.tags);
     return {
       format: 'ciclo-livre',

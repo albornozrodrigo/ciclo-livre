@@ -13,10 +13,12 @@ type Props = {
   actionLabel?: string;
   onAction?: () => void;
   actionDisabled?: boolean;
+  /** Ações próprias na zona do polegar (ex.: dois destinos), no lugar da cápsula única. */
+  footer?: ReactNode;
 };
 
 /** Tela de formulário (sem lobo, ver DESIGN.md): headline, campos roláveis, ação no polegar. */
-export function FormScreen({ title, hint, children, actionLabel, onAction, actionDisabled }: Props) {
+export function FormScreen({ title, hint, children, actionLabel, onAction, actionDisabled, footer }: Props) {
   const insets = useSafeAreaInsets();
   return (
     <KeyboardAvoidingView behavior="padding" style={{ paddingTop: insets.top }} className="flex-1 bg-water dark:bg-water-night">
@@ -28,7 +30,11 @@ export function FormScreen({ title, hint, children, actionLabel, onAction, actio
         {hint ? <Text className="mt-3 text-base leading-6 text-ink-muted dark:text-ink-muted-night">{hint}</Text> : null}
         <View className="mt-8 gap-8">{children}</View>
       </ScrollView>
-      {actionLabel && onAction ? (
+      {footer ? (
+        <View style={{ paddingBottom: insets.bottom + 16 }} className="gap-3 px-5 pt-3">
+          {footer}
+        </View>
+      ) : actionLabel && onAction ? (
         <View style={{ paddingBottom: insets.bottom + 16 }} className="px-5 pt-3">
           <CapsuleButton label={actionLabel} onPress={onAction} disabled={actionDisabled} />
         </View>

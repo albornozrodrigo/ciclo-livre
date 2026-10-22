@@ -3,6 +3,7 @@ import { deleteDatabaseAsync, SQLiteProvider, useSQLiteContext } from 'expo-sqli
 import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
 
 import { log } from '@/lib/logger';
+import { purgeExports } from '@/data-export/export-actions';
 import { cancelAllReminders } from '@/reminders/sync';
 
 import { eraseAllData } from './erase';
@@ -31,6 +32,7 @@ export function useEraseAllData(): () => Promise<void> {
   const reopen = useContext(ReopenContext);
 
   return useCallback(async () => {
+    purgeExportFiles();
     try {
       await eraseAllData({
         cancelReminders: cancelAllReminders,
@@ -47,6 +49,15 @@ export function useEraseAllData(): () => Promise<void> {
 }
 
 const logCancelError = (error: unknown) => log.error('reminders_cancel_failed', error);
+
+/** Temporários de exportação (relatório, planilha, backup) também saem no "apagar tudo". */
+function purgeExportFiles() {
+  try {
+    purgeExports();
+  } catch (error) {
+    log.error('export_purge_failed', error);
+  }
+}
 const deleteDatabaseFile = () => deleteDatabaseAsync(DATABASE_NAME);
 const deleteDatabaseKey = () => SecureStore.deleteItemAsync(DATABASE_KEY_NAME);
 
@@ -55,6 +66,7 @@ const deleteDatabaseKey = () => SecureStore.deleteItemAsync(DATABASE_KEY_NAME);
  * Não há conexão para fechar: initOrClose já fechou a da tentativa que falhou.
  */
 export function resetUnopenableDatabase(): Promise<void> {
+  purgeExportFiles();
   return eraseAllData({
     cancelReminders: cancelAllReminders,
     onCancelError: logCancelError,

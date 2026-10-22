@@ -21,7 +21,9 @@ type Row = {
   body: string | null;
 };
 
-const DISCREET_KEY = 'reminders_discreet';
+/** Chave e codificação do modo discreto em `app_meta` (usadas também pela exportação). */
+export const DISCREET_KEY = 'reminders_discreet';
+export const encodeDiscreet = (discreet: boolean) => (discreet ? '1' : '0');
 const isKind = (v: string): v is ReminderKind => (REMINDER_KINDS as readonly string[]).includes(v);
 
 /** Todos os tipos, na ordem do catálogo; os nunca salvos vêm com o padrão (desligados). */
@@ -76,7 +78,7 @@ export async function setDiscreet(db: SqlExecutor, discreet: boolean): Promise<v
     db.runAsync(
       'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
       DISCREET_KEY,
-      discreet ? '1' : '0',
+      encodeDiscreet(discreet),
     ),
   );
 }

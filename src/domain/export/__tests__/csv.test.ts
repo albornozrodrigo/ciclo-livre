@@ -27,15 +27,15 @@ describe('buildCsv', () => {
 
   it('começa com BOM UTF-8 e cabeçalho em pt-BR, categorias na ordem do catálogo', () => {
     expect(csv.startsWith('﻿')).toBe(true);
-    expect(lines[0]).toBe('Data,Menstruação,Dor,Peso,Tags,Nota');
+    expect(lines[0]).toBe('Data;Menstruação;Dor;Peso;Tags;Nota');
   });
 
-  it('uma linha por dia; opções separadas por "; "; número com vírgula decimal entre aspas', () => {
-    expect(lines[1]).toBe('2026-10-12,Intenso,Costas; Cólica,,,');
+  it('separador ; (Excel em pt-BR); opções separadas por ", "; número com vírgula decimal sem aspas', () => {
+    expect(lines[1]).toBe('2026-10-12;Intenso;Costas, Cólica;;;');
   });
 
   it('escapa aspas e quebras de linha e neutraliza fórmulas', () => {
-    expect(csv).toContain('"64,5"');
+    expect(lines[2]).toContain(';64,5;');
     expect(csv).toContain(`"'=SOMA(A1)"`);
     expect(csv).toContain('"Dia ""difícil"",\ncom vírgula"');
   });

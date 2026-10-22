@@ -5,10 +5,11 @@ import {
   type CycleRow,
   type CycleSummary,
   cycleSummary,
-  measureSeries,
+  MEASURE_WINDOW_DAYS,
+  type MeasureKey,
+  measureSeriesAll,
   type MeasureSeries,
   type Selection,
-  sleepHours,
   symptomFrequency,
   type SymptomRow,
 } from '@/domain/analysis/analysis';
@@ -19,11 +20,7 @@ import type { Profile } from '@/domain/profile';
 
 /** Ciclos completos que entram no relatório (o "PDF de 6 ciclos" para levar à consulta). */
 export const REPORT_CYCLES = 6;
-const MEASURE_DAYS = 90;
 const MAX_SYMPTOMS = 10;
-
-export const REPORT_MEASURES = ['weight', 'resting_heart_rate', 'hrv', 'sleep'] as const;
-export type ReportMeasure = (typeof REPORT_MEASURES)[number];
 
 export type Report = {
   generatedOn: IsoDate;
@@ -32,7 +29,7 @@ export type Report = {
   birthControl: Profile['birthControl'];
   /** null quando não há ciclo para mostrar (gravidez, sem sangramento ou sem registros). */
   cycles: { summary: CycleSummary | null; complete: CycleRow[]; current: CycleRow; symptoms: SymptomRow[]; bbt: BbtChart } | null;
-  measures: Record<ReportMeasure, MeasureSeries>;
+  measures: Record<MeasureKey, MeasureSeries>;
   notes: Note[];
 };
 
@@ -61,19 +58,14 @@ export function buildReport({ model, profile, selections, measures, notes, today
       bbt: bbtChart(measures.temperature ?? {}, model.current.start, addDays(model.current.nextStart, -1)),
     };
   }
-  const from = cycles ? (cycles.complete.at(-1)?.start ?? cycles.current.start) : addDays(today, -MEASURE_DAYS);
+  const from = cycles ? (cycles.complete.at(-1)?.start ?? cycles.current.start) : addDays(today, -MEASURE_WINDOW_DAYS);
   return {
     generatedOn: today,
     period: { from, to: today },
     mode: profile.mode,
     birthControl: profile.birthControl,
     cycles,
-    measures: {
-      weight: measureSeries(measures.weight ?? {}, today),
-      resting_heart_rate: measureSeries(measures.resting_heart_rate ?? {}, today),
-      hrv: measureSeries(measures.hrv ?? {}, today),
-      sleep: measureSeries(sleepHours(selections), today),
-    },
+    measures: measureSeriesAll(measures, selections, today),
     notes: includeNotes ? notes.filter((n) => n.date >= from && n.date <= today).map((n) => ({ date: n.date, text: n.text })) : [],
   };
 }

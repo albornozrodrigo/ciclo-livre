@@ -3,13 +3,11 @@ import { normalizeTagKey } from '@/domain/tracking/tags';
 
 import { getCategoryPrefs } from './log-repo';
 import { getProfile } from './profile-repo';
-import { getDiscreet, listReminders } from './reminder-repo';
+import { DISCREET_KEY, encodeDiscreet, getDiscreet, listReminders } from './reminder-repo';
 import type { SqlExecutor } from './types';
 import { enqueueWrite } from './write-queue';
 
 export { IMPORT_ERROR } from '@/domain/export/format';
-
-const DISCREET_KEY = 'reminders_discreet';
 
 /** Tudo da pessoa em formato aberto e versionado. A chave do banco nunca entra. Ordem determinística. */
 export async function exportAll(db: SqlExecutor, now: Date = new Date()): Promise<ExportData> {
@@ -114,7 +112,7 @@ export async function importAll(db: SqlExecutor, raw: unknown, now: Date = new D
           r.body,
         );
       }
-      await db.runAsync('INSERT INTO app_meta (key, value) VALUES (?, ?)', DISCREET_KEY, data.settings.remindersDiscreet ? '1' : '0');
+      await db.runAsync('INSERT INTO app_meta (key, value) VALUES (?, ?)', DISCREET_KEY, encodeDiscreet(data.settings.remindersDiscreet));
     }),
   );
 }

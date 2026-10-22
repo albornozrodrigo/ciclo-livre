@@ -32,6 +32,7 @@ export async function createReportPdf(
     today,
     includeNotes,
   });
-  const { uri } = await printToFileAsync({ html: renderReportHtml(report) });
+  // A4 em pontos: o padrão do gerador é Carta (612×792) e ignora o @page do HTML.
+  const { uri } = await printToFileAsync({ html: renderReportHtml(report), width: 595, height: 842 });
   return uri;
 }

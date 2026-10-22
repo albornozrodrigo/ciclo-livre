@@ -66,7 +66,7 @@ export function renderReportHtml(report: Report): string {
     const row = (r: (typeof c.complete)[number], isCurrent: boolean) =>
       `<tr><td>${date(r.start)}</td><td>${isCurrent ? t.current : t.days(r.length ?? 0)}</td>
         <td>${r.periodLength === null ? t.notRecorded : t.days(r.periodLength)}</td>
-        <td>${date(r.ovulation.date)} (${t.methods[r.ovulation.method]})</td></tr>`;
+        <td>${date(r.ovulation.date)} (${isCurrent && r.ovulation.method === 'calendar' ? t.forecast : t.methods[r.ovulation.method]})</td></tr>`;
     sections.push(`<h2>${t.cycles}</h2>
       <table><thead><tr><th scope="col">${t.cols.start}</th><th scope="col">${t.cols.length}</th><th scope="col">${t.cols.period}</th><th scope="col">${t.cols.ovulation}</th></tr></thead>
       <tbody>${row(c.current, true)}${c.complete.map((r) => row(r, false)).join('')}</tbody></table>`);
@@ -80,7 +80,7 @@ export function renderReportHtml(report: Report): string {
     sections.push(
       `<h2>${t.bbt}</h2>${
         c.bbt.points.length >= 3
-          ? `${bbtSvg(c.bbt.points, c.bbt.coverLine)}<p>${c.bbt.ovulationDay ? t.bbtConfirmed(c.bbt.ovulationDay) : ''}</p>`
+          ? `${bbtSvg(c.bbt.points, c.bbt.coverLine)}${c.bbt.coverLine !== null ? `<p class="muted">${t.coverLegend}</p>` : ''}<p>${c.bbt.ovulationDay ? t.bbtConfirmed(c.bbt.ovulationDay) : ''}</p>`
           : `<p class="muted">${t.bbtNone}</p>`
       }`,
     );
@@ -99,7 +99,9 @@ export function renderReportHtml(report: Report): string {
   if (measures.length) sections.push(`<h2>${t.measures}</h2><ul>${measures.join('')}</ul>`);
 
   const method = report.birthControl ? ptBR.onboarding.birthControl.options[report.birthControl] : t.notInformed;
-  sections.push(`<h2>${t.birthControl}</h2><p>${escapeHtml(method)}</p>`);
+  sections.push(
+    `<h2>${t.birthControl}</h2><p>${escapeHtml(method)}</p><p class="muted">${escapeHtml(t.mode(ptBR.onboarding.mode.options[report.mode].label))}</p>`,
+  );
 
   if (report.notes.length) {
     sections.push(
@@ -111,16 +113,18 @@ export function renderReportHtml(report: Report): string {
 <html lang="pt-BR"><head><meta charset="utf-8"><title>${t.title}</title>
 <style>
   @page { size: A4; margin: 18mm 16mm; }
-  body { font-family: sans-serif; color: #1f201d; font-size: 12pt; line-height: 1.45; }
-  h1 { font-size: 22pt; margin: 0 0 4px; }
-  h2 { font-size: 14pt; margin: 22px 0 8px; border-bottom: 1.5px solid #1f201d; padding-bottom: 4px; }
-  .muted { color: #4a4c46; }
+  body { font-family: sans-serif; color: #2C2E2A; font-size: 12pt; line-height: 1.45; }
+  h1 { font-size: 22pt; margin: 0 0 4px; letter-spacing: -0.03em; }
+  h2 { font-size: 14pt; margin: 22px 0 8px; border-bottom: 1.5px solid #2C2E2A; padding-bottom: 4px; }
+  .muted { color: #5B5E57; }
   .stats { display: flex; gap: 32px; margin: 0; }
-  .stats dt { font-size: 10pt; color: #4a4c46; } .stats dd { margin: 0; font-size: 16pt; font-weight: 700; }
+  .stats dt { font-size: 10pt; color: #5B5E57; } .stats dd { margin: 0; font-size: 16pt; font-weight: 700; }
   table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
   th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #bbb; }
   th { font-size: 10pt; }
-  .disclaimer { margin-top: 28px; padding: 10px 12px; border: 1.5px solid #1f201d; font-size: 10pt; }
+  .disclaimer { margin-top: 28px; padding: 10px 14px; border: 1.5px solid #2C2E2A; border-radius: 14px; font-size: 10pt; }
+  h2 { break-after: avoid; }
+  tr, li, .disclaimer, svg { break-inside: avoid; }
 </style></head>
 <body>
   <h1>${t.title}</h1>

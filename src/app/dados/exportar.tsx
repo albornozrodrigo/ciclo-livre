@@ -1,13 +1,14 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Text, View } from 'react-native';
 
 import { FormScreen } from '@/components/form-screen';
 import { SwitchRow } from '@/components/reminders/switch-row';
 import { CapsuleButton } from '@/components/ui/capsule-button';
+import { PasswordField } from '@/components/ui/password-field';
 import { useSnackbar } from '@/components/ui/snackbar';
-import { type ExportKind, prepareExport, saveToFolder, shareFile } from '@/data-export/export-actions';
+import { EXPORT_KINDS, type ExportKind, prepareExport, saveToFolder, shareFile } from '@/data-export/export-actions';
 import { todayIso } from '@/domain/dates';
 import { MIN_PASSWORD, passwordStrength } from '@/domain/export/backup';
 import { ptBR } from '@/i18n/pt-BR';
@@ -15,10 +16,9 @@ import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 
 const d = ptBR.data;
-const KINDS: readonly ExportKind[] = ['relatorio', 'planilha', 'completo', 'backup'];
-const isKind = (v: unknown): v is ExportKind => typeof v === 'string' && (KINDS as readonly string[]).includes(v);
+const isKind = (v: unknown): v is ExportKind => typeof v === 'string' && (EXPORT_KINDS as readonly string[]).includes(v);
 
-/** Gera um arquivo e manda para onde a pessoa escolher (compartilhar ou pasta, incluindo o Google Drive). */
+/** Gera um arquivo e manda para onde a pessoa escolher: Compartilhar (inclui o Google Drive) ou uma pasta do aparelho. */
 export default function ExportarScreen() {
   const { tipo } = useLocalSearchParams<{ tipo: string }>();
   const db = useSQLiteContext();
@@ -28,6 +28,8 @@ export default function ExportarScreen() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [busy, setBusy] = useState(false);
+  // Trava síncrona: dois toques rápidos não geram duas exportações (o `busy` só desabilita após o render).
+  const running = useRef(false);
   const profile = state.status === 'ready' ? state.profile : null;
   if (!isKind(tipo) || !profile) return null;
   const kind = tipo;
@@ -37,7 +39,8 @@ export default function ExportarScreen() {
   const ready = !busy && (!isBackup || (password.length >= MIN_PASSWORD && confirm === password));
 
   async function run(destination: 'share' | 'folder') {
-    if (!profile) return;
+    if (!profile || running.current) return;
+    running.current = true;
     setBusy(true);
     try {
       const item = await prepareExport(kind, { db, profile, today: todayIso(), includeNotes, password: isBackup ? password : undefined });
@@ -47,12 +50,32 @@ export default function ExportarScreen() {
       log.error('export_failed', error);
       show(d.failed);
     } finally {
+      running.current = false;
       setBusy(false);
     }
   }
 
   return (
-    <FormScreen title={d.kinds[kind].title} hint={d.kinds[kind].detail}>
+    <FormScreen
+      title={d.kinds[kind].title}
+      hint={d.kinds[kind].detail}
+      footer={
+        <>
+          {busy ? (
+            <Text accessibilityLiveRegion="polite" className="text-sm text-ink-muted dark:text-ink-muted-night">
+              {isBackup ? d.workingBackup : d.working}
+            </Text>
+          ) : null}
+          <CapsuleButton label={d.share} onPress={() => run('share')} disabled={!ready} accessibilityHint={d.shareHint} />
+          <CapsuleButton
+            label={d.saveFolder}
+            variant="outline"
+            onPress={() => run('folder')}
+            disabled={!ready}
+            accessibilityHint={d.saveFolderHint}
+          />
+        </>
+      }>
       {kind === 'relatorio' ? (
         <View className="gap-1">
           <SwitchRow label={d.includeNotes} detail={d.includeNotesHint} value={includeNotes} onValueChange={setIncludeNotes} />
@@ -61,12 +84,17 @@ export default function ExportarScreen() {
 
       {isBackup ? (
         <View className="gap-4">
-          <PasswordField label={d.password} value={password} onChange={setPassword} />
+          <PasswordField label={d.password} value={password} onChange={setPassword} newPassword />
           <Text accessibilityLiveRegion="polite" className="text-sm font-bold text-ink dark:text-ink-night">
             {password ? d.passwordStrength[passwordStrength(password)] : d.passwordRules}
           </Text>
-          <PasswordField label={d.passwordConfirm} value={confirm} onChange={setConfirm} />
-          {mismatch ? <Text className="text-sm font-bold text-ink dark:text-ink-night">{`Erro: ${d.passwordMismatch}`}</Text> : null}
+          <PasswordField
+            label={d.passwordConfirm}
+            value={confirm}
+            onChange={setConfirm}
+            error={mismatch ? d.passwordMismatch : null}
+            newPassword
+          />
           <Text className="text-base font-bold leading-6 text-ink dark:text-ink-night">{d.passwordWarning}</Text>
         </View>
       ) : null}
@@ -75,41 +103,7 @@ export default function ExportarScreen() {
         <Text className="text-base leading-6 text-ink dark:text-ink-night">{d.notEncrypted}</Text>
       ) : null}
 
-      <View className="gap-3">
-        {busy ? (
-          <Text accessibilityLiveRegion="polite" className="text-sm text-ink-muted dark:text-ink-muted-night">
-            {isBackup ? d.workingBackup : d.working}
-          </Text>
-        ) : null}
-        <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{d.shareDetail}</Text>
-        <CapsuleButton label={d.share} onPress={() => run('share')} disabled={!ready} accessibilityHint={d.shareHint} />
-        <CapsuleButton
-          label={d.saveFolder}
-          variant="outline"
-          onPress={() => run('folder')}
-          disabled={!ready}
-          accessibilityHint={d.saveFolderHint}
-        />
-      </View>
+      <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{d.shareDetail}</Text>
     </FormScreen>
-  );
-}
-
-function PasswordField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <View className="gap-2">
-      <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{label}</Text>
-      <TextInput
-        accessibilityLabel={label}
-        value={value}
-        onChangeText={onChange}
-        secureTextEntry
-        autoCapitalize="none"
-        autoCorrect={false}
-        autoComplete="new-password"
-        style={{ paddingHorizontal: 20, paddingVertical: 14, minHeight: 56 }}
-        className="rounded-[28px] border-[1.5px] border-ink text-base text-ink dark:border-ink-night dark:text-ink-night"
-      />
-    </View>
   );
 }

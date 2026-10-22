@@ -10,9 +10,9 @@ import {
   type CycleRow,
   type CycleSummary,
   cycleSummary,
-  measureSeries,
+  type MeasureKey,
+  measureSeriesAll,
   type MeasureSeries,
-  sleepHours,
   symptomFrequency,
   type SymptomRow,
 } from '@/domain/analysis/analysis';
@@ -21,8 +21,7 @@ import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { log } from '@/lib/logger';
 
-export const MEASURES = ['weight', 'resting_heart_rate', 'hrv', 'sleep'] as const;
-export type MeasureKey = (typeof MEASURES)[number];
+export { MEASURES, type MeasureKey } from '@/domain/analysis/analysis';
 
 export type AnalysisView = {
   /** null quando o modo não acompanha ciclo (gravidez, sem sangramento). */
@@ -49,12 +48,7 @@ export function useAnalysis(profile: Profile | null): AnalysisView | null {
           if (!active) return;
           const today = todayIso();
           const model = cycleModelFor(profile, signals, today);
-          const measures = {
-            weight: measureSeries(data.measures.weight ?? {}, today),
-            resting_heart_rate: measureSeries(data.measures.resting_heart_rate ?? {}, today),
-            hrv: measureSeries(data.measures.hrv ?? {}, today),
-            sleep: measureSeries(sleepHours(data.selections), today),
-          };
+          const measures = measureSeriesAll(data.measures, data.selections, today);
           // null só quando o modo não tem ciclo; modo com ciclo e sem dados mostra o convite a registrar.
           const cycles = !modeHasCycle(profile)
             ? null

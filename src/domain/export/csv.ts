@@ -15,7 +15,9 @@ export type CsvLabels = {
 type CsvInput = { selections: Selection[]; measures: Measure[]; notes: Note[]; dayTags: DayTag[] };
 
 const BOM = '﻿';
-const NEEDS_QUOTES = /[",\r\n]/;
+/** `;` entre colunas: o Excel em pt-BR usa `;` (a vírgula é o separador decimal). O Sheets detecta sozinho. */
+const SEP = ';';
+const NEEDS_QUOTES = /[";\r\n]/;
 // Começo que planilhas tratam como fórmula (injeção de fórmula em CSV).
 const FORMULA_START = /^[=+\-@\t\r]/;
 
@@ -25,12 +27,12 @@ function textCell(value: string): string {
   return NEEDS_QUOTES.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
 }
 
-/** Número com vírgula decimal (pt-BR); entre aspas por causa da vírgula. */
+/** Número com vírgula decimal (pt-BR). */
 const numberCell = (value: number) => textCell(String(value).replace('.', ','));
 
 /**
  * Planilha do diário: uma linha por dia com registro, colunas na ordem do catálogo.
- * UTF-8 com BOM e CRLF, para abrir certo no Excel e no Google Sheets.
+ * UTF-8 com BOM, CRLF e `;`, para abrir certo no Excel em pt-BR e no Google Sheets.
  */
 export function buildCsv(data: CsvInput, labels: CsvLabels): string {
   const used = new Set([...data.selections.map((s) => s.category), ...data.measures.map((m) => m.category)]);
@@ -54,16 +56,16 @@ export function buildCsv(data: CsvInput, labels: CsvLabels): string {
   for (const t of data.dayTags) day(t.date).tags.push(t.tag);
   for (const n of data.notes) day(n.date).note = n.text;
 
-  const header = [labels.date, ...columns.map(labels.category), labels.tags, labels.note].map(textCell).join(',');
+  const header = [labels.date, ...columns.map(labels.category), labels.tags, labels.note].map(textCell).join(SEP);
   const rows = [...days.keys()].sort().map((date) => {
     const d = days.get(date) as Day;
     const cells = columns.map((id) => {
       const measure = d.measures.get(id);
       if (measure !== undefined) return numberCell(measure);
       const options = d.options.get(id);
-      return options ? textCell(options.join('; ')) : '';
+      return options ? textCell(options.join(', ')) : '';
     });
-    return [date, ...cells, d.tags.length ? textCell(d.tags.join('; ')) : '', d.note ? textCell(d.note) : ''].join(',');
+    return [date, ...cells, d.tags.length ? textCell(d.tags.join(', ')) : '', d.note ? textCell(d.note) : ''].join(SEP);
   });
   return BOM + [header, ...rows].join('\r\n');
 }

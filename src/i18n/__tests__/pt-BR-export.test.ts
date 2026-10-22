@@ -7,7 +7,7 @@ describe('csvLabels', () => {
       { selections: [{ date: '2026-10-12', category: 'pain', option: 'cramps' }], measures: [], notes: [], dayTags: [] },
       csvLabels,
     );
-    expect(csv).toContain('Data,Dor,Tags,Nota');
-    expect(csv).toContain('2026-10-12,Cólica,,');
+    expect(csv).toContain('Data;Dor;Tags;Nota');
+    expect(csv).toContain('2026-10-12;Cólica;;');
   });
 });

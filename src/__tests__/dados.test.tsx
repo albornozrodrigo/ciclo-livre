@@ -25,12 +25,19 @@ jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: mockS
 const mockPrepare = jest.fn(async (..._args: unknown[]) => ({ file: { uri: 'cache/x' }, name: 'x', mimeType: 'x' }));
 const mockShareFile = jest.fn(async (..._args: unknown[]) => undefined);
 const mockSaveToFolder = jest.fn(async (..._args: unknown[]) => 'saved');
-const mockRestore = jest.fn(async (..._args: unknown[]) => 'restored');
+const mockRead = jest.fn(async (text: string, password?: string): Promise<unknown> => {
+  if (text.includes('ciclo-livre-backup') && !password) return { kind: 'needs_password' };
+  if (password === 'errada') throw new Error('Senha incorreta ou arquivo danificado.');
+  return { kind: 'ready', data: { ok: true } };
+});
+const mockApply = jest.fn(async (..._args: unknown[]) => undefined);
 jest.mock('@/data-export/export-actions', () => ({
+  EXPORT_KINDS: ['relatorio', 'planilha', 'completo', 'backup'],
   prepareExport: (...args: unknown[]) => mockPrepare(...args),
   shareFile: (...args: unknown[]) => mockShareFile(...args),
   saveToFolder: (...args: unknown[]) => mockSaveToFolder(...args),
-  restoreFromText: (...args: unknown[]) => mockRestore(...args),
+  readRestore: (text: string, password?: string) => mockRead(text, password),
+  applyRestore: (...args: unknown[]) => mockApply(...args),
 }));
 let mockPicked = '{"format":"ciclo-livre-backup"}';
 jest.mock('expo-document-picker', () => ({
@@ -108,16 +115,46 @@ describe('Exportar', () => {
 });
 
 describe('Restaurar', () => {
-  it('backup: escolhe o arquivo, apaga a cópia, pede senha, confirma e restaura', async () => {
-    await render(wrap(<RestaurarScreen />));
+  const pickAndType = async (password: string) => {
     await fireEvent.press(screen.getByRole('button', { name: d.pick }));
+    await fireEvent.changeText(await screen.findByLabelText(d.password), password);
+  };
+
+  it('backup: confere a senha ANTES de pedir confirmação; depois substitui e relê o perfil', async () => {
+    await render(wrap(<RestaurarScreen />));
+    await pickAndType('senha-forte');
     expect(mockDeleted).toContain('cache/picked');
-    await fireEvent.changeText(await screen.findByLabelText(d.password), 'senha-forte');
     await fireEvent.press(screen.getByRole('button', { name: d.restoreButton }));
+    expect(mockRead).toHaveBeenLastCalledWith(mockPicked, 'senha-forte');
     expect(Alert.alert).toHaveBeenCalledWith(d.confirmTitle, d.confirmBody, expect.anything(), expect.anything());
-    expect(mockRestore).toHaveBeenCalledWith({}, mockPicked, 'senha-forte');
+    expect(mockApply).toHaveBeenCalledWith({}, { ok: true });
     expect(mockReload).toHaveBeenCalled();
     expect(mockShow).toHaveBeenCalledWith(d.restored);
+  });
+
+  it('senha errada: erro no campo, sem confirmação e sem tocar nos dados', async () => {
+    await render(wrap(<RestaurarScreen />));
+    await pickAndType('errada');
+    await fireEvent.press(screen.getByRole('button', { name: d.restoreButton }));
+    expect(await screen.findByText(`Erro: ${d.wrongPassword}`)).toBeOnTheScreen();
+    expect(Alert.alert).not.toHaveBeenCalled();
+    expect(mockApply).not.toHaveBeenCalled();
+  });
+
+  it('arquivo que não é do app: erro escrito na tela', async () => {
+    mockPicked = 'qualquer coisa';
+    mockRead.mockRejectedValueOnce(new Error('inválido'));
+    await render(wrap(<RestaurarScreen />));
+    await fireEvent.press(screen.getByRole('button', { name: d.pick }));
+    expect(await screen.findByText(`Erro: ${d.notAppFile}`)).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: d.restoreButton })).toBeNull();
+  });
+
+  it('escolher outro arquivo limpa a senha digitada', async () => {
+    await render(wrap(<RestaurarScreen />));
+    await pickAndType('senha-forte');
+    await fireEvent.press(screen.getByRole('button', { name: d.pick }));
+    expect(await screen.findByLabelText(d.password)).toHaveProp('value', '');
   });
 
   it('exportação aberta restaura sem senha', async () => {
@@ -126,25 +163,35 @@ describe('Restaurar', () => {
     await fireEvent.press(screen.getByRole('button', { name: d.pick }));
     expect(screen.queryByLabelText(d.password)).toBeNull();
     await fireEvent.press(await screen.findByRole('button', { name: d.restoreButton }));
-    expect(mockRestore).toHaveBeenCalledWith({}, mockPicked, undefined);
+    expect(mockApply).toHaveBeenCalled();
   });
 
-  it('falha (senha errada) mostra mensagem genérica', async () => {
-    mockRestore.mockRejectedValueOnce(new Error('Senha incorreta ou arquivo danificado.'));
-    await render(wrap(<RestaurarScreen />));
-    await fireEvent.press(screen.getByRole('button', { name: d.pick }));
-    await fireEvent.changeText(await screen.findByLabelText(d.password), 'x');
-    await fireEvent.press(screen.getByRole('button', { name: d.restoreButton }));
-    expect(mockShow).toHaveBeenCalledWith(d.restoreFailed);
-    expect(mockReload).not.toHaveBeenCalled();
-  });
-
-  it('no onboarding (app reinstalado), restaurar não tenta voltar: o app troca para as abas sozinho', async () => {
+  it('no onboarding (aparelho vazio): sem aviso nem confirmação de substituir, e não tenta voltar', async () => {
     mockPicked = '{"format":"ciclo-livre"}';
     await render(wrap(<OnboardingRestaurarScreen />));
     await fireEvent.press(screen.getByRole('button', { name: d.pick }));
+    expect(screen.queryByText(d.confirmBody)).toBeNull();
     await fireEvent.press(await screen.findByRole('button', { name: d.restoreButton }));
+    expect(Alert.alert).not.toHaveBeenCalled();
+    expect(mockApply).toHaveBeenCalled();
     expect(mockReload).toHaveBeenCalled();
     expect(mockBack).not.toHaveBeenCalled();
+  });
+});
+
+describe('Exportar — dois toques rápidos', () => {
+  it('geram uma exportação só', async () => {
+    mockTipo = 'completo';
+    let release: () => void = () => undefined;
+    mockPrepare.mockImplementationOnce(
+      () => new Promise((resolve) => (release = () => resolve({ file: { uri: 'x' }, name: 'x', mimeType: 'x' }))),
+    );
+    await render(wrap(<ExportarScreen />));
+    const share = screen.getByRole('button', { name: d.share });
+    fireEvent.press(share);
+    fireEvent.press(share);
+    release();
+    await screen.findByRole('button', { name: d.share });
+    expect(mockPrepare).toHaveBeenCalledTimes(1);
   });
 });

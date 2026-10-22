@@ -51,7 +51,14 @@ export function cycleSummary(model: CycleModel): CycleSummary | null {
   if (lengths.length === 0) return null;
   const mean = average(lengths);
   const sd = Math.sqrt(lengths.reduce((acc, l) => acc + (l - mean) ** 2, 0) / lengths.length);
-  return { count: lengths.length, mean: Math.round(mean), min: Math.min(...lengths), max: Math.max(...lengths), sd, periodMean: recentPeriodMean(model) };
+  return {
+    count: lengths.length,
+    mean: Math.round(mean),
+    min: Math.min(...lengths),
+    max: Math.max(...lengths),
+    sd,
+    periodMean: recentPeriodMean(model),
+  };
 }
 
 /** Durações dos ciclos completos recentes e plausíveis (as mesmas da previsão), do mais recente ao mais antigo. */
@@ -63,14 +70,40 @@ export function completeLengths(model: CycleModel): number[] {
 
 /** Categorias que descrevem como a pessoa se sente (não fluxo, coleta, testes, contracepção ou medições). */
 const SYMPTOM_CATEGORIES = new Set([
-  'pain', 'pms', 'discharge', 'energy', 'sleep_quality', 'digestion', 'cravings', 'skin', 'hair',
-  'feelings', 'mind', 'stress', 'hot_flashes', 'ailments',
+  'pain',
+  'pms',
+  'discharge',
+  'energy',
+  'sleep_quality',
+  'digestion',
+  'cravings',
+  'skin',
+  'hair',
+  'feelings',
+  'mind',
+  'stress',
+  'hot_flashes',
+  'ailments',
 ]);
 /** Estados neutros ou bons: aparecem no registro, mas não são sintomas. */
 const NOT_SYMPTOMS = new Set([
-  'discharge:none', 'discharge:sticky', 'discharge:creamy', 'discharge:egg_white', 'discharge:watery',
-  'energy:good', 'energy:high', 'sleep_quality:ok', 'sleep_quality:restful', 'skin:good', 'hair:good',
-  'feelings:happy', 'feelings:calm', 'mind:focused', 'mind:motivated', 'mind:creative', 'stress:low',
+  'discharge:none',
+  'discharge:sticky',
+  'discharge:creamy',
+  'discharge:egg_white',
+  'discharge:watery',
+  'energy:good',
+  'energy:high',
+  'sleep_quality:ok',
+  'sleep_quality:restful',
+  'skin:good',
+  'hair:good',
+  'feelings:happy',
+  'feelings:calm',
+  'mind:focused',
+  'mind:motivated',
+  'mind:creative',
+  'stress:low',
 ]);
 const MIN_COMPLETE_CYCLES = 2;
 
@@ -134,7 +167,7 @@ export function bbtChart(temperatures: Record<IsoDate, number>, cycleStart: IsoD
   };
 }
 
-const MEASURE_WINDOW_DAYS = 90;
+export const MEASURE_WINDOW_DAYS = 90;
 
 export type MeasureSeries = {
   points: { date: IsoDate; value: number }[];
@@ -152,7 +185,12 @@ export function measureSeries(values: Record<IsoDate, number>, today: IsoDate): 
   const vals = points.map((p) => p.value);
   return {
     points,
-    summary: { last: vals[vals.length - 1], mean: vals.reduce((a, b) => a + b, 0) / vals.length, min: Math.min(...vals), max: Math.max(...vals) },
+    summary: {
+      last: vals[vals.length - 1],
+      mean: vals.reduce((a, b) => a + b, 0) / vals.length,
+      min: Math.min(...vals),
+      max: Math.max(...vals),
+    },
   };
 }
 
@@ -163,4 +201,22 @@ export function sleepHours(selections: readonly Selection[]): Record<IsoDate, nu
   const out: Record<IsoDate, number> = {};
   for (const s of selections) if (s.category === 'sleep' && SLEEP_HOURS[s.option] !== undefined) out[s.date] = SLEEP_HOURS[s.option];
   return out;
+}
+
+/** Medições mostradas na Análise e no relatório (uma lista só, para os dois não divergirem). */
+export const MEASURES = ['weight', 'resting_heart_rate', 'hrv', 'sleep'] as const;
+export type MeasureKey = (typeof MEASURES)[number];
+
+/** Séries dos últimos 90 dias de cada medição; sono vem da faixa registrada. */
+export function measureSeriesAll(
+  measures: Record<string, Record<IsoDate, number>>,
+  selections: readonly Selection[],
+  today: IsoDate,
+): Record<MeasureKey, MeasureSeries> {
+  return {
+    weight: measureSeries(measures.weight ?? {}, today),
+    resting_heart_rate: measureSeries(measures.resting_heart_rate ?? {}, today),
+    hrv: measureSeries(measures.hrv ?? {}, today),
+    sleep: measureSeries(sleepHours(selections), today),
+  };
 }

@@ -5,9 +5,11 @@ import type { Profile } from '@/domain/profile';
 import { createReportPdf } from '@/report/report-pdf';
 
 let mockHtml = '';
+let mockSize: { width?: number; height?: number } = {};
 jest.mock('expo-print', () => ({
-  printToFileAsync: jest.fn(async ({ html }: { html: string }) => {
+  printToFileAsync: jest.fn(async ({ html, width, height }: { html: string; width?: number; height?: number }) => {
     mockHtml = html;
+    mockSize = { width, height };
     return { uri: 'file:///cache/Print/abc.pdf' };
   }),
 }));
@@ -36,6 +38,8 @@ describe('createReportPdf', () => {
     expect(uri).toBe('file:///cache/Print/abc.pdf');
     expect(mockHtml).toContain('Relatório do ciclo');
     expect(mockHtml).not.toContain('Nota íntima');
+    // A4 em pontos (o padrão do gerador é Carta, 612×792, e o @page é ignorado).
+    expect(mockSize).toEqual({ width: 595, height: 842 });
   });
 
   it('com "incluir notas", as notas do período entram', async () => {

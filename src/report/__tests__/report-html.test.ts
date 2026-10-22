@@ -91,4 +91,21 @@ describe('renderReportHtml', () => {
     expect(out).toContain('(1 registro)');
     expect(out).toContain('informada no cadastro');
   });
+
+  it('ovulação do ciclo atual aparece como previsão; modo informado; quebras de página e cores do app', () => {
+    expect(html).toMatch(/Atual \(em andamento\)<\/td>[\s\S]*?\(previsão\)/);
+    expect(html).toContain('Modo: Menstruação e ciclo');
+    expect(html).toContain('break-inside: avoid');
+    expect(html).toContain('#2C2E2A');
+    expect(html).not.toContain('#1f201d');
+  });
+
+  it('gráfico de temperatura tem legenda escrita da linha tracejada', () => {
+    const report = buildReport({ model, profile, selections: [], measures: {}, today: TODAY, includeNotes: false, notes: [] });
+    const points = [36.3, 36.3, 36.2, 36.3, 36.25, 36.3, 36.7, 36.75, 36.8].map((value, i) => ({ cycleDay: i + 1, value }));
+    const out = renderReportHtml({ ...report, cycles: { ...report.cycles!, bbt: { points, ovulationDay: 6, coverLine: 36.3 } } });
+    expect(out).toContain('<svg');
+    expect(out).toContain('Tracejado: linha de cobertura');
+  });
 });
+
