@@ -36,13 +36,18 @@ describe('PrivacySection', () => {
     await waitFor(() => expect(onErase).toHaveBeenCalledTimes(1));
   });
 
-  it('avisa sem detalhes técnicos quando apagar falha', async () => {
-    const onErase = jest.fn().mockRejectedValue(new Error('SQLITE_BUSY /data/user'));
-    await render(<PrivacySection onErase={onErase} confirm={async () => true} />);
+  it('ignora um segundo toque enquanto a confirmação está aberta', async () => {
+    let answer: (value: boolean) => void = () => {};
+    const confirm = jest.fn(() => new Promise<boolean>((resolve) => (answer = resolve)));
+    const onErase = jest.fn().mockResolvedValue(undefined);
+    await render(<PrivacySection onErase={onErase} confirm={confirm} />);
+    const button = screen.getByRole('button', { name: copy.eraseButton });
 
-    fireEvent.press(screen.getByRole('button', { name: copy.eraseButton }));
+    fireEvent.press(button);
+    fireEvent.press(button);
+    answer(true);
 
-    expect(await screen.findByText(copy.eraseFailed)).toBeOnTheScreen();
-    expect(screen.queryByText(/SQLITE/)).toBeNull();
+    await waitFor(() => expect(onErase).toHaveBeenCalledTimes(1));
+    expect(confirm).toHaveBeenCalledTimes(1);
   });
 });

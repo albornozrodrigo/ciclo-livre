@@ -1,4 +1,4 @@
-import { DatabaseNotEncryptedError, initDatabase } from '@/db/database';
+import { DatabaseNotEncryptedError, initDatabase, initOrClose } from '@/db/database';
 import type { Migration } from '@/db/migrations';
 import type { SqlExecutor } from '@/db/types';
 
@@ -67,5 +67,31 @@ describe('initDatabase', () => {
     expect(error).toBeInstanceOf(Error);
     expect((error as Error).message).not.toContain(evil);
     expect(log).toEqual([]);
+  });
+});
+
+describe('initOrClose', () => {
+  it('fecha a conexão e repropaga o erro quando a inicialização falha', async () => {
+    const failure = new Error('falhou');
+    const close = jest.fn().mockResolvedValue(undefined);
+
+    await expect(initOrClose({ closeAsync: close }, async () => Promise.reject(failure))).rejects.toBe(failure);
+    expect(close).toHaveBeenCalledTimes(1);
+  });
+
+  it('não fecha a conexão quando a inicialização dá certo', async () => {
+    const close = jest.fn().mockResolvedValue(undefined);
+
+    await initOrClose({ closeAsync: close }, async () => {});
+
+    expect(close).not.toHaveBeenCalled();
+  });
+
+  it('repropaga o erro original mesmo se fechar também falhar', async () => {
+    const failure = new Error('init');
+
+    await expect(
+      initOrClose({ closeAsync: () => Promise.reject(new Error('close')) }, () => Promise.reject(failure)),
+    ).rejects.toBe(failure);
   });
 });

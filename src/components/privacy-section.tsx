@@ -1,31 +1,32 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { ptBR } from '@/i18n/pt-BR';
-import { log } from '@/lib/logger';
 
 type Props = {
+  /** Apaga e avisa o resultado (a tela é remontada depois, então o aviso fica com quem chama). */
   onErase: () => Promise<void>;
   /** Pede confirmação explícita; resolve true só se a pessoa confirmar. */
   confirm: () => Promise<boolean>;
 };
 
-type Status = 'idle' | 'erasing' | 'erased' | 'failed';
-
 const copy = ptBR.privacy;
 
 export function PrivacySection({ onErase, confirm }: Props) {
-  const [status, setStatus] = useState<Status>('idle');
+  // Ocupado desde o toque até o fim do erase: evita dois diálogos e dois erases com toque duplo.
+  const [busy, setBusy] = useState(false);
+  // Trava síncrona: dois toques seguidos chegam antes de o estado `busy` atualizar.
+  const inProgress = useRef(false);
 
   async function handleErasePress() {
-    if (!(await confirm())) return;
-    setStatus('erasing');
+    if (inProgress.current) return;
+    inProgress.current = true;
+    setBusy(true);
     try {
-      await onErase();
-      setStatus('erased');
-    } catch (error) {
-      log.error('erase_all_failed', error);
-      setStatus('failed');
+      if (await confirm()) await onErase();
+    } finally {
+      inProgress.current = false;
+      setBusy(false);
     }
   }
 
@@ -41,18 +42,13 @@ export function PrivacySection({ onErase, confirm }: Props) {
         <Pressable
           accessibilityRole="button"
           accessibilityHint={copy.eraseHint}
-          accessibilityState={{ busy: status === 'erasing', disabled: status === 'erasing' }}
-          disabled={status === 'erasing'}
+          accessibilityState={{ busy, disabled: busy }}
+          disabled={busy}
           onPress={handleErasePress}
           className="min-h-12 items-center justify-center self-start rounded-full border-[1.5px] border-ink px-5 active:opacity-70 dark:border-ink-night">
           <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{copy.eraseButton}</Text>
         </Pressable>
         <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{copy.eraseHint}</Text>
-        {status === 'erased' || status === 'failed' ? (
-          <Text accessibilityLiveRegion="polite" className="text-sm font-bold leading-5 text-ink dark:text-ink-night">
-            {status === 'erased' ? copy.erased : copy.eraseFailed}
-          </Text>
-        ) : null}
       </View>
     </View>
   );

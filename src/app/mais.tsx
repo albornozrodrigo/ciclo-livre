@@ -4,6 +4,7 @@ import { PrivacySection } from '@/components/privacy-section';
 import { Screen } from '@/components/ui/screen';
 import { useEraseAllData } from '@/db/database-root';
 import { ptBR } from '@/i18n/pt-BR';
+import { log } from '@/lib/logger';
 
 /** Diálogo nativo (Material) com a ação destrutiva marcada; resolve true só em "Apagar tudo". */
 function confirmEraseAll(): Promise<boolean> {
@@ -24,10 +25,15 @@ function confirmEraseAll(): Promise<boolean> {
 export default function MaisScreen() {
   const eraseAllData = useEraseAllData();
 
-  // Apagar remonta as abas (volta para Hoje), então a confirmação vai num toast nativo.
+  // Apagar remonta as abas (volta para Hoje), dando certo ou não; o resultado vai num toast nativo.
   async function eraseAndNotify() {
-    await eraseAllData();
-    ToastAndroid.show(ptBR.privacy.erased, ToastAndroid.LONG);
+    try {
+      await eraseAllData();
+      ToastAndroid.show(ptBR.privacy.erased, ToastAndroid.LONG);
+    } catch (error) {
+      log.error('erase_all_failed', error);
+      ToastAndroid.show(ptBR.privacy.eraseFailed, ToastAndroid.LONG);
+    }
   }
 
   return (

@@ -15,20 +15,18 @@ status = "in_progress"
 phases = 11
 
 [phase]
-number = 1
-name = "Fundação"
-status = "in_progress"
-plans_completed = 2
+number = 2
+name = "Onboarding, perfil e modos"
+status = "not_started"
+plans_completed = 0
 
 [loop]
-position = "APPLY"
-plan = "01-03"
-plan_path = "phases/01-fundacao/01-03-PLAN.md"
+position = "IDLE"
 
 [satellite]
 groom = true
 
 [stats]
-total_plans = 2
+total_plans = 4
 total_phases = 11
-last_activity = "2026-10-22T16:20:00Z"
+last_activity = "2026-10-22T17:30:00Z"

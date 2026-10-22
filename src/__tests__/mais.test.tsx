@@ -37,4 +37,19 @@ describe('Mais › apagar todos os dados', () => {
     await waitFor(() => expect(ToastAndroid.show).toHaveBeenCalledWith(ptBR.privacy.erased, ToastAndroid.LONG));
     expect(mockErase).toHaveBeenCalledTimes(1);
   });
+
+  it('avisa por toast, sem detalhes técnicos, quando apagar falha', async () => {
+    mockErase.mockRejectedValue(new Error('SQLITE_BUSY /data/user'));
+    await render(
+      <SafeAreaProvider initialMetrics={metrics}>
+        <MaisScreen />
+      </SafeAreaProvider>,
+    );
+
+    fireEvent.press(screen.getByRole('button', { name: ptBR.privacy.eraseButton }));
+
+    await waitFor(() =>
+      expect(ToastAndroid.show).toHaveBeenCalledWith(ptBR.privacy.eraseFailed, ToastAndroid.LONG),
+    );
+  });
 });

@@ -2,7 +2,7 @@ import { getRandomBytes } from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-import { initDatabase } from './database';
+import { initDatabase, initOrClose } from './database';
 import { getOrCreateDatabaseKey } from './key';
 import { MIGRATIONS } from './migrations';
 
@@ -16,8 +16,10 @@ const secretStore = {
 
 /** onInit do SQLiteProvider: liga as dependências reais do aparelho à inicialização testada. */
 export function initAppDatabase(db: SQLiteDatabase): Promise<void> {
-  return initDatabase(db, {
-    getKey: () => getOrCreateDatabaseKey(secretStore, getRandomBytes),
-    migrations: MIGRATIONS,
-  });
+  return initOrClose(db, () =>
+    initDatabase(db, {
+      getKey: () => getOrCreateDatabaseKey(secretStore, getRandomBytes),
+      migrations: MIGRATIONS,
+    }),
+  );
 }

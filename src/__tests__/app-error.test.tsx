@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { AppError } from '@/components/ui/app-error';
@@ -9,10 +9,15 @@ const metrics = {
   insets: { top: 24, left: 0, right: 0, bottom: 0 },
 };
 
-const renderError = (error: Error, retry = jest.fn()) =>
+const renderError = (
+  error: Error,
+  retry = jest.fn(),
+  reset: () => Promise<void> = jest.fn().mockResolvedValue(undefined),
+  confirm: () => Promise<boolean> = async () => false,
+) =>
   render(
     <SafeAreaProvider initialMetrics={metrics}>
-      <AppError error={error} retry={retry} />
+      <AppError error={error} retry={retry} reset={reset} confirmReset={confirm} />
     </SafeAreaProvider>,
   );
 
@@ -31,5 +36,29 @@ describe('AppError', () => {
     fireEvent.press(screen.getByRole('button', { name: ptBR.appError.retry }));
 
     expect(retry).toHaveBeenCalledTimes(1);
+  });
+
+  it('não apaga nada se a pessoa não confirmar o recomeço', async () => {
+    const reset = jest.fn().mockResolvedValue(undefined);
+    const retry = jest.fn();
+    await renderError(new Error('x'), retry, reset, async () => false);
+
+    fireEvent.press(screen.getByRole('button', { name: ptBR.appError.reset }));
+
+    await waitFor(() => expect(reset).not.toHaveBeenCalled());
+    expect(retry).not.toHaveBeenCalled();
+  });
+
+  it('apaga e tenta abrir de novo depois da confirmação', async () => {
+    const calls: string[] = [];
+    const reset = jest.fn(async () => {
+      calls.push('reset');
+    });
+    const retry = jest.fn(() => calls.push('retry'));
+    await renderError(new Error('x'), retry, reset, async () => true);
+
+    fireEvent.press(screen.getByRole('button', { name: ptBR.appError.reset }));
+
+    await waitFor(() => expect(calls).toEqual(['reset', 'retry']));
   });
 });

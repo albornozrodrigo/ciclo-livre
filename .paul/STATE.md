@@ -16,21 +16,21 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 1 of 11 (Fundação) — In progress
-Plan: 01-03 em APPLY (01-01 e 01-02 completos)
-Status: APPLY 01-03 — código e testes prontos; prova no emulador em andamento (celular ocupado por outra sessão)
-Last activity: 2026-10-22 — 01-02 unificado (SQLCipher provado no aparelho)
+Phase: 2 of 11 (Onboarding, perfil e modos) — Not started
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-22 — Phase 1 complete (4 planos; /code-review e /cso feitos)
 
 Progress:
-- Milestone: [░░░░░░░░░░] 6%
-- Phase 1: [██████░░░░] 67%
+- Milestone: [█░░░░░░░░░] 9%
+- Phase 2: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ◐        ○     [01-03 em execução]
+  ○        ○        ○     [Pronto para planejar a fase 2]
 ```
 
 ## Accumulated Context
@@ -42,13 +42,16 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | NativeWind 5 RC + Tailwind 4.3; lightningcss 1.30.1 | Init | Validado no aparelho (01-01); fallback descartado |
 | Resolver do Metro: expo-asset/expo-image usam react-native original | 01-01 | react-native-css RC não exporta AssetRegistry (RN 0.88); revisitar no estável |
 | Mudou plugin no app.json → `npx expo prebuild --platform android` antes do build | 01-02 | `expo run` não reaplica plugins em android/ existente |
+| Aparelho de teste: Galaxy S21 FE `RQCRC00WJMV` (S21 Ultra é de outra sessão) | 01-03 | Usar `-s RQCRC00WJMV` / `--device RQCRC00WJMV` |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
 | Issue | Origin | Effort | Revisit |
 |-------|--------|--------|---------|
 | Tokens repetidos em `@theme`/`:root`/`theme.ts` | 01-01 review | S | Teste de paridade ou remover `:root` |
-| `npm audit`: 19 high vulnerabilities vindas do template | Init | S | Fase 1 |
+| `npm audit`: 19 high vulnerabilities vindas do template (não triadas; /cso sem OSV) | Init | S | Fase 2 |
+| Diálogo nativo com acento teal padrão (fora da paleta) | 01-03 | S | Fase 11 |
+| FLAG_SECURE / ocultar miniatura em Recentes | /cso | S | Fase 3 (quando houver dados na tela) |
 
 ### Blockers/Concerns
 None yet.
@@ -61,9 +64,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: 01-03 Task 3 (prova de "apagar tudo" no emulador)
-Next action: concluir prova 01-03, /paul:unify, depois /code-review + /cso de fechamento da fase 1
-Resume file: .paul/phases/01-fundacao/01-03-PLAN.md
+Stopped at: Phase 1 complete, ready to plan Phase 2
+Next action: /paul:plan para a fase 2 (Onboarding, perfil e modos)
+Resume file: .paul/ROADMAP.md
 
 ---
 *STATE.md — Updated after every significant action*

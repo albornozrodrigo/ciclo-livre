@@ -76,3 +76,14 @@ describe('runMigrations', () => {
     expect(() => db.raw.exec("INSERT INTO app_meta (key, value) VALUES ('k', NULL)")).toThrow();
   });
 });
+
+describe('runMigrations com banco de versão mais nova', () => {
+  it('recusa user_version acima da última migration conhecida sem alterar nada', async () => {
+    const db = openMemoryDatabase();
+    db.raw.exec('PRAGMA user_version = 9');
+
+    await expect(runMigrations(db, sample)).rejects.toThrow(/mais nova/);
+    expect(tables(db)).toEqual([]);
+    expect(userVersion(db)).toBe(9);
+  });
+});

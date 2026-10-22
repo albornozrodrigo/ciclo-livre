@@ -30,6 +30,11 @@ export async function runMigrations(db: SqlExecutor, migrations: Migration[]): P
   assertWellFormed(migrations);
   const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
   const current = row?.user_version ?? 0;
+  const latest = migrations.at(-1)?.version ?? 0;
+  if (current > latest) {
+    // Banco criado por uma versão mais nova do app: abrir com código antigo arrisca corromper dados.
+    throw new Error('O banco foi criado por uma versão mais nova do app.');
+  }
 
   for (const migration of migrations) {
     if (migration.version <= current) continue;

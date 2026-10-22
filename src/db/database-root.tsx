@@ -28,11 +28,30 @@ export function useEraseAllData(): () => Promise<void> {
   const reopen = useContext(ReopenContext);
 
   return useCallback(async () => {
-    await eraseAllData({
-      closeDatabase: () => db.closeAsync(),
-      deleteDatabase: () => deleteDatabaseAsync(DATABASE_NAME),
-      deleteKey: () => SecureStore.deleteItemAsync(DATABASE_KEY_NAME),
-    });
-    reopen();
+    try {
+      await eraseAllData({
+        closeDatabase: () => db.closeAsync(),
+        deleteDatabase: deleteDatabaseFile,
+        deleteKey: deleteDatabaseKey,
+      });
+    } finally {
+      // Mesmo se falhar no meio, a conexão já pode estar fechada: reabrir evita um contexto inutilizável.
+      reopen();
+    }
   }, [db, reopen]);
+}
+
+const deleteDatabaseFile = () => deleteDatabaseAsync(DATABASE_NAME);
+const deleteDatabaseKey = () => SecureStore.deleteItemAsync(DATABASE_KEY_NAME);
+
+/**
+ * Saída da tela de erro quando o banco não abre (chave perdida, arquivo ilegível).
+ * Não há conexão para fechar: initOrClose já fechou a da tentativa que falhou.
+ */
+export function resetUnopenableDatabase(): Promise<void> {
+  return eraseAllData({
+    closeDatabase: async () => {},
+    deleteDatabase: deleteDatabaseFile,
+    deleteKey: deleteDatabaseKey,
+  });
 }

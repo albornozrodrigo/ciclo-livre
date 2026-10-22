@@ -52,6 +52,11 @@ export const ptBR = {
     title: 'Algo não abriu direito',
     body: 'Não conseguimos abrir seus dados com segurança agora. Nada foi apagado e nada saiu do seu aparelho.',
     retry: 'Tentar de novo',
+    reset: 'Apagar dados e começar de novo',
+    resetHint: 'Use se tentar de novo não resolver. Remove tudo o que está guardado neste aparelho.',
+    resetConfirmTitle: 'Apagar dados e começar de novo?',
+    resetConfirmBody:
+      'Os dados guardados neste aparelho não puderam ser abertos e serão removidos. Não dá para desfazer.',
   },
 } as const;
 

@@ -20,7 +20,7 @@ Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios co
 |-----------|-------|
 | Type | Application (mobile, Android) |
 | Version | 0.0.0 |
-| Status | Initializing (scaffold Expo pronto) |
+| Status | Fase 1 (Fundação) completa; pronto para a fase 2 |
 | Last Updated | 2026-10-22 |
 
 ## Requirements
@@ -42,7 +42,10 @@ Referência: `../estudo-rea-clue/00-resumo-executivo.md` e `notas/02-mapa-de-gat
   - todos os ícones e temas.
 
 ### Validated (Shipped)
-None yet.
+- ✓ Casca de 5 abas pt-BR com tema "Território do Ciclo" (claro/escuro, contraste AA) — Phase 1
+- ✓ NativeWind 5 RC validado em aparelho Android — Phase 1
+- ✓ SQLite criptografado (SQLCipher) com chave no secure-store e migrations — Phase 1
+- ✓ Logger sem texto livre, aviso "não é contraceptivo", apagar todos os dados e recuperação quando o banco não abre — Phase 1
 
 ### Active (In Progress)
 None yet.
@@ -124,7 +127,9 @@ Rascunho de fases para o milestone v0.1. A versão final é definida em `/paul:p
 | IA via BYOK | Funções de IA grátis sem custo para o projeto | 2026-10-22 | Active |
 | Android primeiro | Paridade com o APK estudado; foco | 2026-10-22 | Active |
 | PAUL como SDD + skills Superpowers como flows | O PAUL dá roadmap/estado entre sessões; o Superpowers dá a disciplina de TDD e verificação | 2026-10-22 | Active |
-| NativeWind 5 RC + Tailwind 4 | O usuário pediu as versões mais recentes; o NativeWind 4 estável só suporta Tailwind 3 | 2026-10-22 | Active (reavaliar se o RC travar) |
+| NativeWind 5 RC + Tailwind 4 | O usuário pediu as versões mais recentes; o NativeWind 4 estável só suporta Tailwind 3 | 2026-10-22 | Active (validado no aparelho; ajuste de resolver do Metro) |
+| SQLCipher com chave bruta 256 bits no secure-store; falha fechada sem cipher | Dado sensível nunca em claro | 2026-10-22 | Active |
+| Aparelho de teste: Galaxy S21 FE (RQCRC00WJMV) | Indicado pela pessoa usuária; S21 Ultra usado por outra sessão | 2026-10-22 | Active |
 
 ## Success Metrics
 
@@ -162,4 +167,4 @@ Rascunho de fases para o milestone v0.1. A versão final é definida em `/paul:p
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-10-22*
+*Last updated: 2026-10-22 after Phase 1*

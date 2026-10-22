@@ -65,3 +65,18 @@ describe('getOrCreateDatabaseKey', () => {
     );
   });
 });
+
+describe('getOrCreateDatabaseKey com chamadas concorrentes', () => {
+  it('gera e grava uma única chave quando duas chamadas correm juntas', async () => {
+    const store = memoryStore();
+    const random = countingRandom();
+
+    const [a, b] = await Promise.all([
+      getOrCreateDatabaseKey(store, random),
+      getOrCreateDatabaseKey(store, random),
+    ]);
+
+    expect(a).toBe(b);
+    expect(random.calls).toBe(1);
+  });
+});

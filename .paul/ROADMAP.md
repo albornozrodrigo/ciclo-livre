@@ -16,13 +16,13 @@ App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clu
 ## Current Milestone
 **v0.1 Initial Release** (v0.1.0)
 Status: In progress
-Phases: 0 of 11 complete
+Phases: 1 of 11 complete
 
 ## Phases
 
 | Phase | Name | Plans | Status | Completed |
 |-------|------|-------|--------|-----------|
-| 1 | Fundação | 3 | Planning | - |
+| 1 | Fundação | 4 | ✅ Complete | 2026-10-22 |
 | 2 | Onboarding, perfil e modos | TBD | Not started | - |
 | 3 | Registro diário | TBD | Not started | - |
 | 4 | Motor de previsão + calendário | TBD | Not started | - |
@@ -50,9 +50,10 @@ Phases: 0 of 11 complete
 - Base de privacidade: log sem dados sensíveis, aviso "não é contraceptivo" e "apagar todos os dados".
 
 **Plans:**
-- [ ] 01-01: Ferramentas, casca de navegação e tema + dev build no aparelho
-- [ ] 01-02: Banco criptografado + migrations (TDD)
-- [ ] 01-03: Base de privacidade (logger seguro, aviso médico, apagar tudo)
+- [x] 01-01: Ferramentas, casca de navegação e tema + dev build no aparelho
+- [x] 01-02: Banco criptografado + migrations (TDD)
+- [x] 01-03: Base de privacidade (logger seguro, aviso médico, apagar tudo)
+- [x] 01-04: Correções do /code-review e /cso de fechamento
 
 ### Phase 2: Onboarding, perfil e modos
 **Goal:** No primeiro uso, a pessoa informa a última menstruação, a duração média do ciclo e da menstruação, e escolhe o modo: Período, Sem sangramento, Tentando engravidar, Gravidez ou Perimenopausa. Todos os modos são livres e trocáveis em Mais.

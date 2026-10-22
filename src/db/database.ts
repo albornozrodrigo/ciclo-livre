@@ -1,3 +1,5 @@
+import { log } from '@/lib/logger';
+
 import { isValidDatabaseKey } from './key';
 import { type Migration, runMigrations } from './migrations';
 import type { SqlExecutor } from './types';
@@ -32,4 +34,19 @@ export async function initDatabase(db: SqlExecutor, { getKey, migrations }: Init
 
   await db.execAsync('PRAGMA foreign_keys = ON');
   await runMigrations(db, migrations);
+}
+
+/**
+ * Roda a inicialização e, se ela falhar, fecha a conexão antes de repropagar.
+ * O expo-sqlite reaproveita conexões abertas do cache; uma conexão vazada impediria
+ * apagar o arquivo depois e manteria o estado de chave da tentativa anterior.
+ */
+export async function initOrClose(db: { closeAsync: () => Promise<void> }, init: () => Promise<void>): Promise<void> {
+  try {
+    await init();
+  } catch (error) {
+    // O erro de init é o que importa; falha ao fechar é registrada, sem esconder o original.
+    await db.closeAsync().catch((closeError: unknown) => log.error('db_close_after_init_failed', closeError));
+    throw error;
+  }
 }
