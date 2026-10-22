@@ -57,3 +57,29 @@ describe('Onboarding › pronto', () => {
     expect(mockPush).toHaveBeenCalledWith('/onboarding/data-prevista');
   });
 });
+
+describe('Onboarding › pronto › honestidade e falhas', () => {
+  beforeEach(() => mockSaveProfile.mockReset().mockResolvedValue(undefined));
+
+  it('quando a última menstruação não foi informada, explica que as previsões começam depois', async () => {
+    await renderDone({ birthYear: '1995', mode: 'period', lastPeriodStart: null });
+
+    expect(screen.getByText(ptBR.onboarding.lastPeriod.dontRememberNote)).toBeOnTheScreen();
+  });
+
+  it('não mostra essa nota quando a data foi informada', async () => {
+    await renderDone({ birthYear: '1995', mode: 'period', lastPeriodStart: '2026-10-01' });
+
+    expect(screen.queryByText(ptBR.onboarding.lastPeriod.dontRememberNote)).toBeNull();
+  });
+
+  it('avisa, sem detalhes técnicos, quando salvar falha', async () => {
+    mockSaveProfile.mockRejectedValue(new Error('SQLITE_FULL'));
+    await renderDone({ birthYear: '1995', mode: 'no_bleeding' });
+
+    await fireEvent.press(screen.getByRole('button', { name: copy.start }));
+
+    expect(await screen.findByText(copy.saveFailed)).toBeOnTheScreen();
+    expect(screen.queryByText(/SQLITE/)).toBeNull();
+  });
+});

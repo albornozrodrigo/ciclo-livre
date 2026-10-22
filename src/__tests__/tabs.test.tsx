@@ -11,6 +11,8 @@ import { ptBR, type ScreenKey } from '@/i18n/pt-BR';
 
 // O banco nativo (SQLCipher) não existe no Jest; as telas só precisam do hook.
 jest.mock('@/db/database-root', () => ({ useEraseAllData: () => jest.fn() }));
+jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: jest.fn() }) }));
+jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile: null } }) }));
 
 const metrics = {
   frame: { x: 0, y: 0, width: 390, height: 844 },

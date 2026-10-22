@@ -11,6 +11,7 @@ export function RootNavigator({ onboarded }: Props) {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Protected guard={onboarded}>
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="perfil" />
       </Stack.Protected>
       <Stack.Protected guard={!onboarded}>
         <Stack.Screen name="onboarding" />

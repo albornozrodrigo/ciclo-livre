@@ -33,6 +33,19 @@ export const ptBR = {
       phase: 'Em construção — etapa 2',
     },
   },
+  profile: {
+    title: 'Seu perfil',
+    currentMode: 'Modo atual',
+    changeMode: 'Trocar modo',
+    cycleData: 'Dados do ciclo',
+    cycleDataHint: 'Última menstruação, durações e contracepção',
+    save: 'Salvar',
+    saved: 'Perfil salvo.',
+    saveFailed: 'Não foi possível salvar agora. Tente de novo.',
+    modeTitle: 'Trocar modo',
+    modeHint: 'Todos os modos são livres. Seus registros continuam guardados ao trocar.',
+    cycleTitle: 'Dados do ciclo',
+  },
   privacy: {
     title: 'Privacidade e segurança',
     localData:
@@ -145,6 +158,7 @@ export const ptBR = {
       start: 'Começar a usar',
       fixError: 'Algo precisa de ajuste antes de salvar.',
       fixButton: 'Corrigir',
+      saveFailed: 'Não deu para salvar agora. Tente de novo.',
     },
   },
   appError: {

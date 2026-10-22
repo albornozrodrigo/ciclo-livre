@@ -1,6 +1,8 @@
-import { Alert, ToastAndroid } from 'react-native';
+import { Alert, View } from 'react-native';
 
 import { PrivacySection } from '@/components/privacy-section';
+import { ProfileSection } from '@/components/profile-section';
+import { useSnackbar } from '@/components/ui/snackbar';
 import { Screen } from '@/components/ui/screen';
 import { useEraseAllData } from '@/db/database-root';
 import { ptBR } from '@/i18n/pt-BR';
@@ -24,21 +26,25 @@ function confirmEraseAll(): Promise<boolean> {
 
 export default function MaisScreen() {
   const eraseAllData = useEraseAllData();
+  const { show } = useSnackbar();
 
-  // Apagar remonta as abas (volta para Hoje), dando certo ou não; o resultado vai num toast nativo.
+  // Apagar remonta o app (volta ao onboarding); o snackbar fica acima do banco e sobrevive.
   async function eraseAndNotify() {
     try {
       await eraseAllData();
-      ToastAndroid.show(ptBR.privacy.erased, ToastAndroid.LONG);
+      show(ptBR.privacy.erased);
     } catch (error) {
       log.error('erase_all_failed', error);
-      ToastAndroid.show(ptBR.privacy.eraseFailed, ToastAndroid.LONG);
+      show(ptBR.privacy.eraseFailed);
     }
   }
 
   return (
     <Screen screen="mais" territory="coral" shape={0}>
-      <PrivacySection onErase={eraseAndNotify} confirm={confirmEraseAll} />
+      <View className="gap-10">
+        <ProfileSection />
+        <PrivacySection onErase={eraseAndNotify} confirm={confirmEraseAll} />
+      </View>
     </Screen>
   );
 }

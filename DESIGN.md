@@ -25,6 +25,18 @@ typography:
     fontWeight: 700
     lineHeight: 0.95
     letterSpacing: "-0.04em"
+  hero:
+    fontFamily: "Roboto (sistema)"
+    fontSize: "56sp"
+    fontWeight: 700
+    lineHeight: 0.96
+    letterSpacing: "-0.04em"
+  headline:
+    fontFamily: "Roboto (sistema)"
+    fontSize: "32sp"
+    fontWeight: 700
+    lineHeight: 1.06
+    letterSpacing: "-0.03em"
   title:
     fontFamily: "Roboto (sistema)"
     fontSize: "22sp"
@@ -52,8 +64,8 @@ components:
     backgroundColor: "{colors.sun}"
     textColor: "{colors.ink}"
     rounded: "{rounded.capsule}"
-    height: "48px"
-    padding: "0 8px 0 20px"
+    height: "56px"
+    padding: "0 8px 0 24px"
   capsule-outline:
     backgroundColor: "{colors.water}"
     textColor: "{colors.ink}"
@@ -123,6 +135,8 @@ Fonte da verdade em código: as classes vêm de `src/global.css` (`@theme`); cor
 
 ## Typography
 
+- **Hero:** 56sp, peso 700, só o nome do app na boas-vindas; uma linha que encolhe para caber.
+- **Headline:** 32sp/700, a pergunta de cada passo do onboarding e de telas de formulário.
 - **Display:** 44sp, peso 700, entrelinha 42 (≈0.95), tracking -0.04em; uma linha, encolhe para caber com fonte grande. Usado só para o nome da tela e o número do dia do ciclo.
 - **Title:** 22sp/700. **Body:** 16sp/400, entrelinha 1.45. **Label:** 14sp/700 nas cápsulas e chips.
 - Algarismos tabulares sempre que houver números comparáveis (dias, temperaturas).
@@ -131,7 +145,9 @@ Fonte da verdade em código: as classes vêm de `src/global.css` (`@theme`); cor
 ## Layout
 
 - Margem lateral de 20dp, pilha de 12dp e seção de 32dp. Há mais espaço acima de um título do que abaixo.
-- Composição "um lobo domina": cada tela tem um território principal sangrando por duas bordas e conteúdo sobre a água ou dentro do lobo.
+- Composição "um lobo domina": cada tela de aba tem um território principal sangrando por duas bordas e conteúdo sobre a água ou dentro do lobo.
+- **Exceção — telas de pergunta e formulário** (passos do onboarding, edição de perfil): só água, headline e controles. Sem lobo, para a pergunta ser a única coisa na tela. A boas-vindas mantém um lobo de sol (começo = "hoje").
+- Dentro de um lobo fica só o título (que encolhe para caber); texto de apoio fica na água, para crescer com a fonte do sistema sem sair do território.
 - Ação primária na metade inferior, na zona do polegar.
 - Edge-to-edge com insets de sistema (safe area) em todas as telas.
 
@@ -148,9 +164,15 @@ Plano. Não há sombras. A profundidade vem da sobreposição de territórios (u
 ## Components
 
 - **Barra de navegação:** NativeTabs (Material); o indicador ativo usa o tom de terra; ícones Material Symbols.
-- **Cápsula primária:** sol, rótulo em `ink` e chip redondo de `ink` com seta à direita.
+- **Cápsula primária:** sol, rótulo em `ink` e chip redondo de `ink` com seta à direita; 56dp. **Desabilitada:** contorno tracejado em `ink-muted`, rótulo `ink-muted`, sem chip (sol translúcido fica ilegível no escuro).
 - **Cápsula de contorno:** borda de 1.5dp em `ink`, sem fundo.
 - **Chip de fase:** cápsula pequena na cor do território, com o nome da fase sempre escrito.
+- **Escolha única (rádio):** linhas de contorno 1.5dp, raio 28dp, ≥56dp. Selecionada = preenchida de `ink` (texto em `water`) com check num círculo de sol. Nunca cor de fase.
+- **Ajuste numérico:** cápsula de contorno com botões redondos de `ink` (− e +) e o valor no meio, que é o elemento "ajustável" para o TalkBack.
+- **Campo de data:** cápsula de contorno com a data por extenso; abre o diálogo nativo do Android tingido de tinta (plugin `with-android-accent`).
+- **Progresso de passos:** "Passo N de M" + segmentos de 8dp: feitos em `ink` cheio, restantes em contorno de `ink`.
+- **Linha de navegação:** rótulo, detalhe em `ink-muted` e seta; ≥64dp; divisória fina.
+- **Snackbar:** retângulo `ink` (texto `water`), raio 20dp, acima da barra de abas, anunciado ao TalkBack, some em 4s. Nunca toast.
 - **Chip de status** (ex.: "Em construção"): cápsula de contorno, sem cor de território.
 - **Movimento** (a implementar nas fases seguintes): 0.4s com leve overshoot nas transições de território; respeita "remover animações" do sistema.
 

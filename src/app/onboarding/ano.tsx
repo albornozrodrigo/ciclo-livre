@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Keyboard, Text, TextInput, View } from 'react-native';
 
 import { OnboardingStep } from '@/components/onboarding-step';
 import { isoFromDate } from '@/domain/dates';
@@ -17,7 +17,11 @@ export default function BirthYearScreen() {
 
   function handleContinue() {
     const code = validateBirthYear(Number(draft.birthYear), isoFromDate(new Date()));
-    if (code === 'under_18' || code === 'out_of_range') return setError(copy.errors[code]);
+    if (code === 'under_18' || code === 'out_of_range') {
+      // Fecha o teclado para a mensagem não ficar escondida atrás dele.
+      Keyboard.dismiss();
+      return setError(copy.errors[code]);
+    }
     setError(null);
     router.push(nextRoute('birth_year', draft.mode) ?? '/onboarding/objetivo');
   }

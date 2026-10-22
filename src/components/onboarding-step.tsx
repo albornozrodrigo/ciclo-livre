@@ -63,7 +63,11 @@ function Progress({ current, total }: { current: number; total: number }) {
         {Array.from({ length: total }, (_, i) => (
           <View
             key={i}
-            className={i < current ? 'h-1.5 flex-1 rounded-full bg-ink dark:bg-ink-night' : 'h-1.5 flex-1 rounded-full bg-ink/15 dark:bg-ink-night/20'}
+            className={
+              i < current
+                ? 'h-2 flex-1 rounded-full bg-ink dark:bg-ink-night'
+                : 'h-2 flex-1 rounded-full border-[1.5px] border-ink dark:border-ink-night'
+            }
           />
         ))}
       </View>

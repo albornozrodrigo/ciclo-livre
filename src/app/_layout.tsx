@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Alert, useColorScheme } from 'react-native';
 
 import { AppError } from '@/components/ui/app-error';
+import { SnackbarProvider } from '@/components/ui/snackbar';
 import { DatabaseRoot, resetUnopenableDatabase } from '@/db/database-root';
 import { ptBR } from '@/i18n/pt-BR';
 import { RootNavigator } from '@/navigation/root-navigator';
@@ -37,11 +38,13 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       {/* Ícones escuros: toda tela tem um lobo saturado atrás da barra de status (abas e onboarding). */}
       <StatusBar style="dark" />
-      <DatabaseRoot>
-        <ProfileProvider>
-          <ProfileGate />
-        </ProfileProvider>
-      </DatabaseRoot>
+      <SnackbarProvider>
+        <DatabaseRoot>
+          <ProfileProvider>
+            <ProfileGate />
+          </ProfileProvider>
+        </DatabaseRoot>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }

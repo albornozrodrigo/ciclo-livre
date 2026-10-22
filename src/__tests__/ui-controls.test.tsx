@@ -101,3 +101,17 @@ describe('NumberStepper', () => {
     expect(onChange).toHaveBeenCalledWith(29);
   });
 });
+
+describe('CapsuleButton desabilitado', () => {
+  it('troca para contorno sem o chip de seta, para continuar legível', async () => {
+    await render(<CapsuleButton label="Continuar" onPress={jest.fn()} disabled />);
+
+    expect(screen.queryByTestId('capsule-arrow')).toBeNull();
+  });
+
+  it('habilitado mostra o chip de seta', async () => {
+    await render(<CapsuleButton label="Continuar" onPress={jest.fn()} />);
+
+    expect(screen.getByTestId('capsule-arrow', { includeHiddenElements: true })).toBeTruthy();
+  });
+});

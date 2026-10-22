@@ -37,16 +37,19 @@ export default function DoneScreen() {
   const { saveProfile } = useProfile();
   const [fixStep, setFixStep] = useState<Step | null>(null);
   const [saving, setSaving] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   async function handleStart() {
     const result = validateProfile(toProfileInput(draft), isoFromDate(new Date()));
     if (!result.ok) return setFixStep(STEP_OF_FIELD[result.errors[0].field]);
     setSaving(true);
+    setSaveFailed(false);
     try {
       // Ao salvar, a guarda de rotas troca o onboarding pelas abas.
       await saveProfile(result.profile);
     } catch (error) {
       log.error('onboarding_save_failed', error);
+      setSaveFailed(true);
       setSaving(false);
     }
   }
@@ -58,6 +61,16 @@ export default function DoneScreen() {
         <View className="rounded-[28px] border-[1.5px] border-ink p-5 dark:border-ink-night">
           <Text className="text-lg font-bold leading-7 text-ink dark:text-ink-night">{copy.disclaimer}</Text>
         </View>
+        {draft.lastPeriodStart === null && draft.mode !== 'pregnancy' && draft.mode !== 'no_bleeding' ? (
+          <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">
+            {ptBR.onboarding.lastPeriod.dontRememberNote}
+          </Text>
+        ) : null}
+        {saveFailed ? (
+          <Text accessibilityLiveRegion="assertive" className="text-base font-bold leading-6 text-ink dark:text-ink-night">
+            {copy.saveFailed}
+          </Text>
+        ) : null}
         {fixStep ? (
           <View accessibilityLiveRegion="assertive" className="gap-3">
             <Text className="text-base leading-6 text-ink dark:text-ink-night">{copy.fixError}</Text>

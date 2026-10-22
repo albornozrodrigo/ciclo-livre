@@ -16,6 +16,11 @@ const routes = (onboarded: boolean) => ({
     return <Slot />;
   },
   'onboarding/index': () => <Text>boas-vindas</Text>,
+  'perfil/_layout': () => {
+    const { Slot } = jest.requireActual('expo-router');
+    return <Slot />;
+  },
+  'perfil/modo': () => <Text>trocar modo</Text>,
 });
 
 describe('RootNavigator', () => {
@@ -42,5 +47,17 @@ describe('RootNavigator', () => {
     await renderRouter(routes(true), { initialUrl: '/onboarding' });
 
     expect(screen.queryByText('boas-vindas')).toBeNull();
+  });
+
+  it('sem perfil, a edição de perfil não é acessível', async () => {
+    await renderRouter(routes(false), { initialUrl: '/perfil/modo' });
+
+    expect(screen.queryByText('trocar modo')).toBeNull();
+  });
+
+  it('com perfil, a edição de perfil abre', async () => {
+    await renderRouter(routes(true), { initialUrl: '/perfil/modo' });
+
+    expect(screen.getByText('trocar modo')).toBeOnTheScreen();
   });
 });
