@@ -18,7 +18,7 @@ phases = 11
 number = 7
 name = "Relatório + exportação"
 status = "in_progress"
-plans_completed = 0
+plans_completed = 1
 
 [loop]
 position = "IDLE"

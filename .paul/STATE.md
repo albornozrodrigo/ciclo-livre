@@ -18,18 +18,18 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 Milestone: v0.1 Initial Release
 Phase: 7 of 11 (Relatório + exportação) — Planned, applying 07-01
 Plan: 07-01 (exportação/backup), 07-02 (PDF), 07-03 (tela + Drive)
-Status: APPLY 07-01 em andamento (backup criptografado pronto; JSON/CSV/restauração com testes vermelhos)
+Status: 07-01 complete; next APPLY 07-02 (PDF)
 Last activity: 2026-10-22 — Phase 6 complete (lembretes; reviews aplicados; discreto por padrão)
 
 Progress:
 - Milestone: [█████░░░░░] 55%
-- Phase 7: [█░░░░░░░░░] 10%
+- Phase 7: [███░░░░░░░] 33%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ◐        ○     [07-01 em APPLY]
+  ✓        ✓        ✓     [07-01 fechado; próximo: APPLY 07-02]
 ```
 
 ## Accumulated Context
@@ -76,9 +76,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Phase 6 complete; 07-01 em APPLY
-Next action: continuar /paul:apply .paul/phases/07-relatorio-exportacao/07-01-PLAN.md (export-repo e csv)
-Resume file: .paul/phases/07-relatorio-exportacao/07-01-PLAN.md
+Stopped at: 07-01 complete
+Next action: /paul:apply .paul/phases/07-relatorio-exportacao/07-02-PLAN.md
+Resume file: .paul/phases/07-relatorio-exportacao/07-02-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
