@@ -1,3 +1,4 @@
+import { StatusBar } from 'expo-status-bar';
 import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,10 +28,12 @@ export function OnboardingStep({ step, title, why, children, primaryLabel, onPri
   const { current, total } = stepPosition(step, draft.mode);
 
   return (
-    <KeyboardAvoidingView behavior="height" className="flex-1 bg-water dark:bg-water-night">
+    <KeyboardAvoidingView behavior="padding" style={{ paddingTop: insets.top }} className="flex-1 bg-water dark:bg-water-night">
+      {/* Sem lobo atrás da barra de status nos passos: os ícones seguem o tema. */}
+      <StatusBar style="auto" />
       <ScrollView
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingTop: insets.top + 24, paddingBottom: 24 }}
+        contentContainerStyle={{ paddingTop: 24, paddingBottom: 24 }}
         className="flex-1 px-5">
         <Progress current={current} total={total} />
         <Text

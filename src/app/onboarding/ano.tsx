@@ -39,8 +39,9 @@ export default function BirthYearScreen() {
           maxLength={4}
           autoFocus
           returnKeyType="done"
+          style={{ paddingHorizontal: 24 }}
           onSubmitEditing={handleContinue}
-          className="min-h-16 rounded-[28px] border-[1.5px] border-ink px-6 text-[32px] font-bold tracking-[2px] text-ink [font-variant:tabular-nums] placeholder:text-ink-muted dark:border-ink-night dark:text-ink-night dark:placeholder:text-ink-muted-night"
+          className="min-h-16 rounded-[28px] border-[1.5px] border-ink text-[32px] font-bold tracking-[2px] text-ink [font-variant:tabular-nums] placeholder:text-ink-muted dark:border-ink-night dark:text-ink-night dark:placeholder:text-ink-muted-night"
         />
         {error ? (
           <Text accessibilityLiveRegion="assertive" className="text-base leading-6 text-ink dark:text-ink-night">

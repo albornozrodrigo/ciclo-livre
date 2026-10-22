@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CapsuleButton } from '@/components/ui/capsule-button';
@@ -15,7 +15,7 @@ export default function WelcomeScreen() {
   const lobeHeight = useLobeHeight();
 
   return (
-    <View className="flex-1 justify-between bg-water dark:bg-water-night">
+    <ScrollView className="flex-1 bg-water dark:bg-water-night" contentContainerStyle={{ flexGrow: 1 }}>
       <Lobe territory="sun" shape={2} />
       <View style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }} className="px-5">
         <Text
@@ -25,10 +25,12 @@ export default function WelcomeScreen() {
           className="text-[56px] font-bold leading-[54px] tracking-[-2.24px] text-ink">
           {copy.title}
         </Text>
-        <Text className="mt-4 max-w-[300px] text-lg leading-7 text-ink">{copy.lead}</Text>
       </View>
 
-      <View style={{ paddingBottom: insets.bottom + 16 }} className="gap-6 px-5">
+      {/* O apoio fica na água, não no lobo: com fonte grande ele cresce sem sair do território. */}
+      <Text className="px-5 pt-6 text-lg leading-7 text-ink dark:text-ink-night">{copy.lead}</Text>
+
+      <View style={{ paddingBottom: insets.bottom + 16 }} className="flex-1 justify-end gap-6 px-5 pt-6">
         <View className="gap-3">
           {copy.promises.map((promise) => (
             <View key={promise} className="flex-row items-start gap-3">
@@ -39,6 +41,6 @@ export default function WelcomeScreen() {
         </View>
         <CapsuleButton label={copy.start} onPress={() => router.push(STEP_ROUTES.birth_year)} />
       </View>
-    </View>
+    </ScrollView>
   );
 }

@@ -31,7 +31,7 @@ export default function LastPeriodScreen() {
         },
       }}>
       <DateField
-        label={copy.title}
+        label={copy.label}
         value={draft.lastPeriodStart}
         placeholder={copy.pick}
         min={addDays(today, -LIMITS.lastPeriodMaxDaysAgo)}

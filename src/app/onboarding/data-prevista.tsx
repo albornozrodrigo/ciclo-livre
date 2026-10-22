@@ -23,7 +23,7 @@ export default function DueDateScreen() {
       onPrimary={() => next && router.push(next)}
       primaryDisabled={!draft.dueDate}>
       <DateField
-        label={copy.title}
+        label={copy.label}
         value={draft.dueDate}
         placeholder={copy.pick}
         min={today}

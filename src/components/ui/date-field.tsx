@@ -19,19 +19,18 @@ export function formatLongDate(value: IsoDate): string {
   return dateFromIso(value).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-/** Campo de data que abre o seletor nativo do Material 3, já limitado às datas aceitas. */
+/** Campo de data que abre o seletor nativo do Android, já limitado às datas aceitas. */
 export function DateField({ label, value, placeholder, min, max, initial, onChange }: Props) {
   function open() {
     DateTimePickerAndroid.open({
       value: dateFromIso(value ?? initial),
       mode: 'date',
-      design: 'material',
-      title: label,
+      // Seletor padrão do Android: o "material" (MaterialDatePicker) exige tema Material Components
+      // e derruba o app com o tema AppCompat gerado pelo Expo.
       minimumDate: dateFromIso(min),
       maximumDate: dateFromIso(max),
-      onChange: (event, date) => {
-        if (event.type === 'set' && date) onChange(isoFromDate(date));
-      },
+      // Só dispara ao confirmar; cancelar não muda nada.
+      onValueChange: (_event, date) => onChange(isoFromDate(date)),
     });
   }
 

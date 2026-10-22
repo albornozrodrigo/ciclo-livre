@@ -85,6 +85,7 @@ export const ptBR = {
     dueDate: {
       title: 'Qual é a data prevista do parto?',
       why: 'Usamos para contar as semanas. Se ainda não sabe, uma estimativa serve; dá para mudar depois.',
+      label: 'Data prevista do parto',
       pick: 'Escolher data',
     },
     tryingSince: {
@@ -101,6 +102,7 @@ export const ptBR = {
     lastPeriod: {
       title: 'Quando começou sua última menstruação?',
       why: 'É o ponto de partida das previsões.',
+      label: 'Primeiro dia de sangramento',
       pick: 'Escolher data',
       dontRemember: 'Não lembro',
       dontRememberNote: 'Tudo bem. As previsões começam quando você registrar a próxima.',
