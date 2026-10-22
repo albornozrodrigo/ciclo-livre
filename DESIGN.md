@@ -11,17 +11,17 @@ colors:
   land: "#8ED462"
   land-night: "#7BC04F"
   coral: "#FF705D"
-  coral-night: "#F0634F"
+  coral-night: "#ff7a66"
   sun: "#F5E211"
   sun-night: "#EBD70F"
   pond: "#2BA0FF"
-  pond-night: "#2A93E8"
+  pond-night: "#3aa6ff"
   lilac: "#EBC1FF"
   lilac-night: "#D9A9F2"
 typography:
   display:
     fontFamily: "Roboto (sistema)"
-    fontSize: "40sp"
+    fontSize: "44sp"
     fontWeight: 700
     lineHeight: 0.95
     letterSpacing: "-0.04em"
@@ -115,13 +115,15 @@ Mapeamento para os papéis Material 3:
 - surface = água;
 - os containers são os territórios.
 
-Sobre lobo colorido, o texto é sempre `ink` (#2C2E2A), também no modo escuro, porque os lobos continuam saturados. Contraste do `ink` sobre os lobos: ≥ 4.8:1 (coral e lago, os piores casos).
+Sobre lobo colorido, o texto é sempre `ink` (#2C2E2A), também no modo escuro, porque os lobos continuam saturados. Contraste do `ink` sobre os lobos: ≥ 4.9:1 nos dois modos (pior caso: lago claro 4.95:1; coral-night 5.37:1; pond-night 5.28:1).
+
+**Lobos das abas (casca):** cada aba tem um território fixo para orientação (Hoje = sol, Calendário = lago, Análise = lilás, Explorar = terra, Mais = coral). Ali o lobo identifica o lugar, não uma fase, e nunca aparece sem o nome da tela. Quando uma tela mostrar a fase do ciclo (Hoje, a partir da fase 4), a cor da fase vem sempre com rótulo.
 
 Fonte da verdade em código: as classes vêm de `src/global.css` (`@theme`); cores usadas em JS (SVG, NativeTabs) vêm de `src/constants/theme.ts`, que espelha estes valores.
 
 ## Typography
 
-- **Display:** 40sp, peso 700, entrelinha 0.95, tracking -0.04em. Usado só para o nome da tela e o número do dia do ciclo.
+- **Display:** 44sp, peso 700, entrelinha 42 (≈0.95), tracking -0.04em; uma linha, encolhe para caber com fonte grande. Usado só para o nome da tela e o número do dia do ciclo.
 - **Title:** 22sp/700. **Body:** 16sp/400, entrelinha 1.45. **Label:** 14sp/700 nas cápsulas e chips.
 - Algarismos tabulares sempre que houver números comparáveis (dias, temperaturas).
 - Tudo escala com a fonte do sistema (sp): nada de tamanho fixo que quebre com a fonte grande.
@@ -149,6 +151,7 @@ Plano. Não há sombras. A profundidade vem da sobreposição de territórios (u
 - **Cápsula primária:** sol, rótulo em `ink` e chip redondo de `ink` com seta à direita.
 - **Cápsula de contorno:** borda de 1.5dp em `ink`, sem fundo.
 - **Chip de fase:** cápsula pequena na cor do território, com o nome da fase sempre escrito.
+- **Chip de status** (ex.: "Em construção"): cápsula de contorno, sem cor de território.
 - **Movimento** (a implementar nas fases seguintes): 0.4s com leve overshoot nas transições de território; respeita "remover animações" do sistema.
 
 ## Do's and Don'ts

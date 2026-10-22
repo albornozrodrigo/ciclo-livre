@@ -18,9 +18,9 @@ export const Palette = {
     ink: '#F2EEE1',
     inkMuted: '#B9B5A8',
     land: '#7BC04F',
-    coral: '#F0634F',
+    coral: '#ff7a66',
     sun: '#EBD70F',
-    pond: '#2A93E8',
+    pond: '#3aa6ff',
     lilac: '#D9A9F2',
   },
 } as const;
