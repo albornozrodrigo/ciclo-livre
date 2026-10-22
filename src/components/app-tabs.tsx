@@ -11,6 +11,7 @@ export default function AppTabs() {
     <NativeTabs
       backgroundColor={colors.water}
       indicatorColor={colors.land}
+      labelVisibilityMode="labeled"
       labelStyle={{ default: { color: colors.inkMuted }, selected: { color: colors.ink } }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{ptBR.tabs.hoje}</NativeTabs.Trigger.Label>
