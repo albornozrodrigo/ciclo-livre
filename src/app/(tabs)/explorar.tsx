@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 
+import { AiSummary } from '@/components/content/ai-summary';
 import { ListRow } from '@/components/ui/list-row';
 import { Screen } from '@/components/ui/screen';
 import { ARTICLES } from '@/content/articles';
@@ -48,7 +49,15 @@ export default function ExplorarScreen() {
             {results.length === 0 ? (
               <Text className="text-base leading-6 text-ink dark:text-ink-night">{c.noResultsHint}</Text>
             ) : (
-              results.map((a) => <ArticleRow key={a.id} article={a} />)
+              <>
+                {/* Nova busca, novo resumo: a chave reinicia o estado do cartão. */}
+                <View className="mb-4 mt-2">
+                  <AiSummary key={query.trim()} query={query} articles={results} />
+                </View>
+                {results.map((a) => (
+                  <ArticleRow key={a.id} article={a} />
+                ))}
+              </>
             )}
           </View>
         ) : (

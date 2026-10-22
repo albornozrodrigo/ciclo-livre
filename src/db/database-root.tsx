@@ -3,6 +3,7 @@ import { deleteDatabaseAsync, SQLiteProvider, useSQLiteContext } from 'expo-sqli
 import { createContext, type ReactNode, useCallback, useContext, useState } from 'react';
 
 import { log } from '@/lib/logger';
+import { deleteApiKey } from '@/ai/key-store';
 import { purgeExports } from '@/data-export/export-actions';
 import { cancelAllReminders } from '@/reminders/sync';
 
@@ -50,13 +51,14 @@ export function useEraseAllData(): () => Promise<void> {
 
 const logCancelError = (error: unknown) => log.error('reminders_cancel_failed', error);
 
-/** Temporários de exportação (relatório, planilha, backup) também saem no "apagar tudo". */
+/** Temporários de exportação e a chave da IA também saem no "apagar tudo". */
 function purgeExportFiles() {
   try {
     purgeExports();
   } catch (error) {
     log.error('export_purge_failed', error);
   }
+  deleteApiKey().catch((error: unknown) => log.error('ai_key_delete_failed', error));
 }
 const deleteDatabaseFile = () => deleteDatabaseAsync(DATABASE_NAME);
 const deleteDatabaseKey = () => SecureStore.deleteItemAsync(DATABASE_KEY_NAME);

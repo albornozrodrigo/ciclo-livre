@@ -9,7 +9,12 @@ import { ptBR } from '@/i18n/pt-BR';
 const c = ptBR.content;
 const mockPush = jest.fn();
 let mockId = 'colica';
+// Objeto estável: um banco novo a cada render faria o efeito de foco rodar sem parar.
+const mockDb = { getAllAsync: async () => [] };
+jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDb }));
+jest.mock('@/ai/key-store', () => ({ getApiKey: async () => null }));
 jest.mock('expo-router', () => ({
+  useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]),
   useIsFocused: () => true,
   router: { push: (href: unknown) => mockPush(href) },
   useLocalSearchParams: () => ({ id: mockId }),
