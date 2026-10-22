@@ -17,6 +17,7 @@ jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockEmptyDb }));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() }, useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]) }));
 jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: jest.fn() }) }));
 jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile: null } }) }));
+jest.mock('@/cycle/use-today-cycle', () => ({ useTodayCycle: () => null }));
 
 const metrics = {
   frame: { x: 0, y: 0, width: 390, height: 844 },
@@ -41,7 +42,7 @@ describe('telas das abas', () => {
     const copy = ptBR.screens[key];
     expect(await screen.findByRole('header', { name: copy.title })).toBeOnTheScreen();
     if ('phase' in copy) expect(screen.getByText(copy.phase)).toBeOnTheScreen();
-    expect(screen.getByText(copy.lead)).toBeOnTheScreen();
+    if ('lead' in copy) expect(screen.getByText(copy.lead)).toBeOnTheScreen();
   });
 
   it('o lobo é decorativo e fica fora da árvore de acessibilidade', async () => {

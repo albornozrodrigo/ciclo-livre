@@ -44,7 +44,7 @@ export function Screen({ screen, territory, shape = 0, children }: Props) {
             <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{copy.phase}</Text>
           </View>
         ) : null}
-        <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{copy.lead}</Text>
+        {'lead' in copy ? <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{copy.lead}</Text> : null}
       </View>
 
       {children ? <View className="px-5 pt-8">{children}</View> : null}

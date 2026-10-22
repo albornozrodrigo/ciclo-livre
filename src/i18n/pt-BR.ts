@@ -12,8 +12,6 @@ export const ptBR = {
   screens: {
     hoje: {
       title: 'Hoje',
-      lead: 'Registre como foi seu dia. Em breve, aqui também aparecem a fase do ciclo e as previsões.',
-      phase: 'Previsões na etapa 4',
     },
     calendario: {
       title: 'Calendário',
@@ -34,6 +32,32 @@ export const ptBR = {
       title: 'Mais',
       lead: 'Seu perfil e sua privacidade. Lembretes e exportação de dados chegam nas próximas etapas.',
     },
+  },
+  cycle: {
+    phases: {
+      menstruation: 'Menstruação',
+      follicular: 'Fase folicular',
+      fertile: 'Janela fértil',
+      luteal: 'Fase lútea',
+    },
+    dayOfCycle: (n: number) => `Dia ${n} do ciclo`,
+    nextIn: (n: number) =>
+      n === 0 ? 'Menstruação prevista para hoje' : n === 1 ? 'Próxima menstruação: amanhã' : `Próxima menstruação em ${n} dias`,
+    range: (from: string, to: string) => `Pode vir entre ${from} e ${to}`,
+    late: (n: number) => (n === 1 ? 'Menstruação atrasada há 1 dia' : `Menstruação atrasada há ${n} dias`),
+    lateHint: 'Atrasos acontecem. Se ela não vier ou se você tiver dúvida, um teste de gravidez ou um serviço de saúde podem ajudar.',
+    fertile: (from: string, to: string) => `Janela fértil: ${from} a ${to}`,
+    confidence: {
+      low: 'Estimativa com poucos dados. Fica mais precisa a cada ciclo registrado.',
+      medium: 'Estimativa feita com seus últimos ciclos.',
+      high: 'Estimativa firme: seus ciclos têm sido regulares.',
+    },
+    pain: (dates: string) => `Dor costuma aparecer em: ${dates}`,
+    disclaimer: 'Estimativas. Não servem como contracepção.',
+    none: 'Registre sua menstruação para ver a fase do ciclo e as previsões.',
+    pregnancyWeeks: (week: number, day: number) => `${week} semanas e ${day} ${day === 1 ? 'dia' : 'dias'}`,
+    dueIn: (n: number) => (n <= 0 ? 'A data prevista chegou' : `Faltam ${n} dias para a data prevista`),
+    noBleeding: 'No modo sem sangramento não há previsões de ciclo. Registre como você está e veja seus padrões na Análise.',
   },
   tags: {
     title: 'Suas tags',

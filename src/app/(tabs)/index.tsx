@@ -3,13 +3,16 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { CycleCard, CycleDetails, PHASE_TERRITORY } from '@/components/cycle/cycle-card';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { Screen } from '@/components/ui/screen';
 import { getDay } from '@/db/log-repo';
 import { todayIso } from '@/domain/dates';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
+import { useProfile } from '@/profile/profile-context';
 import { summarizeDay } from '@/tracking/summary';
+import { useTodayCycle } from '@/cycle/use-today-cycle';
 
 const copy = ptBR.today;
 
@@ -37,10 +40,17 @@ function useTodaySummary(): string[] | null {
 
 export default function HojeScreen() {
   const items = useTodaySummary();
+  const { state } = useProfile();
+  const cycle = useTodayCycle(state.status === 'ready' ? state.profile : null);
+  // O território de Hoje é a fase de hoje; sem fase (gravidez, sem dados) fica o sol.
+  const territory = cycle?.kind === 'cycle' ? PHASE_TERRITORY[cycle.phase] : 'sun';
 
   return (
-    <Screen screen="hoje" territory="sun" shape={0}>
-      <View className="gap-5">
+    <Screen screen="hoje" territory={territory} shape={0}>
+      <View className="gap-8">
+        {cycle ? <CycleCard view={cycle} /> : null}
+        {/* Registrar logo depois do essencial: o caminho mais comum fica sempre à vista. */}
+        <CapsuleButton label={copy.logToday} onPress={() => router.push(`/registro/${todayIso()}`)} />
         {items === null ? null : items.length === 0 ? (
           <Text className="text-base leading-6 text-ink dark:text-ink-night">{copy.empty}</Text>
         ) : (
@@ -51,7 +61,7 @@ export default function HojeScreen() {
             <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{items.join(' · ')}</Text>
           </View>
         )}
-        <CapsuleButton label={copy.logToday} onPress={() => router.push(`/registro/${todayIso()}`)} />
+        {cycle ? <CycleDetails view={cycle} /> : null}
       </View>
     </Screen>
   );
