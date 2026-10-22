@@ -16,8 +16,8 @@ phases = 11
 
 [phase]
 number = 8
-name = "Conteúdo + busca + resumo IA"
-status = "not_started"
+name = "Conteúdo + busca + resumo IA + importar do Clue"
+status = "planned"
 plans_completed = 0
 
 [loop]
@@ -27,6 +27,6 @@ position = "IDLE"
 groom = true
 
 [stats]
-total_plans = 20
+total_plans = 23
 total_phases = 11
 last_activity = "2026-10-22T23:59:00Z"

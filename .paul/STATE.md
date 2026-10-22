@@ -11,14 +11,14 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.1 — Fase 8 Conteúdo + busca + resumo IA (a planejar)
+**Current focus:** v0.1 — Fase 8 (08-01 artigos e busca)
 
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 8 of 11 (Conteúdo + busca + resumo IA) — Not started
-Plan: Not started
-Status: Ready to plan
+Phase: 8 of 11 (Conteúdo + busca + resumo IA + importar do Clue) — Planned
+Plan: 08-01 (artigos + busca), 08-02 (resumo IA BYOK), 08-03 (importar do Clue)
+Status: Ready to apply 08-01
 Last activity: 2026-10-22 — Phase 7 complete (relatório PDF, exportação, backup/restauração, Drive pelo compartilhar; reviews aplicados)
 
 Progress:
@@ -29,7 +29,7 @@ Progress:
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [Pronto para planejar a fase 8]
+  ✓        ○        ○     [08-01 planejado; pronto para APPLY]
 ```
 
 ## Accumulated Context
@@ -47,6 +47,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Notificações discretas ligadas por padrão | 06 | Android ignorou SECRET no canal; texto de saúde só se a pessoa escolher |
 | Drive via compartilhar/SAF (sem OAuth) | 07 plan | Sem projeto Google Cloud; backup automático adiado |
 | `.prettierrc` (aspas simples, 140 col.) | 06 | Evita reformatar o projeto com padrões errados |
+| Artigos escritos pelo app com a skill no-ai-slop, rodapé "sem revisão profissional" | 08 plan | Decisão do usuário |
+| IA BYOK: Claude primeiro, chave no secure-store, consentimento explícito | 08 plan | Decisão do usuário |
+| Importar do Clue (ZIP com senha + measurements.json), juntando sem apagar | 08 plan | Requisito do usuário |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -80,8 +83,8 @@ None yet.
 
 Last session: 2026-10-22
 Stopped at: Phase 7 complete
-Next action: /paul:plan para a fase 8 (conteúdo próprio/licença aberta, busca, resumo IA BYOK; /cso antes de fechar)
-Resume file: .paul/ROADMAP.md
+Next action: /paul:apply .paul/phases/08-conteudo-ia/08-01-PLAN.md
+Resume file: .paul/phases/08-conteudo-ia/08-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

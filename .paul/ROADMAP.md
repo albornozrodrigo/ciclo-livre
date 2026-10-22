@@ -29,7 +29,7 @@ Phases: 7 of 11 complete
 | 5 | Análise | 2 | ✅ Complete | 2026-10-22 |
 | 6 | Lembretes | 2 | ✅ Complete | 2026-10-22 |
 | 7 | Relatório médico + exportação (Google Drive) | 3 | ✅ Complete | 2026-10-22 |
-| 8 | Conteúdo + busca + resumo IA | TBD | Not started | - |
+| 8 | Conteúdo + busca + resumo IA + importar do Clue | 3 | Planned | - |
 | 9 | Chat com seus dados (IA BYOK) | TBD | Not started | - |
 | 10 | Wearables (Health Connect) | TBD | Not started | - |
 | 11 | Personalização + release | TBD | Not started | - |
@@ -102,11 +102,12 @@ Phases: 7 of 11 complete
   - SAF/compartilhar do Android: o Drive aparece como destino, sem OAuth e sem custo;
   - Drive API com OAuth: backup automático, mas exige um projeto no Google Cloud e tela de consentimento.
 
-### Phase 8: Conteúdo + busca + resumo IA
+### Phase 8: Conteúdo + busca + resumo IA + importar do Clue
 **Goal:**
-- Artigos próprios ou de licença aberta, todos liberados.
+- Artigos próprios, escritos com a skill no-ai-slop (decisão do usuário, 2026-10-22), todos liberados.
 - Busca.
-- Resumo por IA usando a chave da própria pessoa (BYOK).
+- Resumo por IA usando a chave da própria pessoa (BYOK, Claude primeiro).
+- **Importar os dados exportados do Clue** (requisito do usuário, 2026-10-22).
 **Depends on:** Phase 1
 **Research:** Likely (fontes de conteúdo com licença aberta; APIs Claude/OpenAI)
 
