@@ -1,4 +1,5 @@
-import { Text, View } from 'react-native';
+import type { ReactNode } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type Territory } from '@/constants/theme';
@@ -10,16 +11,20 @@ type Props = {
   screen: ScreenKey;
   territory: Territory;
   shape?: LobeShape;
+  /** Conteúdo da tela, abaixo do texto de apresentação. */
+  children?: ReactNode;
 };
 
 /** Tela de aba: um território dominante com o nome dentro, e o conteúdo sobre a água. */
-export function Screen({ screen, territory, shape = 0 }: Props) {
+export function Screen({ screen, territory, shape = 0, children }: Props) {
   const insets = useSafeAreaInsets();
   const lobeHeight = useLobeHeight();
   const copy = ptBR.screens[screen];
 
   return (
-    <View className="flex-1 bg-water dark:bg-water-night">
+    <ScrollView
+      className="flex-1 bg-water dark:bg-water-night"
+      contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
       <Lobe territory={territory} shape={shape} />
 
       <View style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }} className="px-5">
@@ -39,6 +44,8 @@ export function Screen({ screen, territory, shape = 0 }: Props) {
         </View>
         <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{copy.lead}</Text>
       </View>
-    </View>
+
+      {children ? <View className="px-5 pt-8">{children}</View> : null}
+    </ScrollView>
   );
 }

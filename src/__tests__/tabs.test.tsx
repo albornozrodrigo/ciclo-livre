@@ -9,6 +9,9 @@ import HojeScreen from '@/app/index';
 import MaisScreen from '@/app/mais';
 import { ptBR, type ScreenKey } from '@/i18n/pt-BR';
 
+// O banco nativo (SQLCipher) não existe no Jest; as telas só precisam do hook.
+jest.mock('@/db/database-root', () => ({ useEraseAllData: () => jest.fn() }));
+
 const metrics = {
   frame: { x: 0, y: 0, width: 390, height: 844 },
   insets: { top: 24, left: 0, right: 0, bottom: 0 },
@@ -30,7 +33,7 @@ describe('telas das abas', () => {
       </SafeAreaProvider>,
     );
     const copy = ptBR.screens[key];
-    expect(await screen.findByRole('header')).toHaveTextContent(copy.title);
+    expect(await screen.findByRole('header', { name: copy.title })).toBeOnTheScreen();
     expect(screen.getByText(copy.phase)).toBeOnTheScreen();
     expect(screen.getByText(copy.lead)).toBeOnTheScreen();
   });
