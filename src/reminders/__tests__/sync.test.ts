@@ -6,7 +6,11 @@ import type { Profile } from '@/domain/profile';
 import { defaultReminder } from '@/domain/reminders/catalog';
 import { cancelAllReminders, CHANNELS, requestReminderPermission, syncReminders } from '@/reminders/sync';
 
-type Request = { identifier: string; content: { title: string; body: string; data: Record<string, unknown> }; trigger: { date: Date; channelId: string } };
+type Request = {
+  identifier: string;
+  content: { title: string; body: string; data: Record<string, unknown> };
+  trigger: { date: Date; channelId: string };
+};
 const mockStore = new Map<string, Request>();
 const mockCalls: string[] = [];
 let mockGranted = true;
@@ -44,8 +48,15 @@ jest.mock('expo-notifications', () => ({
 }));
 
 const profile: Profile = {
-  birthYear: 1995, mode: 'period', lastPeriodStart: null, periodLength: 5, cycleLength: 28,
-  regularity: 'unknown', dueDate: null, tryingSince: null, birthControl: null,
+  birthYear: 1995,
+  mode: 'period',
+  lastPeriodStart: null,
+  periodLength: 5,
+  cycleLength: 28,
+  regularity: 'unknown',
+  dueDate: null,
+  tryingSince: null,
+  birthControl: null,
 };
 // 22/10/2026, 8h local.
 const NOW = new Date(2026, 9, 22, 8, 0);
@@ -65,7 +76,14 @@ beforeEach(async () => {
 });
 
 describe('syncReminders', () => {
-  it('agenda a agenda calculada na hora local, com o texto padrão', async () => {
+  it('por padrão, texto neutro (discreto): nada de saúde na notificação sem a pessoa escolher', async () => {
+    await syncReminders(db, profile, NOW);
+    expect(scheduled()[0].content).toMatchObject({ title: 'Ciclo Livre', body: 'Você tem um lembrete.' });
+    expect(scheduled()[0].trigger.channelId).toBe(CHANNELS.discreet);
+  });
+
+  it('com o texto ligado, agenda na hora local com o texto padrão', async () => {
+    await setDiscreet(db, false);
     await syncReminders(db, profile, NOW);
 
     const first = scheduled()[0];
@@ -74,18 +92,10 @@ describe('syncReminders', () => {
     expect(first.content).toMatchObject({ title: 'Menstruação prevista para hoje' });
   });
 
-  it('texto de saúde nunca aparece na tela de bloqueio: canal SECRET; o canal antigo é removido', async () => {
+  it('pede SECRET no canal do texto (o Android pode ignorar) e remove o canal antigo', async () => {
     await syncReminders(db, profile, NOW);
     expect(mockChannels.get(CHANNELS.private)?.lockscreenVisibility).toBe(3);
     expect(mockCalls).toContain('deleteChannel lembretes');
-  });
-
-  it('modo discreto: texto neutro num canal que pode aparecer na tela de bloqueio', async () => {
-    await setDiscreet(db, true);
-    await syncReminders(db, profile, NOW);
-    expect(scheduled()[0].content).toMatchObject({ title: 'Ciclo Livre', body: 'Você tem um lembrete.' });
-    expect(scheduled()[0].trigger.channelId).toBe(CHANNELS.discreet);
-    expect(mockChannels.get(CHANNELS.discreet)?.lockscreenVisibility).toBe(1);
   });
 
   it('sem mudança, não cancela nem reagenda nada (abrir e sair do app é barato e seguro)', async () => {
@@ -98,14 +108,18 @@ describe('syncReminders', () => {
   it('mudou o texto: troca só o que mudou', async () => {
     await syncReminders(db, profile, NOW);
     const before = scheduled().map((r) => r.identifier);
-    await setDiscreet(db, true);
+    await setDiscreet(db, false);
     await syncReminders(db, profile, NOW);
     expect(scheduled().map((r) => r.identifier)).not.toEqual(before);
     expect(scheduled()).toHaveLength(before.length);
   });
 
   it('o lembrete de registro leva a data do dia (abre o registro certo)', async () => {
-    await saveReminder(db, { ...defaultReminder('daily_log'), enabled: true, options: { ...defaultReminder('daily_log').options, anchor: '2026-10-22' } });
+    await saveReminder(db, {
+      ...defaultReminder('daily_log'),
+      enabled: true,
+      options: { ...defaultReminder('daily_log').options, anchor: '2026-10-22' },
+    });
     await syncReminders(db, profile, NOW);
     const log = scheduled().find((r) => r.identifier.startsWith('daily_log:2026-10-22'));
     expect(log?.content.data).toEqual({ kind: 'daily_log', date: '2026-10-22' });

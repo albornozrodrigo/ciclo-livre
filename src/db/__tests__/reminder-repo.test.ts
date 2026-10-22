@@ -54,8 +54,10 @@ describe('reminder-repo', () => {
     ).rejects.toThrow('Opções inválidas');
   });
 
-  it('modo discreto: desligado por padrão, salva e relê', async () => {
+  it('modo discreto: ligado por padrão (texto de saúde só se a pessoa escolher), salva e relê', async () => {
     const db = await migratedDb();
+    expect(await getDiscreet(db)).toBe(true);
+    await setDiscreet(db, false);
     expect(await getDiscreet(db)).toBe(false);
     await setDiscreet(db, true);
     expect(await getDiscreet(db)).toBe(true);

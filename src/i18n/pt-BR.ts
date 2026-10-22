@@ -142,8 +142,10 @@ export const ptBR = {
     bodyTooLong: 'Erro: o texto pode ter até 100 caracteres.',
     preview: 'Como vai aparecer',
     previewMeta: (time: string) => `Ciclo Livre · ${time}`,
-    lockscreenPrivate: 'Na tela de bloqueio este lembrete não aparece. O texto só aparece com o celular desbloqueado.',
-    lockscreenDiscreet: 'Notificações discretas ligadas: aparece assim, inclusive na tela de bloqueio.',
+    lockscreenPrivate:
+      'Notificações discretas desligadas: este texto aparece nas notificações. Na tela de bloqueio, segue o ajuste de conteúdo sensível do Android.',
+    lockscreenDiscreet:
+      'Notificações discretas ligadas: aparece assim, inclusive na tela de bloqueio. Dá para mudar na lista de lembretes.',
     leaveTitle: 'Sair sem salvar?',
     leaveBody: 'As mudanças neste lembrete serão descartadas.',
     leaveStay: 'Continuar editando',

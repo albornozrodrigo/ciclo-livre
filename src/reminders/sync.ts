@@ -11,9 +11,12 @@ import { planSchedule } from '@/domain/reminders/schedule';
 import { reminderContent } from '@/i18n/pt-BR-reminders';
 
 /**
- * Dois canais, porque o Android não deixa mudar a visibilidade de um canal que já existe:
- * - `private`: texto de saúde; SECRET = nada aparece na tela de bloqueio, qualquer que seja o ajuste do sistema.
- * - `discreet`: texto neutro ("Você tem um lembrete"); pode aparecer na tela de bloqueio.
+ * Dois canais (a pessoa pode silenciar um sem o outro nos ajustes do Android):
+ * - `private`: texto do lembrete. Pedimos SECRET, mas o Android aplica a visibilidade do canal
+ *   conforme o ajuste do sistema (testado no S21 FE: ficou "sem substituição"). Por isso a proteção real
+ *   é o modo discreto ligado por padrão; com ele desligado, a tela de bloqueio segue o ajuste
+ *   "conteúdo sensível" do Android, e a tela de lembretes diz isso.
+ * - `discreet`: texto neutro ("Você tem um lembrete").
  */
 export const CHANNELS = { private: 'lembretes-privados', discreet: 'lembretes-discretos' } as const;
 /** Canal da primeira versão (PRIVATE mostra o texto se o sistema não esconder conteúdo sensível). */

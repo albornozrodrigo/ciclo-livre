@@ -6,7 +6,7 @@ import LembretesScreen from '@/app/lembretes/index';
 import LembreteScreen from '@/app/lembretes/[tipo]';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
-import { getDiscreet, listReminders } from '@/db/reminder-repo';
+import { getDiscreet, listReminders, setDiscreet } from '@/db/reminder-repo';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 import { REMINDER_NAMES } from '@/i18n/pt-BR-reminders';
@@ -129,10 +129,12 @@ describe('Lembretes (lista)', () => {
     expect(mockPush).toHaveBeenCalledWith({ pathname: '/lembretes/[tipo]', params: { tipo: 'birth_control', ligar: '1' } });
   });
 
-  it('notificações discretas salvam', async () => {
+  it('notificações discretas vêm ligadas; desligar salva', async () => {
     await render(wrap(<LembretesScreen />));
-    await fireEvent(await screen.findByRole('switch', { name: r.discreet }), 'valueChange', true);
-    expect(await getDiscreet(mockDb)).toBe(true);
+    const discreet = await screen.findByRole('switch', { name: r.discreet });
+    expect(discreet).toHaveProp('value', true);
+    await fireEvent(discreet, 'valueChange', false);
+    expect(await getDiscreet(mockDb)).toBe(false);
   });
 });
 
@@ -150,9 +152,15 @@ describe('Lembrete (detalhe)', () => {
     expect(mockBack).toHaveBeenCalled();
   });
 
-  it('prévia mostra o texto que vai aparecer', async () => {
+  it('prévia mostra o que vai aparecer: neutro por padrão, o texto quando a pessoa desliga o modo discreto', async () => {
+    await render(wrap(<LembreteScreen />));
+    expect(await screen.findByText('Você tem um lembrete.')).toBeOnTheScreen();
+    expect(screen.getByText(r.lockscreenDiscreet)).toBeOnTheScreen();
+
+    await setDiscreet(mockDb, false);
     await render(wrap(<LembreteScreen />));
     expect(await screen.findByText(/deve vir em 2 dias/)).toBeOnTheScreen();
+    expect(screen.getByText(r.lockscreenPrivate)).toBeOnTheScreen();
   });
 
   it('janela fértil avisa que não é contracepção', async () => {
@@ -201,4 +209,3 @@ describe('Lembrete (detalhe)', () => {
     expect(mockPrevent).toBe(true);
   });
 });
-

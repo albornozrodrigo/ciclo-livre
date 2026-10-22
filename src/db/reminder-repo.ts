@@ -67,7 +67,8 @@ export async function saveReminder(db: SqlExecutor, reminder: Reminder): Promise
 /** Notificações discretas: título e texto neutros na tela de bloqueio. */
 export async function getDiscreet(db: SqlExecutor): Promise<boolean> {
   const row = await db.getFirstAsync<{ value: string }>('SELECT value FROM app_meta WHERE key = ?', DISCREET_KEY);
-  return row?.value === '1';
+  // Sem escolha salva = discreto: texto de saúde só aparece se a pessoa desligar este modo.
+  return row?.value !== '0';
 }
 
 export async function setDiscreet(db: SqlExecutor, discreet: boolean): Promise<void> {
