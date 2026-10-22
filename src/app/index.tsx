@@ -1,5 +1,5 @@
 import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
@@ -34,6 +34,9 @@ export default function HomeScreen() {
       <SafeAreaView style={styles.safeArea}>
         <ThemedView style={styles.heroSection}>
           <AnimatedIcon />
+          <Text className="rounded-full bg-rose-500 px-4 py-1 text-base font-bold text-white">
+            Ciclo Livre
+          </Text>
           <ThemedText type="title" style={styles.title}>
             Welcome to&nbsp;Expo
           </ThemedText>
