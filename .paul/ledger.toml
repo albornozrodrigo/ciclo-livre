@@ -224,3 +224,32 @@ at = "2026-10-22"
 action = "transition"
 phase = 4
 at = "2026-10-22"
+
+[[entry]]
+action = "plan"
+phase = 5
+plan = "05-02"
+at = "2026-10-22"
+
+[[entry]]
+action = "apply"
+phase = 5
+plan = "05-02"
+at = "2026-10-22"
+
+[[entry]]
+action = "unify"
+phase = 5
+plan = "05-02"
+at = "2026-10-22"
+
+[[entry]]
+action = "transition"
+phase = 5
+at = "2026-10-22"
+
+[[entry]]
+action = "plan"
+phase = 6
+plan = "06-01"
+at = "2026-10-22"
