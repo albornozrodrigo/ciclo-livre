@@ -75,7 +75,8 @@ export function CycleBars({ history, summary }: { history: CycleRow[]; summary: 
       <BarChart
         bars={bars}
         reference={summary.mean}
-        referenceLabel={`${a.mean(summary.mean)} · ${a.periodLegend} ${a.tapHint}`}
+        referenceTag={a.mean(summary.mean)}
+        referenceLabel={`${a.periodLegend} ${a.tapHint}`}
         summary={a.chartSummary(summary.count, summary.mean, summary.min, summary.max)}
         restingLabel={a.lastComplete}
       />

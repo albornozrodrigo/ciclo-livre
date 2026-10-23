@@ -44,9 +44,17 @@ export default function HojeScreen() {
   const cycle = useTodayCycle(state.status === 'ready' ? state.profile : null);
   // O território de Hoje é a fase de hoje; sem fase (gravidez, sem dados) fica o sol.
   const territory = cycle?.kind === 'cycle' ? PHASE_TERRITORY[cycle.phase] : 'sun';
+  // A fase que vem depois, com o nome escrito (cor de fase nunca sozinha).
+  const next =
+    cycle?.kind === 'cycle' && cycle.nextPhase
+      ? {
+          territory: PHASE_TERRITORY[cycle.nextPhase.phase],
+          label: ptBR.cycle.nextPhase(ptBR.cycle.phases[cycle.nextPhase.phase].toLowerCase(), cycle.nextPhase.inDays),
+        }
+      : undefined;
 
   return (
-    <Screen screen="hoje" territory={territory} shape={0}>
+    <Screen screen="hoje" territory={territory} shape={0} secondary={next}>
       <View className="gap-8">
         {cycle ? <CycleCard view={cycle} /> : null}
         {/* Registrar logo depois do essencial: o caminho mais comum fica sempre à vista. */}

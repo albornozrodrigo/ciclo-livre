@@ -118,4 +118,10 @@ describe('Calendário › acessibilidade', () => {
     const futureDay = screen.getAllByRole('button', { name: /^\d+ de / })[10];
     expect(futureDay).toBeDisabled();
   });
+  it('hoje tem a marca de sol (e a legenda explica)', async () => {
+    await renderCalendar();
+    // Uma no dia de hoje, outra na legenda.
+    expect(await screen.findAllByTestId('today-mark', { includeHiddenElements: true })).toHaveLength(2);
+    expect(screen.getByText(cal.legend.today)).toBeOnTheScreen();
+  });
 });

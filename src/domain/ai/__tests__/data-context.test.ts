@@ -47,6 +47,7 @@ const base: ContextInput = {
     fertile: { start: '2026-10-20', end: '2026-10-25' },
     confidence: 'medium',
     painDays: [],
+    nextPhase: null,
   },
   summary,
   history: [row('2026-10-12', null, 3), row('2026-09-22', 20, 5), row('2026-08-24', 29, 5)],
@@ -83,7 +84,11 @@ describe('buildDataContext', () => {
   });
 
   it('nota com "<" não perde o resto', () => {
-    const t = buildDataContext({ ...base, notes: [{ date: '2026-10-13', text: 'cólica <3 dias, tomei chá' }] }, { cycles: 6, includeNotes: true }, labels).text;
+    const t = buildDataContext(
+      { ...base, notes: [{ date: '2026-10-13', text: 'cólica <3 dias, tomei chá' }] },
+      { cycles: 6, includeNotes: true },
+      labels,
+    ).text;
     expect(t).toContain('13/10/2026: cólica ‹3 dias, tomei chá');
   });
 

@@ -107,6 +107,13 @@ describe('Hoje › ciclo', () => {
     expect(screen.getByText(c.disclaimer)).toBeOnTheScreen();
   });
 
+  it('o lobo da próxima fase vem com o nome dela escrito e quando começa', async () => {
+    await seedCycles();
+    await renderHoje();
+    expect(await screen.findByText(c.nextPhase(c.phases.menstruation.toLowerCase(), 2))).toBeOnTheScreen();
+    expect(screen.getByTestId('lobe-next', { includeHiddenElements: true })).toBeTruthy();
+  });
+
   it('sem menstruação registrada convida a registrar', async () => {
     await renderHoje();
 

@@ -510,7 +510,7 @@ export const ptBR = {
       ovulation: 'Anel: ovulação estimada',
       predicted: 'Contorno tracejado: previsão',
       logged: 'Ponto: dia com registro',
-      today: 'Sublinhado: hoje',
+      today: 'Hoje',
     },
   },
   cycle: {
@@ -521,6 +521,7 @@ export const ptBR = {
       luteal: 'Fase lútea',
     },
     dayOfCycle: (n: number) => `Dia ${n} do ciclo`,
+    nextPhase: (name: string, inDays: number) => `Depois: ${name}, ${inDays === 1 ? 'amanhã' : `em ${inDays} dias`}`,
     // Sempre aproximado: a margem vem logo abaixo (princípio de honestidade sobre incerteza).
     nextIn: (n: number) =>
       n === 0

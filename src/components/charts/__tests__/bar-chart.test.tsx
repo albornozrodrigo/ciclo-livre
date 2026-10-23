@@ -11,7 +11,16 @@ const bars = [
 ];
 
 async function renderChart(list = bars) {
-  const result = await render(<BarChart bars={list} reference={29} referenceLabel="média 29" summary="resumo" restingLabel="último completo" />);
+  const result = await render(
+    <BarChart
+      bars={list}
+      reference={29}
+      referenceTag="média 29"
+      referenceLabel="legenda"
+      summary="resumo"
+      restingLabel="último completo"
+    />,
+  );
   await fireEvent(screen.getByLabelText('resumo').parent!, 'layout', { nativeEvent: { layout: { width: 300, height: 140 } } });
   return result;
 }
@@ -22,6 +31,16 @@ const ink = processColor(Palette.light.ink);
 const muted = processColor(Palette.light.inkMuted);
 
 describe('BarChart', () => {
+  it('"média 29" fica na ponta da linha de referência, numa calha à direita que nenhuma barra ocupa', async () => {
+    await renderChart();
+    const tag = screen.getByTestId('reference-tag', { includeHiddenElements: true });
+    expect(tag).toHaveTextContent('média 29');
+    // Linha em y(29) = 140 − 29/33 × 140 ≈ 17: a etiqueta fica centrada nela.
+    expect(tag.props.style).toEqual(expect.objectContaining({ position: 'absolute', right: 0, top: expect.any(Number) }));
+    const lastBar = screen.getByTestId('bar-b', { includeHiddenElements: true });
+    expect(lastBar.props.x + lastBar.props.width).toBeLessThanOrEqual(300 - 52);
+  });
+
   it('sem toque, o rótulo mostra a barra destacada com o texto de repouso', async () => {
     await renderChart();
     expect(screen.getByText('Ciclo B: 30 dias · último completo')).toBeOnTheScreen();
@@ -38,7 +57,16 @@ describe('BarChart', () => {
   it('se a barra tocada some dos dados, volta para a destacada', async () => {
     const { rerender } = await renderChart();
     await fireEvent.press(screen.getByRole('button', { name: 'Ciclo A: 28 dias' }));
-    await rerender(<BarChart bars={[bars[1]]} reference={29} referenceLabel="média 29" summary="resumo" restingLabel="último completo" />);
+    await rerender(
+      <BarChart
+        bars={[bars[1]]}
+        reference={29}
+        referenceTag="média 29"
+        referenceLabel="legenda"
+        summary="resumo"
+        restingLabel="último completo"
+      />,
+    );
     expect(fillOf('b')).toBe(ink);
     expect(screen.getByText('Ciclo B: 30 dias · último completo')).toBeOnTheScreen();
   });

@@ -3,8 +3,15 @@ import type { Profile } from '@/domain/profile';
 
 const TODAY = '2026-10-22';
 const profile: Profile = {
-  birthYear: 1995, mode: 'period', lastPeriodStart: null, periodLength: 5, cycleLength: 28,
-  regularity: 'unknown', dueDate: null, tryingSince: null, birthControl: null,
+  birthYear: 1995,
+  mode: 'period',
+  lastPeriodStart: null,
+  periodLength: 5,
+  cycleLength: 28,
+  regularity: 'unknown',
+  dueDate: null,
+  tryingSince: null,
+  birthControl: null,
 };
 const signals = {
   flowDates: ['2026-08-01', '2026-08-02', '2026-08-29', '2026-08-30', '2026-09-26', '2026-09-27'],
@@ -26,7 +33,15 @@ describe('todayCycleView', () => {
       fertile: { start: '2026-11-02', end: '2026-11-08' },
       confidence: 'medium',
       painDays: ['2026-10-24'],
+      nextPhase: { phase: 'menstruation', inDays: 2 },
     });
+  });
+
+  it('próxima fase: qual é e em quantos dias começa', () => {
+    // Dia 8 do ciclo de 26/09: folicular hoje, janela fértil começa em 5/10.
+    const view = todayCycleView(profile, signals, '2026-10-03');
+    expect(view.kind === 'cycle' && view.phase).toBe('follicular');
+    expect(view.kind === 'cycle' && view.nextPhase).toEqual({ phase: 'fertile', inDays: 2 });
   });
 
   it('durante a janela fértil mostra a janela atual', () => {

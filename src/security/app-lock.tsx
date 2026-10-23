@@ -6,6 +6,7 @@ import { AppState, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CapsuleButton } from '@/components/ui/capsule-button';
+import { StaticLobe, useLobeHeight } from '@/components/ui/lobe';
 import { useSnackbar } from '@/components/ui/snackbar';
 import { getSecuritySettings, type SecuritySettings, setAppLock, setHideRecents } from '@/db/security-settings-repo';
 import { ptBR } from '@/i18n/pt-BR';
@@ -90,23 +91,30 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
 
 function LockScreen({ onUnlock, failed }: { onUnlock: () => void; failed: boolean }) {
   const insets = useSafeAreaInsets();
+  const lobeHeight = useLobeHeight();
   return (
-    <View
-      style={{ paddingTop: insets.top + 32, paddingBottom: insets.bottom + 16 }}
-      className="flex-1 justify-between bg-water px-5 dark:bg-water-night">
-      <StatusBar style="auto" />
-      <View className="gap-3">
-        <Text accessibilityRole="header" className="text-[32px] font-bold leading-[34px] tracking-[-0.96px] text-ink dark:text-ink-night">
-          {s.locked}
-        </Text>
-        <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{s.lockedHint}</Text>
-        {failed ? (
-          <Text accessibilityLiveRegion="polite" className="text-base font-bold leading-6 text-ink dark:text-ink-night">
-            {s.unlockFailed}
+    <View style={{ paddingBottom: insets.bottom + 16 }} className="flex-1 justify-between bg-water dark:bg-water-night">
+      {/* Sobre o lobo de sol os ícones da barra são escuros. Sol: começo neutro, sem cor de fase. */}
+      <StatusBar style="dark" />
+      <StaticLobe territory="sun" shape={2} />
+      <View>
+        <View style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }} className="px-5">
+          <Text accessibilityRole="header" className="text-[44px] font-bold leading-[42px] tracking-[-1.76px] text-ink">
+            {s.locked}
           </Text>
-        ) : null}
+        </View>
+        <View className="gap-3 px-5 pt-8">
+          <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{s.lockedHint}</Text>
+          {failed ? (
+            <Text accessibilityLiveRegion="polite" className="text-base font-bold leading-6 text-ink dark:text-ink-night">
+              {s.unlockFailed}
+            </Text>
+          ) : null}
+        </View>
       </View>
-      <CapsuleButton label={s.unlock} onPress={onUnlock} />
+      <View className="px-5">
+        <CapsuleButton label={s.unlock} onPress={onUnlock} />
+      </View>
     </View>
   );
 }

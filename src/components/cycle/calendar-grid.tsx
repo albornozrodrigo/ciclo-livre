@@ -50,15 +50,21 @@ function DayCell({ cell, onPress, disabled }: { cell: CalendarCell; onPress: (ce
       className="h-16 flex-1 items-center justify-center active:opacity-70">
       <View className={`h-12 w-12 items-center justify-center rounded-full ${ring}`}>
         <View className={`h-10 w-10 items-center justify-center rounded-full ${tint ?? ''}`}>
-        <Text
-          className={dayTextClass(cell, Boolean(tint))}>
-          {day}
-        </Text>
+          <Text className={dayTextClass(cell, Boolean(tint))}>{day}</Text>
         </View>
       </View>
-      <View className={cell.logged ? 'mt-0.5 h-1.5 w-1.5 rounded-full bg-ink dark:bg-ink-night' : 'mt-0.5 h-1.5 w-1.5'} />
+      {/* Linha de marcas: sol de hoje (com contorno de tinta: sol sobre água sozinho não dá contraste) e ponto de registro. */}
+      <View className="mt-0.5 h-1.5 flex-row items-center gap-1">
+        {cell.today ? <TodayMark /> : null}
+        {cell.logged ? <View className="h-1.5 w-1.5 rounded-full bg-ink dark:bg-ink-night" /> : null}
+      </View>
     </Pressable>
   );
+}
+
+/** Marca de hoje: cápsula de sol com filete de tinta. */
+function TodayMark() {
+  return <View testID="today-mark" className="h-1.5 w-4 rounded-full border border-ink bg-sun dark:border-ink-night dark:bg-sun-night" />;
 }
 
 /** `isDisabled`: dias que não abrem nada (ex.: futuro) são anunciados como desativados. */
@@ -108,7 +114,12 @@ export function CalendarLegend() {
       {item('h-5 w-5 border-[2.5px] border-ink dark:border-ink-night', cal.legend.ovulation)}
       {item('h-5 w-5 bg-coral border-2 border-dashed border-ink dark:bg-coral-night dark:border-ink-night', cal.legend.predicted)}
       {item('h-1.5 w-1.5 bg-ink dark:bg-ink-night', cal.legend.logged)}
-      <Text className="text-sm font-bold text-ink underline dark:text-ink-night">{cal.legend.today}</Text>
+      <View className="flex-row items-center gap-2">
+        <View className="h-5 w-5 items-center justify-center">
+          <TodayMark />
+        </View>
+        <Text className="text-sm font-bold text-ink underline dark:text-ink-night">{cal.legend.today}</Text>
+      </View>
     </View>
   );
 }

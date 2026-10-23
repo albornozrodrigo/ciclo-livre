@@ -1,4 +1,4 @@
-import { daysBetween, type IsoDate } from '@/domain/dates';
+import { addDays, daysBetween, type IsoDate } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 
 import { cycleModelFor } from './for-profile';
@@ -22,7 +22,18 @@ export type TodayView =
       fertile: { start: IsoDate; end: IsoDate };
       confidence: Confidence;
       painDays: IsoDate[];
+      /** Fase que vem depois da de hoje e em quantos dias ela começa (lobo secundário de Hoje). */
+      nextPhase: { phase: Phase; inDays: number } | null;
     };
+
+/** Procura o primeiro dia à frente com outra fase (no máximo um ciclo longo). */
+function findNextPhase(model: NonNullable<ReturnType<typeof cycleModelFor>>, phase: Phase, today: IsoDate) {
+  for (let d = 1; d <= 60; d++) {
+    const info = dayInfo(model, addDays(today, d), today);
+    if (info && info.phase !== phase) return { phase: info.phase, inDays: d };
+  }
+  return null;
+}
 
 /** O que a tela Hoje mostra sobre o ciclo, por modo. Função pura: `today` injetado. */
 export function todayCycleView(profile: Profile, signals: CycleSignals, today: IsoDate): TodayView {
@@ -48,5 +59,6 @@ export function todayCycleView(profile: Profile, signals: CycleSignals, today: I
     fertile,
     confidence: model.confidence,
     painDays: predictPainDays(model.periods, signals.painDates, model.next.start),
+    nextPhase: findNextPhase(model, info.phase, today),
   };
 }

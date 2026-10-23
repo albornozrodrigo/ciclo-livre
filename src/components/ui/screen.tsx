@@ -1,26 +1,32 @@
 import { useIsFocused } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { type ReactNode, useState } from 'react';
-import { type NativeScrollEvent, type NativeSyntheticEvent, ScrollView, Text, View } from 'react-native';
+import { type NativeScrollEvent, type NativeSyntheticEvent, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type Territory } from '@/constants/theme';
 import { ptBR, type ScreenKey } from '@/i18n/pt-BR';
 
-import { Lobe, type LobeShape, useLobeHeight } from './lobe';
+import { Lobe, type LobeShape, SIDE_BLEED_RIGHT, SIDE_SCALE, SideLobe, useLobeHeight } from './lobe';
 
 type Props = {
   screen: ScreenKey;
   territory: Territory;
   shape?: LobeShape;
+  /** Território que vem depois (lobo menor, sobreposto pelo dominante), sempre com o nome escrito. */
+  secondary?: { territory: Territory; label: string };
   /** Conteúdo da tela, abaixo do texto de apresentação. */
   children?: ReactNode;
 };
 
 /** Tela de aba: um território dominante com o nome dentro, e o conteúdo sobre a água. */
-export function Screen({ screen, territory, shape = 0, children }: Props) {
+export function Screen({ screen, territory, shape = 0, secondary, children }: Props) {
   const insets = useSafeAreaInsets();
   const lobeHeight = useLobeHeight();
+  const { width } = useWindowDimensions();
+  // O lobo secundário começa um pouco acima da borda do dominante, que o sobrepõe.
+  const sideTop = lobeHeight * 0.62;
+  const sideSize = width * SIDE_SCALE;
   const copy = ptBR.screens[screen];
   const focused = useIsFocused();
   // Depois que o lobo sai por baixo da barra de status, o texto passaria sob os ícones.
@@ -41,7 +47,16 @@ export function Screen({ screen, territory, shape = 0, children }: Props) {
         scrollEventThrottle={32}
         className="flex-1"
         contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
+        {secondary ? <SideLobe territory={secondary.territory} top={sideTop} /> : null}
         <Lobe territory={territory} shape={shape} />
+        {secondary ? (
+          // Nome escrito sobre a parte visível do lobo secundário (cor de fase sempre com rótulo).
+          <Text
+            style={{ position: 'absolute', top: sideTop + sideSize * 0.5, right: 20, width: sideSize * (1 - SIDE_BLEED_RIGHT) - 36 }}
+            className="text-right text-sm font-bold leading-5 text-ink">
+            {secondary.label}
+          </Text>
+        ) : null}
 
         <View style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }} className="px-5">
           <Text
