@@ -1,4 +1,4 @@
-import { Appearance } from 'react-native';
+import { Appearance, Platform } from 'react-native';
 
 import { applySavedTheme, getSavedTheme, saveTheme } from '@/appearance/theme';
 
@@ -14,6 +14,7 @@ jest.mock('expo-secure-store', () => ({
 jest.mock('@/lib/logger', () => ({ log: { error: jest.fn() } }));
 
 beforeEach(() => {
+  jest.replaceProperty(Platform, 'OS', 'android');
   mockStore.clear();
   mockFail = false;
   jest.spyOn(Appearance, 'setColorScheme').mockImplementation(() => undefined);
@@ -43,5 +44,12 @@ describe('tema', () => {
     mockFail = true;
     expect(() => saveTheme('light')).not.toThrow();
     expect(Appearance.setColorScheme).toHaveBeenLastCalledWith('light');
+  });
+
+  it('fora do Android (web, render do build) não tenta ler nem aplicar o tema', () => {
+    jest.replaceProperty(Platform, 'OS', 'web');
+    jest.mocked(Appearance.setColorScheme).mockClear();
+    applySavedTheme();
+    expect(Appearance.setColorScheme).not.toHaveBeenCalled();
   });
 });

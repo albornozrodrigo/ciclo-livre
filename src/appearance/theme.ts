@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { Appearance } from 'react-native';
+import { Appearance, Platform } from 'react-native';
 
 import { log } from '@/lib/logger';
 
@@ -21,9 +21,15 @@ export function getSavedTheme(): Theme {
 }
 
 /** Claro/escuro força o modo nativo também (seletores de data, barras); sistema remove a escolha. */
-const apply = (theme: Theme) => Appearance.setColorScheme(theme === 'system' ? 'auto' : theme);
+const apply = (theme: Theme) => {
+  // Fora do app nativo (web, render no servidor durante o build) não há esquema de cor para forçar.
+  if (typeof Appearance.setColorScheme !== 'function') return;
+  Appearance.setColorScheme(theme === 'system' ? 'auto' : theme);
+};
 
+/** Roda quando o app carrega; só no Android (no build e na web não há SecureStore nem tema nativo). */
 export function applySavedTheme(): void {
+  if (Platform.OS !== 'android') return;
   apply(getSavedTheme());
 }
 
