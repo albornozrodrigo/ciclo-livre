@@ -32,7 +32,7 @@ Phases: 10 of 11 complete
 | 8 | Conteúdo + busca + resumo IA + importar do Clue | 4 | ✅ Complete | 2026-10-23 |
 | 9 | Chat com seus dados (IA BYOK) | 2 | ✅ Complete | 2026-10-23 |
 | 10 | Wearables (Health Connect) | 2 | ✅ Complete | 2026-10-23 |
-| 11 | Personalização + release | TBD | Not started | - |
+| 11 | Personalização + release | 5 | Planning | - |
 
 ## Phase Details
 
@@ -133,8 +133,17 @@ Phases: 10 of 11 complete
 **Goal:**
 - Ícones alternativos e temas, todos liberados.
 - Build de release via EAS rodando em aparelho real.
+- Política de privacidade no app (texto com no-ai-slop; também aberta pelo diálogo do Health Connect), trava do app e Recentes escondidos.
+- Polimento das pendências acumuladas.
 **Depends on:** Phases 1–10
-**Research:** Likely (ícone alternativo no Android via config plugin)
+**Research:** Feita (2026-10-23): ícones por plugin próprio (libs prontas desabilitam a MainActivity); expo-local-authentication + expo-screen-capture; react-native-quick-crypto para scrypt nativo; assinatura de release por plugin; tema via Appearance.setColorScheme.
+
+**Plans:**
+- [ ] 11-01: Política de privacidade + trava do app + Recentes
+- [ ] 11-02: Ícone próprio, ícones alternativos e tema
+- [ ] 11-03: Polimento funcional (pendências S)
+- [ ] 11-04: Polimento visual (teto de design adiado)
+- [ ] 11-05: Release (KDF nativo, permissões, assinatura, /cso completo)
 
 ---
 *Roadmap created: 2026-10-22*

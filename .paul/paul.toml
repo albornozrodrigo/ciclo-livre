@@ -21,9 +21,9 @@ status = "in_progress"
 plans_completed = 1
 
 [loop]
-position = "IDLE"
-plan = "10-02"
-plan_path = "phases/10-health-connect/10-02-PLAN.md"
+position = "PLAN"
+plan = "11-01"
+plan_path = "phases/11-personalizacao-release/11-01-PLAN.md"
 
 [satellite]
 groom = true

@@ -16,10 +16,10 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 11 of 11 (Personalização + release) — Not started
-Plan: nenhum ainda
-Status: fase 10 fechada; próximo PLAN da fase 11
-Last activity: 2026-10-23 — fase 10 (Health Connect) fechada com revisões
+Phase: 11 of 11 (Personalização + release) — Planning
+Plan: 11-01..11-05 criados; 11-01 a executar
+Status: PLAN criado, pronto para APPLY 11-01
+Last activity: 2026-10-23 — planos da fase 11 criados
 
 Progress:
 - Milestone: [█████████░] 91%
@@ -29,7 +29,7 @@ Progress:
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [fase 10 fechada; próximo: PLAN da fase 11]
+  ✓        ○        ○     [planos 11-01..05 criados; próximo: APPLY 11-01]
 ```
 
 ## Accumulated Context
@@ -63,6 +63,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Health Connect: só leitura, 30 dias, app vence no mesmo dia; react-native-health-connect 4.1.3 (plugin próprio); minSdk 26 | 10 plan | Phones abaixo do Android 8 deixam de ser suportados |
 | Origem do Health Connect por dia/categoria (`health_origin`, v7): reimport atualiza só o que ainda é dele | 10 review | Edição ou exclusão da pessoa sempre vence |
 | Desconectar o Health Connect também revoga a permissão (vale após reiniciar; o app para de ler na hora) | 10 review | Recomendação da biblioteca + privacidade |
+| Ícones alternativos por plugin + módulo local, MainActivity sempre habilitada | 11 plan | Libs prontas quebram deep link/notificação |
+| Release local assinado com chave própria (EAS só se a pessoa fizer login) | 11 plan | Checkpoint para guardar a chave |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -103,9 +105,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-23
-Stopped at: fase 10 completa
-Next action: /paul:plan (fase 11 — personalização + release)
-Resume file: .paul/ROADMAP.md
+Stopped at: planos da fase 11 criados
+Next action: /paul:apply .paul/phases/11-personalizacao-release/11-01-PLAN.md
+Resume file: .paul/phases/11-personalizacao-release/11-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

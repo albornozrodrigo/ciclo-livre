@@ -477,3 +477,15 @@ action = "unify"
 phase = 10
 plan = "10-01"
 at = "2026-10-23"
+
+[[entry]]
+action = "unify"
+phase = 10
+plan = "10-02"
+at = "2026-10-23"
+
+[[entry]]
+action = "plan"
+phase = 11
+plan = "11-01..11-05"
+at = "2026-10-23"
