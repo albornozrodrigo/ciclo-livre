@@ -21,7 +21,6 @@ export type HealthImport = {
   selections: { date: IsoDate; category: 'sleep'; option: string }[];
   /** Registros descartados (valor fora da faixa, data absurda, sessão inválida). */
   dropped: number;
-  days: number;
 };
 
 /** Fuso do aparelho (segundos) num instante; injetado para teste. */
@@ -29,19 +28,26 @@ export type DeviceOffset = (iso: string) => number;
 export const deviceOffset: DeviceOffset = (iso) => -new Date(iso).getTimezoneOffset() * 60;
 
 const MAX_SLEEP_MS = 24 * 60 * 60 * 1000;
+/** Fuso válido no Android: ±18h. */
+const MAX_OFFSET_S = 18 * 3600;
+/** Teto por tipo: 30 dias de um relógio cabem com folga; um app que grava em massa não trava a importação. */
+export const MAX_SAMPLES = 5_000;
 
 /** Data de calendário local do instante (fuso do registro ou do aparelho), ou null se inválida. */
 function localDate(iso: string, offsetSeconds: number | undefined, device: DeviceOffset): IsoDate | null {
   const ms = Date.parse(iso);
-  if (!Number.isFinite(ms)) return null;
-  const date = new Date(ms + (offsetSeconds ?? device(iso)) * 1000).toISOString().slice(0, 10);
+  const offset = offsetSeconds ?? device(iso);
+  if (!Number.isFinite(ms) || !Number.isFinite(offset) || Math.abs(offset) > MAX_OFFSET_S) return null;
+  const shifted = new Date(ms + offset * 1000);
+  if (Number.isNaN(shifted.getTime())) return null;
+  const date = shifted.toISOString().slice(0, 10);
   return isValidDate(date) ? date : null;
 }
 
 type Reducer = (values: { ms: number; value: number }[]) => number;
 const last: Reducer = (v) => v.reduce((a, b) => (b.ms >= a.ms ? b : a)).value;
 const first: Reducer = (v) => v.reduce((a, b) => (b.ms < a.ms ? b : a)).value;
-const lowest: Reducer = (v) => Math.min(...v.map((x) => x.value));
+const lowest: Reducer = (v) => v.reduce((m, x) => Math.min(m, x.value), Infinity);
 const mean: Reducer = (v) => v.reduce((a, b) => a + b.value, 0) / v.length;
 
 /** Soma de intervalos sem contar duas vezes o que se sobrepõe. */
@@ -67,12 +73,13 @@ function unionMs(intervals: [number, number][]): number {
 export function mapHealthConnect(input: HealthInput, device: DeviceOffset = deviceOffset): HealthImport {
   const measures: HealthImport['measures'] = [];
   const selections: HealthImport['selections'] = [];
-  const dates = new Set<IsoDate>();
   let dropped = 0;
 
   const daily = (samples: InstantSample[] | undefined, category: string, pick: Reducer) => {
     const byDay = new Map<IsoDate, { ms: number; value: number }[]>();
-    for (const s of samples ?? []) {
+    const all = samples ?? [];
+    dropped += Math.max(0, all.length - MAX_SAMPLES);
+    for (const s of all.slice(0, MAX_SAMPLES)) {
       const date = localDate(s.time, s.offsetSeconds, device);
       if (!date || !Number.isFinite(s.value)) {
         dropped += 1;
@@ -91,7 +98,6 @@ export function mapHealthConnect(input: HealthInput, device: DeviceOffset = devi
         continue;
       }
       measures.push({ date, category, value });
-      dates.add(date);
     }
   };
 
@@ -101,7 +107,9 @@ export function mapHealthConnect(input: HealthInput, device: DeviceOffset = devi
   daily(input.hrv, 'hrv', mean);
 
   const nights = new Map<IsoDate, [number, number][]>();
-  for (const s of input.sleep ?? []) {
+  const sessions = input.sleep ?? [];
+  dropped += Math.max(0, sessions.length - MAX_SAMPLES);
+  for (const s of sessions.slice(0, MAX_SAMPLES)) {
     const start = Date.parse(s.startTime);
     const end = Date.parse(s.endTime);
     const date = localDate(s.endTime, s.endOffsetSeconds, device);
@@ -109,14 +117,15 @@ export function mapHealthConnect(input: HealthInput, device: DeviceOffset = devi
       dropped += 1;
       continue;
     }
-    nights.set(date, [...(nights.get(date) ?? []), [start, end]]);
+    const list = nights.get(date) ?? [];
+    list.push([start, end]);
+    nights.set(date, list);
   }
   for (const [date, intervals] of nights) {
     selections.push({ date, category: 'sleep', option: sleepBucket(unionMs(intervals) / 60_000) });
-    dates.add(date);
   }
 
   measures.sort((a, b) => (a.date === b.date ? a.category.localeCompare(b.category) : a.date < b.date ? -1 : 1));
   selections.sort((a, b) => (a.date < b.date ? -1 : 1));
-  return { measures, selections, dropped, days: dates.size };
+  return { measures, selections, dropped };
 }

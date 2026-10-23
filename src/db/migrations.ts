@@ -101,6 +101,18 @@ export const MIGRATIONS: Migration[] = [
       ) STRICT`,
     ],
   },
+  {
+    // Valor que o Health Connect gravou em cada dia e categoria: reimportar atualiza só o que ainda é dele.
+    version: 7,
+    statements: [
+      `CREATE TABLE health_origin (
+        date TEXT NOT NULL,
+        category TEXT NOT NULL,
+        value TEXT NOT NULL,
+        PRIMARY KEY (date, category)
+      ) STRICT`,
+    ],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

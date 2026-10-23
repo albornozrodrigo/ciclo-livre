@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import MaisScreen from '@/app/(tabs)/mais';
@@ -103,7 +103,13 @@ describe('Mais › apagar todos os dados', () => {
 });
 
 describe('Mais › Health Connect', () => {
-  it('leva à tela do Health Connect', async () => {
+  it('fora do Android não aparece', async () => {
+    await renderMais();
+    expect(screen.queryByText(ptBR.health.section)).toBeNull();
+  });
+
+  it('no Android leva à tela do Health Connect', async () => {
+    jest.replaceProperty(Platform, 'OS', 'android');
     await renderMais();
     await fireEvent.press(screen.getByRole('button', { name: new RegExp(ptBR.health.maisHint) }));
     expect(mockPush).toHaveBeenCalledWith('/health');

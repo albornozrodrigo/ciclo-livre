@@ -47,7 +47,7 @@ async function seeded() {
 describe('exportAll', () => {
   it('formato aberto e versionado, com tudo da pessoa', async () => {
     const data = await exportAll(await seeded(), NOW);
-    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 6, profile });
+    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 7, profile });
     expect(data.selections).toEqual([
       { date: '2026-10-12', category: 'pain', option: 'back' },
       { date: '2026-10-12', category: 'pain', option: 'cramps' },

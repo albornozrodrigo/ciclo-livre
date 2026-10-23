@@ -5,8 +5,10 @@ import {
   openHealthConnectSettings,
   readRecords,
   requestPermission,
+  revokeAllPermissions,
   SdkAvailabilityStatus,
 } from 'react-native-health-connect';
+import { Platform } from 'react-native';
 
 import { HEALTH_TYPES, type HealthType } from '@/db/health-settings-repo';
 import type { HealthInput, InstantSample, SleepSample } from '@/domain/health/health-import';
@@ -26,6 +28,8 @@ const MAX_PAGES = 50;
 export type HealthStatus = 'available' | 'needs_update' | 'unavailable';
 
 export async function healthStatus(): Promise<HealthStatus> {
+  // Health Connect só existe no Android.
+  if (Platform.OS !== 'android') return 'unavailable';
   const status = await getSdkStatus();
   if (status === SdkAvailabilityStatus.SDK_AVAILABLE) return 'available';
   if (status === SdkAvailabilityStatus.SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED) return 'needs_update';
@@ -60,6 +64,11 @@ export function openHealthSettings(): void {
   openHealthConnectSettings();
 }
 
+/** Tira a permissão no Health Connect (vale depois que o app reinicia; até lá o app já não lê por conta própria). */
+export async function revokeHealth(): Promise<void> {
+  await revokeAllPermissions();
+}
+
 type AnyRecord = Record<string, unknown>;
 const offsetOf = (z: unknown) =>
   z && typeof z === 'object' && typeof (z as { totalSeconds?: unknown }).totalSeconds === 'number'
@@ -67,7 +76,7 @@ const offsetOf = (z: unknown) =>
     : undefined;
 const num = (v: unknown) => (typeof v === 'number' ? v : Number.NaN);
 
-async function readAll(type: HealthType, from: Date, to: Date): Promise<AnyRecord[]> {
+async function readAll(type: HealthType, from: Date, to: Date): Promise<{ records: AnyRecord[]; truncated: boolean }> {
   const out: AnyRecord[] = [];
   let pageToken: string | undefined;
   for (let page = 0; page < MAX_PAGES; page++) {
@@ -79,17 +88,22 @@ async function readAll(type: HealthType, from: Date, to: Date): Promise<AnyRecor
     pageToken = result.pageToken || undefined;
     if (!pageToken) break;
   }
-  return out;
+  return { records: out, truncated: pageToken !== undefined };
 }
 
 const instant = (r: AnyRecord, value: number): InstantSample => ({ time: String(r.time), offsetSeconds: offsetOf(r.zoneOffset), value });
 
-/** Lê os tipos pedidos no intervalo e converte para a entrada do domínio. Nunca registra valores em log. */
-export async function readHealth(types: readonly HealthType[], from: Date, to: Date): Promise<HealthInput> {
+export type HealthRead = { input: HealthInput; truncated: boolean };
+
+/**
+ * Lê os tipos pedidos no intervalo (em paralelo) e converte para a entrada do domínio. Nunca registra valores em log.
+ * `truncated`: algum tipo passou do teto de páginas, então o que ficou de fora precisa ser lido de novo.
+ */
+export async function readHealth(types: readonly HealthType[], from: Date, to: Date): Promise<HealthRead> {
   await initialize();
+  const reads = await Promise.all(types.map(async (type) => ({ type, ...(await readAll(type, from, to)) })));
   const input: HealthInput = {};
-  for (const type of types) {
-    const records = await readAll(type, from, to);
+  for (const { type, records } of reads) {
     if (type === 'weight') input.weight = records.map((r) => instant(r, num((r.weight as AnyRecord | undefined)?.inKilograms)));
     if (type === 'temperature')
       input.basalTemperature = records.map((r) => instant(r, num((r.temperature as AnyRecord | undefined)?.inCelsius)));
@@ -102,5 +116,5 @@ export async function readHealth(types: readonly HealthType[], from: Date, to: D
         endOffsetSeconds: offsetOf(r.endZoneOffset),
       }));
   }
-  return input;
+  return { input, truncated: reads.some((r) => r.truncated) };
 }

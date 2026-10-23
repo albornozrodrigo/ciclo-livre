@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Platform, Text, View } from 'react-native';
 
 import { CoffeeSection } from '@/components/coffee-section';
 import { PrivacySection } from '@/components/privacy-section';
@@ -72,12 +72,15 @@ export default function MaisScreen() {
           </Text>
           <ListRow label={ptBR.ai.mais} detail={ptBR.ai.maisHint} onPress={() => router.push('/ia')} />
         </View>
-        <View className="gap-1">
-          <Text accessibilityRole="header" className="mb-2 text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
-            {ptBR.health.section}
-          </Text>
-          <ListRow label={ptBR.health.mais} detail={ptBR.health.maisHint} onPress={() => router.push('/health')} />
-        </View>
+        {/* Health Connect só existe no Android. */}
+        {Platform.OS === 'android' ? (
+          <View className="gap-1">
+            <Text accessibilityRole="header" className="mb-2 text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
+              {ptBR.health.section}
+            </Text>
+            <ListRow label={ptBR.health.mais} detail={ptBR.health.maisHint} onPress={() => router.push('/health')} />
+          </View>
+        ) : null}
         <PrivacySection onErase={eraseAndNotify} confirm={confirmEraseAll} />
         {/* Pedido da pessoa usuária: sempre o último item da tela. */}
         <CoffeeSection />

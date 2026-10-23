@@ -1,13 +1,16 @@
+import { Platform } from 'react-native';
+
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
 import { exportAll } from '@/db/export-repo';
 import { getHealthSettings, markHealthImported, setHealthConnected, setHealthTypes } from '@/db/health-settings-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
-import { connectHealth, healthStatus } from '@/health/health-connect';
+import { connectHealth, healthStatus, revokeHealth } from '@/health/health-connect';
 import { importFromHealthConnect, shouldAutoImport } from '@/health/import-health';
 
 const mockRead = jest.fn();
 const mockGranted = jest.fn();
 const mockRequest = jest.fn();
+const mockRevoke = jest.fn(async () => undefined);
 let mockSdk = 3;
 jest.mock('react-native-health-connect', () => ({
   SdkAvailabilityStatus: { SDK_UNAVAILABLE: 1, SDK_UNAVAILABLE_PROVIDER_UPDATE_REQUIRED: 2, SDK_AVAILABLE: 3 },
@@ -17,6 +20,7 @@ jest.mock('react-native-health-connect', () => ({
   getGrantedPermissions: () => mockGranted(),
   readRecords: (...a: unknown[]) => mockRead(...a),
   openHealthConnectSettings: jest.fn(),
+  revokeAllPermissions: () => mockRevoke(),
 }));
 
 const NOW = new Date('2026-10-23T12:00:00Z');
@@ -40,7 +44,13 @@ beforeEach(async () => {
 });
 
 describe('healthStatus', () => {
+  it('fora do Android: indisponível, sem chamar o SDK', async () => {
+    jest.replaceProperty(Platform, 'OS', 'ios');
+    expect(await healthStatus()).toBe('unavailable');
+  });
+
   it('traduz o estado do SDK', async () => {
+    jest.replaceProperty(Platform, 'OS', 'android');
     expect(await healthStatus()).toBe('available');
     mockSdk = 2;
     expect(await healthStatus()).toBe('needs_update');
@@ -107,6 +117,41 @@ describe('importFromHealthConnect', () => {
   });
 });
 
+describe('importFromHealthConnect — bordas', () => {
+  it('último import no futuro (relógio adiantado e corrigido): lê os 30 dias de agora', async () => {
+    await setHealthConnected(db, true);
+    await markHealthImported(db, new Date('2027-01-01T00:00:00Z'));
+    await importFromHealthConnect(db, NOW);
+    expect(mockRead.mock.calls[0][1].timeRangeFilter.startTime).toBe('2026-09-23T12:00:00.000Z');
+  });
+
+  it('leitura cortada pelo teto de páginas: grava o que veio, mas não avança o último import', async () => {
+    await setHealthConnected(db, true);
+    await setHealthTypes(db, ['weight']);
+    mockGranted.mockResolvedValue([perm('Weight')]);
+    mockRead.mockResolvedValue({ records: [{ time: '2026-10-20T10:00:00Z', weight: { inKilograms: 64 } }], pageToken: 'mais' });
+    expect((await importFromHealthConnect(db, NOW))?.added).toEqual({ weight: 1 });
+    expect((await getHealthSettings(db)).lastImport).toBeNull();
+  });
+
+  it('desconectar no meio da leitura: nada é gravado', async () => {
+    await setHealthConnected(db, true);
+    mockRead.mockImplementation(async () => {
+      await setHealthConnected(db, false);
+      return { records: [{ time: '2026-10-20T10:00:00Z', weight: { inKilograms: 64 } }] };
+    });
+    expect(await importFromHealthConnect(db, NOW)).toBeNull();
+    expect((await exportAll(db, NOW)).measures).toEqual([]);
+  });
+});
+
+describe('revokeHealth', () => {
+  it('tira a permissão no Health Connect', async () => {
+    await revokeHealth();
+    expect(mockRevoke).toHaveBeenCalled();
+  });
+});
+
 describe('shouldAutoImport', () => {
   it('só com conexão ativa e último import há mais de 6 horas', () => {
     const base = { connected: true, types: [], lastImport: null };
@@ -114,5 +159,6 @@ describe('shouldAutoImport', () => {
     expect(shouldAutoImport(base, NOW)).toBe(true);
     expect(shouldAutoImport({ ...base, lastImport: '2026-10-23T08:00:00Z' }, NOW)).toBe(false);
     expect(shouldAutoImport({ ...base, lastImport: '2026-10-23T05:00:00Z' }, NOW)).toBe(true);
+    expect(shouldAutoImport({ ...base, lastImport: '2027-01-01T00:00:00Z' }, NOW)).toBe(true);
   });
 });

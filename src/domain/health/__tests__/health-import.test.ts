@@ -80,8 +80,25 @@ describe('mapHealthConnect', () => {
     expect(out.dropped).toBe(4);
   });
 
-  it('conta os dias com algum valor', () => {
-    const out = mapHealthConnect({ weight: [at('2026-10-20T10:00:00Z', 64)], restingHeartRate: [at('2026-10-21T10:00:00Z', 60)] }, device);
-    expect(out.days).toBe(2);
+  it('fuso absurdo (fora de ±18h ou NaN) descarta o registro sem derrubar o import', () => {
+    const out = mapHealthConnect(
+      { weight: [at('2026-10-20T10:00:00Z', 64, 1e12), at('2026-10-20T11:00:00Z', 65, Number.NaN), at('2026-10-20T12:00:00Z', 66)] },
+      device,
+    );
+    expect(out.measures).toEqual([{ date: '2026-10-20', category: 'weight', value: 66 }]);
+    expect(out.dropped).toBe(2);
+  });
+
+  it('volume abusivo vindo de outro app: teto por tipo, sem travar nem estourar a pilha', () => {
+    const many = Array.from({ length: 60_000 }, (_, i) => at(new Date(Date.UTC(2026, 9, 20, 12) + i).toISOString(), 60 + (i % 5)));
+    const sleep = Array.from({ length: 60_000 }, (_, i) => ({
+      startTime: new Date(Date.UTC(2026, 9, 20, 2) + i * 1000).toISOString(),
+      endTime: new Date(Date.UTC(2026, 9, 20, 2) + i * 1000 + 500).toISOString(),
+    }));
+    const started = Date.now();
+    const out = mapHealthConnect({ restingHeartRate: many, sleep }, device);
+    expect(Date.now() - started).toBeLessThan(2000);
+    expect(out.measures).toEqual([{ date: '2026-10-20', category: 'resting_heart_rate', value: 60 }]);
+    expect(out.dropped).toBe(2 * (60_000 - 5_000));
   });
 });

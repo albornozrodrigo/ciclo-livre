@@ -61,6 +61,7 @@ export async function importAll(db: SqlExecutor, raw: unknown, now: Date = new D
         'reminder',
         'profile',
         'chat_message',
+        'health_origin',
       ]) {
         // Nomes fixos acima (não vêm do arquivo).
         await db.runAsync(`DELETE FROM ${table}`);

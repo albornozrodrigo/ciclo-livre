@@ -6,9 +6,9 @@ export const HEALTH_TYPES = ['sleep', 'temperature', 'resting_heart_rate', 'hrv'
 export type HealthType = (typeof HEALTH_TYPES)[number];
 export const isHealthType = (v: unknown): v is HealthType => typeof v === 'string' && (HEALTH_TYPES as readonly string[]).includes(v);
 
-const CONNECTED = 'hc_connected';
+export const CONNECTED = 'hc_connected';
 const TYPES = 'hc_types';
-const LAST = 'hc_last_import';
+export const LAST = 'hc_last_import';
 
 export type HealthSettings = { connected: boolean; types: HealthType[]; lastImport: string | null };
 
@@ -38,8 +38,21 @@ export async function getHealthSettings(db: SqlExecutor): Promise<HealthSettings
   return { connected: map.get(CONNECTED) === '1', types: parseTypes(map.get(TYPES)), lastImport: map.get(LAST) ?? null };
 }
 
-/** Desconectar só para de importar: o que já entrou fica (são registros da pessoa). */
-export const setHealthConnected = (db: SqlExecutor, connected: boolean) => upsert(db, CONNECTED, connected ? '1' : '0');
+/**
+ * Desconectar só para de importar: o que já entrou fica (são registros da pessoa).
+ * Mudar a conexão esquece o último import: reconectar (talvez com tipos novos) lê de novo os 30 dias.
+ */
+export const setHealthConnected = (db: SqlExecutor, connected: boolean) =>
+  enqueueWrite(db, () =>
+    db.withTransactionAsync(async () => {
+      await db.runAsync(
+        'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
+        CONNECTED,
+        connected ? '1' : '0',
+      );
+      await db.runAsync('DELETE FROM app_meta WHERE key = ?', LAST);
+    }),
+  );
 
 export async function setHealthTypes(db: SqlExecutor, types: readonly HealthType[]): Promise<void> {
   if (!types.every(isHealthType)) throw new Error('Tipo inválido.');

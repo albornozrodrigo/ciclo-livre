@@ -209,6 +209,13 @@ Plano. Não há sombras. A profundidade vem da sobreposição de territórios (u
 - **Texto exato:** título 22sp/700, quadro de contorno 1.5dp raio 28 com o texto selecionável em 16/24 (datas dd/mm/aaaa, números tabulares) e "N caracteres" em `ink-muted`. O mesmo componente aparece no consentimento e em "Ver o que é enviado". Enquanto monta: "Montando o resumo…" em região "polite".
 - **Entrada de IA numa aba:** linha de navegação (rótulo + detalhe dizendo que o texto aparece antes do envio) antes do conteúdo da aba, sem cor de território nem sol.
 - **Prévia de importação:** título 22sp/700 "O que vai entrar", período, dias e dias já existentes em linhas de 16sp; tabela de categoria × quantidade em linhas ≥56dp com filete `line`, quantidade 700 tabular, um único foco no TalkBack por linha ("Menstruação: 35"). "Não reconhecido" vem com título próprio e cada item como "Nome no Clue: “…” (N registros)" em `ink-muted`. "Importar" em sol só quando há algo novo.
+- **Health Connect (Mais → Relógio e outros apps):** tela de formulário (sem lobo), só no Android. Três estados:
+  - **Indisponível:** só o texto explicando; sem botão.
+  - **Precisa atualizar:** sol "Atualizar na Play Store" na zona do polegar.
+  - **Desconectado:** "Como funciona" em pontos de tinta, "O que ler" em linhas com interruptor e a linha "Abrir o Health Connect"; sol "Conectar".
+  - **Conectado:** "Última leitura", "Lendo: …" só com os tipos ainda liberados (sem nenhum, aviso de atenção com "Abrir o Health Connect"), linha "Abrir o Health Connect" com detalhe, "Desconectar" em contorno; sol "Importar agora".
+
+  O retorno (lendo, resultado, aviso de erro) fica no topo, logo abaixo do texto de apresentação, para aparecer sem rolar depois do toque. O resultado usa a tabela da prévia de importação ("O que entrou": tipo × "N dias", linhas ≥56dp, quantidade 700 tabular, um foco por linha), e o que ficou de fora vai abaixo em `ink-muted`. "Desconectar" mostra um snackbar curto e tira a permissão no Health Connect.
 - **Senha gerada:** 20sp/700 com algarismos tabulares e tracking leve, na mesma família Roboto (sem monoespaçada), grupos separados por traço e sem caracteres ambíguos (0/O, 1/I). Região "polite"; o TalkBack soletra ("J, 8, Q…, traço, …"). Logo abaixo: "Anote esta senha num lugar seguro…".
 - **Véu da barra de status (telas com lobo):** quando a borda do lobo passa por baixo da barra de status, aparece um véu em `water`/`water-night` da altura da barra de status, e os ícones passam a seguir o tema. Sobre o lobo, os ícones são escuros. Só a aba em foco controla a barra de status.
 - **Movimento** (a implementar nas fases seguintes): 0.4s com leve overshoot nas transições de território; respeita "remover animações" do sistema.

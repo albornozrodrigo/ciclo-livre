@@ -282,7 +282,6 @@ function optionsOf(value: unknown): { option: string; severity?: string }[] {
   return out;
 }
 
-
 const round = (v: number, decimals: number) => Math.round(v * 10 ** decimals) / 10 ** decimals;
 
 /** Converte os registros do Clue para o formato do app. Pura e determinística. */
