@@ -15,9 +15,9 @@ status = "in_progress"
 phases = 11
 
 [phase]
-number = 8
-name = "Conteúdo + busca + resumo IA + importar do Clue"
-status = "planned"
+number = 9
+name = "Chat com seus dados (IA BYOK)"
+status = "not_started"
 plans_completed = 0
 
 [loop]
@@ -27,6 +27,6 @@ position = "IDLE"
 groom = true
 
 [stats]
-total_plans = 23
+total_plans = 24
 total_phases = 11
-last_activity = "2026-10-22T23:59:00Z"
+last_activity = "2026-10-23T12:05:00Z"

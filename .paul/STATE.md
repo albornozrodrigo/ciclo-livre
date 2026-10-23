@@ -11,25 +11,25 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.1 — Fase 8 (fechamento: reviews)
+**Current focus:** v0.1 — Fase 9 (chat com seus dados, IA BYOK)
 
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 8 of 11 (Conteúdo + busca + resumo IA + importar do Clue) — Planned
-Plan: 08-01 (artigos + busca), 08-02 (resumo IA BYOK), 08-03 (importar do Clue), 08-04 (correções OWASP)
-Status: 08-04 (correções OWASP) complete; next fechamento da fase 8 (Impeccable + /code-review)
-Last activity: 2026-10-22 — 08-03 importar do Clue (provado no S21 FE)
+Phase: 9 of 11 (Chat com seus dados, IA BYOK) — Not started
+Plan: não planejado
+Status: Fase 8 completa (4 planos + Impeccable + /code-review aplicados); próximo: planejar a fase 9
+Last activity: 2026-10-23 — fase 8 fechada (verificação OWASP corrigida, revisões aplicadas, provas no S21 FE)
 
 Progress:
-- Milestone: [██████░░░░] 64%
-- Phase 8: [█████████░] 90%
+- Milestone: [███████░░░] 73%
+- Phase 9: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [08-03 fechado; próximo: reviews da fase 8]
+  ○        ○        ○     [fase 8 fechada; próximo: PLAN da fase 9]
 ```
 
 ## Accumulated Context
@@ -93,9 +93,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: 08-03 complete
-Next action: fechamento da fase 8 (Impeccable finish review + /code-review high desde 0365a94) e transição
-Resume file: .paul/phases/08-conteudo-ia/08-03-SUMMARY.md
+Stopped at: Fase 8 completa (transição feita)
+Next action: /paul:plan (fase 9 — chat com seus dados, IA BYOK)
+Resume file: .paul/ROADMAP.md
 
 ---
 *STATE.md — Updated after every significant action*
