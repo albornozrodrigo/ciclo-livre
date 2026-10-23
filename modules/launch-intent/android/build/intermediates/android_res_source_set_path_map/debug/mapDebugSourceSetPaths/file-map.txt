@@ -1,9 +1,0 @@
-app.ciclolivre.launchintent.launch-intent-pngs-0 /Users/rodrigo/Projects/ciclo-livre/modules/launch-intent/android/build/generated/res/pngs/debug
-app.ciclolivre.launchintent.launch-intent-updated_navigation_xml-1 /Users/rodrigo/Projects/ciclo-livre/modules/launch-intent/android/build/generated/updated_navigation_xml/debug
-app.ciclolivre.launchintent.launch-intent-mergeDebugResources-2 /Users/rodrigo/Projects/ciclo-livre/modules/launch-intent/android/build/intermediates/incremental/debug/mergeDebugResources/merged.dir
-app.ciclolivre.launchintent.launch-intent-mergeDebugResources-3 /Users/rodrigo/Projects/ciclo-livre/modules/launch-intent/android/build/intermediates/incremental/debug/mergeDebugResources/stripped.dir
-app.ciclolivre.launchintent.launch-intent-debug-4 /Users/rodrigo/Projects/ciclo-livre/modules/launch-intent/android/build/intermediates/merged_res/debug/mergeDebugResources
-app.ciclolivre.launchintent.launch-intent-debug-5 /Users/rodrigo/Projects/ciclo-livre/modules/launch-intent/android/build/intermediates/packaged_res/debug/packageDebugResources
-app.ciclolivre.launchintent.launch-intent-debug-6 /Users/rodrigo/Projects/ciclo-livre/modules/launch-intent/android/src/debug/res
-app.ciclolivre.launchintent.launch-intent-main-7 /Users/rodrigo/Projects/ciclo-livre/modules/launch-intent/android/src/main/res
-gradleHome-0 /Users/rodrigo/.gradle

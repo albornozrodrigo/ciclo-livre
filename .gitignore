@@ -42,3 +42,7 @@ example
 /ios
 /android
 coverage/
+
+# Saída de build dos módulos locais
+modules/*/android/build/
+modules/*/android/.cxx/
