@@ -1,5 +1,6 @@
 import type { SqlExecutor } from './types';
 import { enqueueWrite } from './write-queue';
+import { writeMeta } from './meta';
 
 const LOCK = 'sec_lock';
 const HIDE = 'sec_hide_recents';
@@ -7,14 +8,7 @@ const HIDE = 'sec_hide_recents';
 /** Proteção do aparelho: fica fora do backup e sobrevive a uma restauração. */
 export type SecuritySettings = { lock: boolean; hideRecents: boolean };
 
-const upsert = (db: SqlExecutor, key: string, on: boolean) =>
-  enqueueWrite(db, () =>
-    db.runAsync(
-      'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
-      key,
-      on ? '1' : '0',
-    ),
-  );
+const upsert = (db: SqlExecutor, key: string, on: boolean) => enqueueWrite(db, () => writeMeta(db, key, on ? '1' : '0'));
 
 export async function getSecuritySettings(db: SqlExecutor): Promise<SecuritySettings> {
   const rows = await db.getAllAsync<{ key: string; value: string }>('SELECT key, value FROM app_meta WHERE key IN (?, ?)', LOCK, HIDE);

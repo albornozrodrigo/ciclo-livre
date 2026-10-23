@@ -48,3 +48,12 @@ export function orderCategories(visibleIds: readonly string[], prefs: readonly C
   });
   return result;
 }
+
+/** Lista para a tela Personalizar: visíveis na ordem de `orderCategories` e, no fim, as ocultas. */
+export function orderForEditing(visibleIds: readonly string[], prefs: readonly CategoryPref[]): { id: string; hidden: boolean }[] {
+  const hidden = new Set(prefs.filter((p) => p.hidden).map((p) => p.category));
+  return [
+    ...orderCategories(visibleIds, prefs).map((id) => ({ id, hidden: false })),
+    ...visibleIds.filter((id) => hidden.has(id)).map((id) => ({ id, hidden: true })),
+  ];
+}

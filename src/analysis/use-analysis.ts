@@ -2,7 +2,7 @@ import { useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useState } from 'react';
 
-import { getAnalysisData, getCycleSignals } from '@/db/cycle-repo';
+import { getAnalysisData } from '@/db/cycle-repo';
 import {
   bbtChart,
   type BbtChart,
@@ -20,6 +20,7 @@ import { cycleModelFor, modeHasCycle } from '@/domain/cycle/for-profile';
 import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { log } from '@/lib/logger';
+import { signalsFromAnalysis } from '@/domain/cycle/signals';
 
 export { MEASURES, type MeasureKey } from '@/domain/analysis/analysis';
 
@@ -43,9 +44,11 @@ export function useAnalysis(profile: Profile | null): AnalysisView | null {
     useCallback(() => {
       if (!profile) return undefined;
       let active = true;
-      Promise.all([getCycleSignals(db), getAnalysisData(db)])
-        .then(([signals, data]) => {
+      // Uma leitura só: os sinais da previsão saem dos mesmos dados da Análise.
+      getAnalysisData(db)
+        .then((data) => {
           if (!active) return;
+          const signals = signalsFromAnalysis(data);
           const today = todayIso();
           const model = cycleModelFor(profile, signals, today);
           const measures = measureSeriesAll(data.measures, data.selections, today);

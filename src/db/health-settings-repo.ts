@@ -1,5 +1,6 @@
 import type { SqlExecutor } from './types';
 import { enqueueWrite } from './write-queue';
+import { writeMeta } from './meta';
 
 /** Tipos lidos do Health Connect (ids das categorias do app). */
 export const HEALTH_TYPES = ['sleep', 'temperature', 'resting_heart_rate', 'hrv', 'weight'] as const;
@@ -12,10 +13,7 @@ export const LAST = 'hc_last_import';
 
 export type HealthSettings = { connected: boolean; types: HealthType[]; lastImport: string | null };
 
-const upsert = (db: SqlExecutor, key: string, value: string) =>
-  enqueueWrite(db, () =>
-    db.runAsync('INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value', key, value),
-  );
+const upsert = (db: SqlExecutor, key: string, value: string) => enqueueWrite(db, () => writeMeta(db, key, value));
 
 function parseTypes(raw: string | undefined): HealthType[] {
   if (raw === undefined) return [...HEALTH_TYPES];
@@ -45,11 +43,7 @@ export async function getHealthSettings(db: SqlExecutor): Promise<HealthSettings
 export const setHealthConnected = (db: SqlExecutor, connected: boolean) =>
   enqueueWrite(db, () =>
     db.withTransactionAsync(async () => {
-      await db.runAsync(
-        'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
-        CONNECTED,
-        connected ? '1' : '0',
-      );
+      await writeMeta(db, CONNECTED, connected ? '1' : '0');
       await db.runAsync('DELETE FROM app_meta WHERE key = ?', LAST);
     }),
   );

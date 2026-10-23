@@ -2,6 +2,7 @@ import { type AiModel, AI_MODELS, isAiModel } from '@/domain/ai/models';
 
 import type { SqlExecutor } from './types';
 import { enqueueWrite } from './write-queue';
+import { writeMeta } from './meta';
 
 const CONSENT_KEY = 'ai_consent';
 const MODEL_KEY = 'ai_model';
@@ -24,10 +25,7 @@ export async function getAiSettings(db: SqlExecutor): Promise<AiSettings> {
   return { consent: map.get(CONSENT_KEY) === '1', model: isAiModel(model) ? model : AI_MODELS[0] };
 }
 
-const upsert = (db: SqlExecutor, key: string, value: string) =>
-  enqueueWrite(db, () =>
-    db.runAsync('INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value', key, value),
-  );
+const upsert = (db: SqlExecutor, key: string, value: string) => enqueueWrite(db, () => writeMeta(db, key, value));
 
 export const setAiConsent = (db: SqlExecutor, consent: boolean) => upsert(db, CONSENT_KEY, consent ? '1' : '0');
 
@@ -68,11 +66,7 @@ export async function setChatScope(db: SqlExecutor, scope: { cycles: 6 | 12; inc
 export async function revokeChatConsent(db: SqlExecutor): Promise<void> {
   await enqueueWrite(db, () =>
     db.withTransactionAsync(async () => {
-      await db.runAsync(
-        'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
-        CHAT_CONSENT_KEY,
-        '0',
-      );
+      await writeMeta(db, CHAT_CONSENT_KEY, '0');
       await db.runAsync('DELETE FROM chat_message');
     }),
   );
@@ -86,13 +80,12 @@ export async function acceptChatConsent(db: SqlExecutor, scope: { cycles: 6 | 12
   if (scope.cycles !== 6 && scope.cycles !== 12) throw new Error('Escopo inválido.');
   const before = await getChatSettings(db);
   const changed = before.cycles !== scope.cycles || before.includeNotes !== scope.includeNotes;
-  const upsertSql = 'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value';
   await enqueueWrite(db, () =>
     db.withTransactionAsync(async () => {
       if (changed) await db.runAsync('DELETE FROM chat_message');
-      await db.runAsync(upsertSql, CHAT_CYCLES_KEY, String(scope.cycles));
-      await db.runAsync(upsertSql, CHAT_NOTES_KEY, scope.includeNotes ? '1' : '0');
-      await db.runAsync(upsertSql, CHAT_CONSENT_KEY, '1');
+      await writeMeta(db, CHAT_CYCLES_KEY, String(scope.cycles));
+      await writeMeta(db, CHAT_NOTES_KEY, scope.includeNotes ? '1' : '0');
+      await writeMeta(db, CHAT_CONSENT_KEY, '1');
     }),
   );
 }

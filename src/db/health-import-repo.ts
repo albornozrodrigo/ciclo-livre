@@ -3,6 +3,7 @@ import type { HealthImport } from '@/domain/health/health-import';
 import { CONNECTED, LAST } from './health-settings-repo';
 import type { SqlExecutor } from './types';
 import { enqueueWrite } from './write-queue';
+import { writeMeta } from './meta';
 
 export type HealthImportResult = {
   /** O que entrou ou foi atualizado, por categoria. */
@@ -101,11 +102,7 @@ export async function applyHealthImport(
         });
       }
       if (options.markAt) {
-        await db.runAsync(
-          'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
-          LAST,
-          options.markAt.toISOString(),
-        );
+        await writeMeta(db, LAST, options.markAt.toISOString());
       }
       result = { added, kept, dropped: data.dropped };
     });

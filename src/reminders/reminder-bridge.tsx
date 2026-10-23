@@ -5,10 +5,10 @@ import { useEffect } from 'react';
 import { AppState } from 'react-native';
 
 import { isValidDate } from '@/domain/dates';
-import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 
 import { syncReminders } from './sync';
+import { logUnlessClosed } from '@/db/closed';
 
 /** Toques já tratados: no módulo, para sobreviver à remontagem da ponte (o último toque continua disponível). */
 const handled = new Set<string>();
@@ -33,7 +33,7 @@ export function ReminderBridge() {
   const profile = state.status === 'ready' ? state.profile : null;
 
   useEffect(() => {
-    const sync = () => syncReminders(db, profile).catch((error: unknown) => log.error('reminders_sync_failed', error));
+    const sync = () => syncReminders(db, profile).catch((error: unknown) => logUnlessClosed('reminders_sync_failed', error));
     sync();
     const subscription = AppState.addEventListener('change', (status) => {
       if (status === 'active' || status === 'background') sync();

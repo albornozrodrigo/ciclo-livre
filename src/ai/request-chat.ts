@@ -1,6 +1,6 @@
 import { getChatSettings, getAiSettings, type ChatSettings } from '@/db/ai-settings-repo';
 import { addChatPair, listChat } from '@/db/chat-repo';
-import { getAnalysisData, getCycleSignals } from '@/db/cycle-repo';
+import { getAnalysisData } from '@/db/cycle-repo';
 import { getProfile } from '@/db/profile-repo';
 import type { SqlExecutor } from '@/db/types';
 import { buildChatPrompt, cleanQuestion, QUESTION_MAX } from '@/domain/ai/chat-prompt';
@@ -15,6 +15,7 @@ import { log } from '@/lib/logger';
 import { withAiLock } from './ai-lock';
 import { type AiError, chat } from './claude';
 import { getApiKey } from './key-store';
+import { signalsFromAnalysis } from '@/domain/cycle/signals';
 
 /** `question` é a pergunta como foi enviada e gravada (limpa); `saved` false se a gravação falhou. */
 export type ChatOutcome =
@@ -31,9 +32,8 @@ type Scope = Pick<ChatSettings, 'cycles' | 'includeNotes'>;
  */
 export async function previewChatContext(db: SqlExecutor, scope?: Scope, now: Date = new Date()): Promise<DataContext> {
   const chosen = scope ?? (await getChatSettings(db));
-  const [profile, signals, data, notes] = await Promise.all([
+  const [profile, data, notes] = await Promise.all([
     getProfile(db),
-    getCycleSignals(db),
     getAnalysisData(db),
     // Notas são íntimas: só saem do banco quando a pessoa escolheu incluí-las.
     chosen.includeNotes
@@ -42,6 +42,7 @@ export async function previewChatContext(db: SqlExecutor, scope?: Scope, now: Da
   ]);
   if (!profile) throw new NoProfileError('Sem perfil.');
   const today = isoFromDate(now);
+  const signals = signalsFromAnalysis(data);
   const model = cycleModelFor(profile, signals, today);
   return buildDataContext(
     {

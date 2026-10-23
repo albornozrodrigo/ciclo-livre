@@ -119,6 +119,25 @@ describe('Registrar o dia', () => {
     await waitFor(async () => expect((await getDay(mockDb, DAY)).measures).toEqual({ temperature: 36.55 }));
   });
 
+  it('o erro da medição fica acima do campo (o teclado aberto cobre o que vem abaixo)', async () => {
+    await renderRegistro();
+    const field = screen.getByLabelText(new RegExp(t.temperature.label));
+    await fireEvent.changeText(field, '50');
+    await fireEvent(field, 'blur');
+    const error = await screen.findByText(new RegExp(ptBR.tracking.measureErrors.out_of_range(34, 42, '°C')));
+    // Ordem na árvore: o texto do erro vem antes do campo.
+    const order: string[] = [];
+    const walk = (node: unknown) => {
+      if (!node || typeof node !== 'object') return;
+      const n = node as { type?: string; props?: Record<string, unknown>; children?: unknown[] };
+      if (n.props?.accessibilityLabel === field.props.accessibilityLabel && n.type === 'TextInput') order.push('field');
+      if (n.type === 'Text' && n.children?.join('') === error.props.children) order.push('error');
+      n.children?.forEach(walk);
+    };
+    walk(screen.toJSON());
+    expect(order.indexOf('error')).toBeLessThan(order.indexOf('field'));
+  });
+
   it('nota salva ao sair do campo', async () => {
     await renderRegistro();
     const note = screen.getByLabelText(ptBR.tracking.note.label);

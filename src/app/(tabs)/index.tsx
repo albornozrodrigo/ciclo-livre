@@ -9,10 +9,10 @@ import { Screen } from '@/components/ui/screen';
 import { getDay } from '@/db/log-repo';
 import { todayIso } from '@/domain/dates';
 import { ptBR } from '@/i18n/pt-BR';
-import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 import { summarizeDay } from '@/tracking/summary';
 import { useTodayCycle } from '@/cycle/use-today-cycle';
+import { logUnlessClosed } from '@/db/closed';
 
 const copy = ptBR.today;
 
@@ -28,7 +28,7 @@ function useTodaySummary(): string[] | null {
       let active = true;
       getDay(db, todayIso()).then(
         (day) => active && setItems(summarizeDay(day)),
-        (error: unknown) => log.error('today_summary_failed', error),
+        (error: unknown) => logUnlessClosed('today_summary_failed', error),
       );
       return () => {
         active = false;

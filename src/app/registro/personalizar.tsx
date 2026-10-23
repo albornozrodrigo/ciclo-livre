@@ -7,7 +7,7 @@ import { FormScreen } from '@/components/form-screen';
 import { useSnackbar } from '@/components/ui/snackbar';
 import { getCategoryPrefs, saveCategoryPrefs } from '@/db/log-repo';
 import { defaultVisibleCategories } from '@/domain/tracking/catalog';
-import { orderCategories } from '@/domain/tracking/rules';
+import { orderForEditing } from '@/domain/tracking/rules';
 import { ptBR } from '@/i18n/pt-BR';
 import { categoryLabels } from '@/i18n/pt-BR-tracking';
 import { log } from '@/lib/logger';
@@ -41,9 +41,7 @@ export default function PersonalizarScreen() {
     getCategoryPrefs(db).then(
       (prefs) => {
         if (!active) return;
-        const hidden = new Set(prefs.filter((p) => p.hidden).map((p) => p.category));
-        const order = orderCategories(visible, prefs);
-        setItems([...order, ...visible.filter((id) => hidden.has(id))].map((id) => ({ id, hidden: hidden.has(id) })));
+        setItems(orderForEditing(visible, prefs));
       },
       (error: unknown) => log.error('category_prefs_load_failed', error),
     );

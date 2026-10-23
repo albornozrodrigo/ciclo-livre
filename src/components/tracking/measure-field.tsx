@@ -70,6 +70,12 @@ export function MeasureField({ category, value, onSave }: { category: MeasureCat
   return (
     <View className="gap-2">
       <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{label}</Text>
+      {/* Erro acima do campo: com o teclado aberto, o que fica abaixo do campo some atrás dele. */}
+      {error ? (
+        <Text accessibilityLiveRegion="polite" className="text-sm font-bold leading-5 text-ink dark:text-ink-night">
+          {`${ptBR.tracking.measureErrors.prefix} ${error}`}
+        </Text>
+      ) : null}
       {/* Com erro, contorno mais grosso: sinal visível que não depende de cor. */}
       <View
         className={
@@ -91,11 +97,6 @@ export function MeasureField({ category, value, onSave }: { category: MeasureCat
         />
         <Text className="text-base text-ink-muted dark:text-ink-muted-night">{category.unit}</Text>
       </View>
-      {error ? (
-        <Text accessibilityLiveRegion="polite" className="text-sm font-bold leading-5 text-ink dark:text-ink-night">
-          {`${ptBR.tracking.measureErrors.prefix} ${error}`}
-        </Text>
-      ) : null}
     </View>
   );
 }

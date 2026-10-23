@@ -11,6 +11,7 @@ import { validateMessage } from '@/domain/reminders/message';
 
 import type { SqlExecutor } from './types';
 import { enqueueWrite } from './write-queue';
+import { writeMeta } from './meta';
 
 type Row = {
   kind: string;
@@ -74,13 +75,7 @@ export async function getDiscreet(db: SqlExecutor): Promise<boolean> {
 }
 
 export async function setDiscreet(db: SqlExecutor, discreet: boolean): Promise<void> {
-  await enqueueWrite(db, () =>
-    db.runAsync(
-      'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
-      DISCREET_KEY,
-      encodeDiscreet(discreet),
-    ),
-  );
+  await enqueueWrite(db, () => writeMeta(db, DISCREET_KEY, encodeDiscreet(discreet)));
 }
 
 const ID_SECRET_KEY = 'reminder_id_secret';

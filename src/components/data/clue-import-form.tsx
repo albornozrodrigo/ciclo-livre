@@ -15,6 +15,7 @@ import { categoryLabels } from '@/i18n/pt-BR-tracking';
 import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 import { syncReminders } from '@/reminders/sync';
+import { logUnlessClosed } from '@/db/closed';
 
 const c = ptBR.data.clue;
 const br = (iso: string) => iso.split('-').reverse().join('/');
@@ -98,7 +99,8 @@ export function ClueImportForm({ onDone }: Props) {
       try {
         await applyClueImport(db, ready.data);
         // Menstruações novas mudam as previsões: reagendar os lembretes já.
-        if (state.status === 'ready') await syncReminders(db, state.profile).catch((e: unknown) => log.error('reminders_sync_failed', e));
+        if (state.status === 'ready')
+          await syncReminders(db, state.profile).catch((e: unknown) => logUnlessClosed('reminders_sync_failed', e));
         log.event('clue_imported', { days: ready.preview.days });
         setFile(null);
         setReady(null);

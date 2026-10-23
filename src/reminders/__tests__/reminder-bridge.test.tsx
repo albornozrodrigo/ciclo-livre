@@ -26,6 +26,7 @@ jest.mock('expo-notifications', () => ({
 let listener: ((s: AppStateStatus) => void) | null = null;
 beforeEach(() => {
   mockSync.mockClear();
+  mockLogError.mockClear();
   mockPush.mockClear();
   mockResponse = null;
   jest.spyOn(AppState, 'addEventListener').mockImplementation((_type, handler) => {
@@ -34,7 +35,20 @@ beforeEach(() => {
   });
 });
 
+const mockLogError = jest.fn();
+jest.mock('@/lib/logger', () => ({ log: { error: (...a: unknown[]) => mockLogError(...a) } }));
+
 describe('ReminderBridge', () => {
+  it('banco fechado no meio do reagendamento (apagar tudo): é cancelamento, não erro', async () => {
+    mockSync.mockRejectedValueOnce(new Error('Access to closed resource'));
+    await render(<ReminderBridge />);
+    await act(async () => undefined);
+    expect(mockLogError).not.toHaveBeenCalled();
+    mockSync.mockRejectedValueOnce(new Error('SQLITE_BUSY'));
+    await act(async () => listener?.('active'));
+    expect(mockLogError).toHaveBeenCalledWith('reminders_sync_failed', expect.any(Error));
+  });
+
   it('reagenda ao montar, ao voltar ao app e ao sair dele (registros novos mudam a previsão)', async () => {
     await render(<ReminderBridge />);
     expect(mockSync).toHaveBeenCalledTimes(1);
@@ -44,13 +58,23 @@ describe('ReminderBridge', () => {
   });
 
   it('tocar no lembrete de registro abre o registro do dia do lembrete', async () => {
-    mockResponse = { actionIdentifier: 'default', notification: { request: { identifier: 'daily_log:2026-10-21@20:00#a', content: { data: { kind: 'daily_log', date: '2026-10-21' } } } } };
+    mockResponse = {
+      actionIdentifier: 'default',
+      notification: {
+        request: { identifier: 'daily_log:2026-10-21@20:00#a', content: { data: { kind: 'daily_log', date: '2026-10-21' } } },
+      },
+    };
     await render(<ReminderBridge />);
     expect(mockPush).toHaveBeenCalledWith('/registro/2026-10-21');
   });
 
   it('o mesmo toque não navega de novo quando a ponte remonta (ex.: depois de refazer o cadastro)', async () => {
-    mockResponse = { actionIdentifier: 'default', notification: { request: { identifier: 'daily_log:2026-10-20@20:00#b', content: { data: { kind: 'daily_log', date: '2026-10-20' } } } } };
+    mockResponse = {
+      actionIdentifier: 'default',
+      notification: {
+        request: { identifier: 'daily_log:2026-10-20@20:00#b', content: { data: { kind: 'daily_log', date: '2026-10-20' } } },
+      },
+    };
     const first = await render(<ReminderBridge />);
     await first.unmount();
     await render(<ReminderBridge />);
@@ -58,7 +82,10 @@ describe('ReminderBridge', () => {
   });
 
   it('data inválida nos dados é ignorada', async () => {
-    mockResponse = { actionIdentifier: 'default', notification: { request: { identifier: 'x', content: { data: { kind: 'daily_log', date: '../perfil' } } } } };
+    mockResponse = {
+      actionIdentifier: 'default',
+      notification: { request: { identifier: 'x', content: { data: { kind: 'daily_log', date: '../perfil' } } } },
+    };
     await render(<ReminderBridge />);
     expect(mockPush).not.toHaveBeenCalled();
   });

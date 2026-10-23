@@ -1,5 +1,5 @@
 import { categoryById, type ChoiceCategory } from '@/domain/tracking/catalog';
-import { orderCategories, toggleOption, validateMeasure, validateNote } from '@/domain/tracking/rules';
+import { orderCategories, orderForEditing, toggleOption, validateMeasure, validateNote } from '@/domain/tracking/rules';
 
 const single = categoryById('period') as ChoiceCategory;
 const multi = categoryById('pain') as ChoiceCategory;
@@ -90,5 +90,21 @@ describe('orderCategories', () => {
 
   it('ignora preferências de categorias que não estão visíveis', () => {
     expect(orderCategories(['period'], [{ category: 'bc_ring', position: 0, hidden: false }])).toEqual(['period']);
+  });
+});
+
+describe('orderForEditing', () => {
+  it('lista para Personalizar: visíveis na ordem escolhida e, no fim, as ocultas', () => {
+    const prefs = [
+      { category: 'mood', position: 0, hidden: false },
+      { category: 'period', position: 1, hidden: true },
+      { category: 'pain', position: 2, hidden: false },
+    ];
+    expect(orderForEditing(['period', 'pain', 'mood', 'energy'], prefs)).toEqual([
+      { id: 'mood', hidden: false },
+      { id: 'energy', hidden: false },
+      { id: 'pain', hidden: false },
+      { id: 'period', hidden: true },
+    ]);
   });
 });

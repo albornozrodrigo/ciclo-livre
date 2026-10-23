@@ -1,4 +1,5 @@
 import { getAnalysisData, getCycleSignals, getLoggedDates } from '@/db/cycle-repo';
+import { signalsFromAnalysis } from '@/domain/cycle/signals';
 import { setMeasure, setNote, setSelection } from '@/db/log-repo';
 import { createTag, setDayTags } from '@/db/tag-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
@@ -33,11 +34,29 @@ describe('getCycleSignals', () => {
     });
   });
 
+  it('os sinais tirados dos dados da Análise são os mesmos da leitura própria (uma leitura só basta)', async () => {
+    const db = await migratedDb();
+    await setSelection(db, '2026-09-27', 'period', ['medium']);
+    await setSelection(db, '2026-09-26', 'period', ['heavy']);
+    await setSelection(db, '2026-09-20', 'spotting', ['brown']);
+    await setMeasure(db, '2026-10-01', 'temperature', 36.4);
+    await setMeasure(db, '2026-10-02', 'weight', 64);
+    await setSelection(db, '2026-10-09', 'discharge', ['egg_white', 'watery']);
+    await setSelection(db, '2026-10-08', 'tests', ['ovulation_positive']);
+    await setSelection(db, '2026-09-26', 'pain', ['cramps']);
+    await setSelection(db, '2026-10-12', 'pain', ['cramps']);
+    expect(signalsFromAnalysis(await getAnalysisData(db))).toEqual(await getCycleSignals(db));
+  });
+
   it('banco vazio devolve listas vazias', async () => {
     const db = await migratedDb();
 
     await expect(getCycleSignals(db)).resolves.toEqual({
-      flowDates: [], temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], painDates: [],
+      flowDates: [],
+      temperatures: {},
+      eggWhiteDates: [],
+      positiveOvulationTests: [],
+      painDates: [],
     });
   });
 });
@@ -52,9 +71,7 @@ describe('getLoggedDates', () => {
     await setDayTags(db, '2026-10-04', [tag.id]);
     await setSelection(db, '2026-11-01', 'energy', ['low']);
 
-    await expect(getLoggedDates(db, '2026-10-01', '2026-10-31')).resolves.toEqual([
-      '2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04',
-    ]);
+    await expect(getLoggedDates(db, '2026-10-01', '2026-10-31')).resolves.toEqual(['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04']);
   });
 });
 

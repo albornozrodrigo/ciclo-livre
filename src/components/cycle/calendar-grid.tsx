@@ -72,7 +72,8 @@ export function CalendarGrid({
   isDisabled: (cell: CalendarCell) => boolean;
 }) {
   return (
-    <View>
+    // Avança 12dp em cada margem da tela: em telas de 360dp, cada dia fica com ≥ 48dp de largura (alvo de toque).
+    <View className="-mx-3">
       <View className="flex-row" importantForAccessibility="no-hide-descendants">
         {cal.weekdays.map((d, i) => (
           <Text key={i} className="flex-1 text-center text-sm font-bold text-ink-muted dark:text-ink-muted-night">

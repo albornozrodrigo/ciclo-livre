@@ -10,6 +10,7 @@ import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 
 import { requestReminderPermission, syncReminders } from './sync';
+import { logUnlessClosed } from '@/db/closed';
 
 type Data = { reminders: Reminder[]; discreet: boolean };
 
@@ -43,7 +44,7 @@ export function useReminders() {
   }, [load]);
 
   const resync = useCallback(() => {
-    syncReminders(db, profile).catch((error: unknown) => log.error('reminders_sync_failed', error));
+    syncReminders(db, profile).catch((error: unknown) => logUnlessClosed('reminders_sync_failed', error));
   }, [db, profile]);
 
   /** Garante a permissão; negada, mostra a explicação e devolve false. */
