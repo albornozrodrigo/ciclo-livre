@@ -19,9 +19,9 @@ import {
 import { cycleModelFor, modeHasCycle } from '@/domain/cycle/for-profile';
 import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
-import { log } from '@/lib/logger';
 import { signalsFromAnalysis } from '@/domain/cycle/signals';
 import { hasImportedTemperature } from '@/db/health-import-repo';
+import { logUnlessClosed } from '@/db/closed';
 
 export { MEASURES, type MeasureKey } from '@/domain/analysis/analysis';
 
@@ -53,9 +53,14 @@ export function useAnalysis(profile: Profile | null): AnalysisView | null {
           const signals = signalsFromAnalysis(data);
           const today = todayIso();
           const model = cycleModelFor(profile, signals, today);
-          const importedTemperature = model
-            ? await hasImportedTemperature(db, model.current.start, addDays(model.current.nextStart, -1))
-            : false;
+          // Aviso informativo: falhar aqui não pode apagar a aba inteira.
+          const importedTemperature =
+            model && modeHasCycle(profile)
+              ? await hasImportedTemperature(db, model.current.start, addDays(model.current.nextStart, -1)).catch((e: unknown) => {
+                  logUnlessClosed('analysis_imported_temperature_failed', e);
+                  return false;
+                })
+              : false;
           if (!active) return;
           const measures = measureSeriesAll(data.measures, data.selections, today);
           // null só quando o modo não tem ciclo; modo com ciclo e sem dados mostra o convite a registrar.
@@ -79,7 +84,7 @@ export function useAnalysis(profile: Profile | null): AnalysisView | null {
           setView({ cycles, measures });
         })
         // Também pega erro do cálculo (não só da leitura), para não virar rejeição sem log.
-        .catch((error: unknown) => log.error('analysis_load_failed', error));
+        .catch((error: unknown) => logUnlessClosed('analysis_load_failed', error));
       return () => {
         active = false;
       };

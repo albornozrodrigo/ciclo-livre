@@ -112,39 +112,43 @@ export async function applyHealthImport(
 
 /**
  * "Apagar o que veio do Health Connect": remove os dias × categorias que ainda têm o valor gravado pelo import.
- * O que a pessoa registrou ou editou fica. Esquece a origem de tudo (um novo import pode trazer de novo).
+ * - O que a pessoa editou passa a ser só dela (a origem é esquecida).
+ * - O que ela apagou de propósito continua marcado, para não voltar num próximo import.
+ * - Esquece o último import: a próxima leitura volta a cobrir os 30 dias.
  * Devolve quantos registros saíram.
  */
 export async function removeHealthImported(db: SqlExecutor): Promise<number> {
   return enqueueWrite(db, async () => {
     let removed = 0;
     await db.withTransactionAsync(async () => {
-      const origin = await db.getAllAsync<{ date: string; category: string; value: string }>(
-        'SELECT date, category, value FROM health_origin',
+      const measures = await db.getAllAsync<{ date: string; category: string; origin: string; value: number | null }>(
+        `SELECT o.date, o.category, o.value AS origin, m.value AS value FROM health_origin o
+         LEFT JOIN log_measure m ON m.date = o.date AND m.category = o.category`,
       );
-      for (const o of origin) {
+      const selections = new Map(
+        (
+          await db.getAllAsync<{ date: string; category: string; value: string }>(
+            "SELECT date, category, group_concat(option, ',') AS value FROM log_selection GROUP BY date, category",
+          )
+        ).map((r) => [`${r.date}|${r.category}`, r.value]),
+      );
+      for (const o of measures) {
         // Mesma comparação do import: o valor como o JS escreve (64 e não 64.0).
-        const measure = await db.getFirstAsync<{ value: number }>(
-          'SELECT value FROM log_measure WHERE date = ? AND category = ?',
-          o.date,
-          o.category,
-        );
-        if (measure && String(measure.value) === o.value) {
-          await db.runAsync('DELETE FROM log_measure WHERE date = ? AND category = ?', o.date, o.category);
-          removed += 1;
-          continue;
-        }
-        const selection = await db.getFirstAsync<{ value: string }>(
-          "SELECT group_concat(option, ',') AS value FROM log_selection WHERE date = ? AND category = ?",
-          o.date,
-          o.category,
-        );
-        if (selection?.value === o.value) {
-          await db.runAsync('DELETE FROM log_selection WHERE date = ? AND category = ?', o.date, o.category);
+        const measure = o.value === null ? undefined : String(o.value);
+        const selection = selections.get(`${o.date}|${o.category}`);
+        const current = measure ?? selection;
+        if (current === undefined) continue; // apagado pela pessoa: a marca fica
+        if (current === o.origin) {
+          await db.runAsync(
+            `DELETE FROM ${measure !== undefined ? 'log_measure' : 'log_selection'} WHERE date = ? AND category = ?`,
+            o.date,
+            o.category,
+          );
           removed += 1;
         }
+        await db.runAsync('DELETE FROM health_origin WHERE date = ? AND category = ?', o.date, o.category);
       }
-      await db.runAsync('DELETE FROM health_origin');
+      await db.runAsync('DELETE FROM app_meta WHERE key = ?', LAST);
     });
     return removed;
   });

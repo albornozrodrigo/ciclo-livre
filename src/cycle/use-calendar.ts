@@ -8,7 +8,7 @@ import { cycleModelFor } from '@/domain/cycle/for-profile';
 import type { CycleSignals } from '@/domain/cycle/signals';
 import { addDays, firstOfMonth, type IsoDate, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
-import { log } from '@/lib/logger';
+import { logUnlessClosed } from '@/db/closed';
 
 /**
  * Grade do mês. O histórico (sinais e modelo) é lido uma vez por foco; trocar de mês só busca os
@@ -25,7 +25,7 @@ export function useCalendar(profile: Profile | null, year: number, month: number
       let active = true;
       getCycleSignals(db).then(
         (loaded) => active && setSignals(loaded),
-        (error: unknown) => log.error('calendar_signals_failed', error),
+        (error: unknown) => logUnlessClosed('calendar_signals_failed', error),
       );
       return () => {
         active = false;
@@ -38,7 +38,7 @@ export function useCalendar(profile: Profile | null, year: number, month: number
     const first = firstOfMonth(year, month);
     getLoggedDates(db, addDays(first, -7), addDays(first, 42)).then(
       (dates) => active && setLogged({ key, dates: new Set(dates) }),
-      (error: unknown) => log.error('calendar_logged_failed', error),
+      (error: unknown) => logUnlessClosed('calendar_logged_failed', error),
     );
     return () => {
       active = false;

@@ -44,3 +44,8 @@ export function shouldAutoImport(settings: HealthSettings, now: Date = new Date(
   const elapsed = now.getTime() - Date.parse(settings.lastImport);
   return !(elapsed >= 0 && elapsed <= AUTO_EVERY);
 }
+
+/** Espera o import em curso (se houver) terminar, com ou sem erro: apagar o importado não pode correr junto. */
+export async function waitForHealthImport(): Promise<void> {
+  await inFlight?.catch(() => undefined);
+}

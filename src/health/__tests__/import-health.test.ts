@@ -5,7 +5,7 @@ import { exportAll } from '@/db/export-repo';
 import { getHealthSettings, markHealthImported, setHealthConnected, setHealthTypes } from '@/db/health-settings-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import { connectHealth, healthStatus, revokeHealth } from '@/health/health-connect';
-import { importFromHealthConnect, shouldAutoImport } from '@/health/import-health';
+import { importFromHealthConnect, shouldAutoImport, waitForHealthImport } from '@/health/import-health';
 
 const mockRead = jest.fn();
 const mockGranted = jest.fn();
@@ -142,6 +142,28 @@ describe('importFromHealthConnect — bordas', () => {
     });
     expect(await importFromHealthConnect(db, NOW)).toBeNull();
     expect((await exportAll(db, NOW)).measures).toEqual([]);
+  });
+});
+
+describe('waitForHealthImport', () => {
+  it('espera o import em curso terminar (apagar não corre junto com uma leitura)', async () => {
+    await setHealthConnected(db, true);
+    const pending: (() => void)[] = [];
+    mockRead.mockImplementation(() => new Promise((r) => pending.push(() => r({ records: [] }))));
+    const release = () => pending.forEach((p) => p());
+    const importing = importFromHealthConnect(db, NOW);
+    let waited = false;
+    const waiting = waitForHealthImport().then(() => (waited = true));
+    await new Promise((r) => setTimeout(r, 10));
+    expect(waited).toBe(false);
+    release();
+    await importing;
+    await waiting;
+    expect(waited).toBe(true);
+  });
+
+  it('sem import em curso, resolve na hora; erro do import não vaza', async () => {
+    await expect(waitForHealthImport()).resolves.toBeUndefined();
   });
 });
 

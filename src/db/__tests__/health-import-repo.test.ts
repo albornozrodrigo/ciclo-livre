@@ -171,4 +171,16 @@ describe('removeHealthImported', () => {
     // Depois de apagar, um novo import pode trazer de novo.
     expect((await applyHealthImport(db, data))?.added).toEqual({ resting_heart_rate: 1, sleep: 2, weight: 1 });
   });
+
+  it('esquece o último import (a próxima leitura volta aos 30 dias) e mantém o que a pessoa apagou de propósito', async () => {
+    const db = await migratedDb();
+    await setHealthConnected(db, true);
+    await applyHealthImport(db, data, { markAt: NOW });
+    await clearMeasure(db, '2026-10-21', 'resting_heart_rate');
+    await removeHealthImported(db);
+    expect((await getHealthSettings(db)).lastImport).toBeNull();
+    const again = await applyHealthImport(db, data);
+    expect(again?.added).toEqual({ sleep: 2, weight: 2 });
+    expect((await exportAll(db, NOW)).measures.some((m) => m.category === 'resting_heart_rate')).toBe(false);
+  });
 });

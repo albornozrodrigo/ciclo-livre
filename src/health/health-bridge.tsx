@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 import { AppState } from 'react-native';
 
 import { getHealthSettings } from '@/db/health-settings-repo';
-import { log } from '@/lib/logger';
 
 import { healthStatus } from './health-connect';
 import { importFromHealthConnect, shouldAutoImport } from './import-health';
+import { logUnlessClosed } from '@/db/closed';
 
 /** Importa do Health Connect ao abrir e ao voltar ao app, só com conexão ativa e no máximo a cada 6 horas. */
 export function HealthBridge() {
@@ -20,7 +20,7 @@ export function HealthBridge() {
         if ((await healthStatus()) !== 'available') return;
         await importFromHealthConnect(db);
       } catch (error) {
-        log.error('health_auto_import_failed', error);
+        logUnlessClosed('health_auto_import_failed', error);
       }
     };
     check();

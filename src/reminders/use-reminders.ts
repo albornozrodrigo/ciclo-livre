@@ -6,7 +6,6 @@ import { AppState } from 'react-native';
 
 import { getDiscreet, listReminders, saveReminder, setDiscreet } from '@/db/reminder-repo';
 import type { Reminder } from '@/domain/reminders/catalog';
-import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 
 import { requestReminderPermission, syncReminders } from './sync';
@@ -31,14 +30,14 @@ export function useReminders() {
 
   useFocusEffect(
     useCallback(() => {
-      load().catch((error: unknown) => log.error('reminders_load_failed', error));
+      load().catch((error: unknown) => logUnlessClosed('reminders_load_failed', error));
     }, [load]),
   );
 
   // Voltando dos ajustes do sistema, a permissão pode ter mudado.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (status) => {
-      if (status === 'active') load().catch((error: unknown) => log.error('reminders_load_failed', error));
+      if (status === 'active') load().catch((error: unknown) => logUnlessClosed('reminders_load_failed', error));
     });
     return () => subscription.remove();
   }, [load]);

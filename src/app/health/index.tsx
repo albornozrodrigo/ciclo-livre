@@ -27,7 +27,7 @@ import {
   openHealthSettings,
   revokeHealth,
 } from '@/health/health-connect';
-import { importFromHealthConnect } from '@/health/import-health';
+import { importFromHealthConnect, waitForHealthImport } from '@/health/import-health';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
 import { isAppLocked } from '@/security/lock-policy';
@@ -176,18 +176,17 @@ export default function HealthScreen() {
       setResult(r ? resultView(r) : null);
     });
 
-  async function remove() {
+  // Na trava da tela (sem toque duplo) e depois de qualquer import em curso: senão a leitura traria tudo de volta.
+  const remove = async () => {
     if (!(await confirmRemove())) return;
-    try {
+    await run(async () => {
+      await waitForHealthImport();
       const n = await removeHealthImported(db);
       await refresh();
       setResult(null);
       show(h.removed(n));
-    } catch (e) {
-      log.error('health_remove_failed', e);
-      show(ptBR.ai.saveFailed);
-    }
-  }
+    });
+  };
 
   async function disconnect() {
     try {
