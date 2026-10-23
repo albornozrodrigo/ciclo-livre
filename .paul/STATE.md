@@ -69,6 +69,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Política de privacidade: só fatos verificados no código, com teste; módulo local launch-intent para o link do Health Connect | 11-01 | Mudou o app → revisar a política e a data |
 | FLAG_SECURE por módulo local (secure-window), sem expo-screen-capture | 11-02 | DETECT_SCREEN_CAPTURE bloqueada; depois de mexer em permissões, abrir o app no aparelho |
 | Ícones: plugin + módulo app-icon; troca ao sair do app; Discreto com abertura neutra (Android 13+) e notificação sempre com o caderno | 11-02 | Ao trocar, o Android tira o app dos recentes |
+| Código aberto GPL-3.0 em github.com/albornozrodrigo/ciclo-livre (contato da política); README/CONTRIBUTING para a comunidade | 2026-10-23 | Decisão da pessoa usuária |
+| Chave de upload em `credentials/` + `credentials.json` (gitignored) neste Mac; EAS com credenciais locais | 2026-10-23 | Decisão da pessoa usuária; fazer cópia de segurança fora do repo |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -93,8 +95,6 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
 | Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
-| Seção "Contato" da política de privacidade (canal a definir pela pessoa usuária) | 11-01 | S | Antes do release |
-| Ciclo completo da trava no aparelho (precisa da digital/padrão da pessoa) | 11-01 | S | Verificação da pessoa usuária |
 | Helper único para gravar em `app_meta` (SQL repetido em 5 repositórios) | 11-01 code-review | S | 11-03 |
 | "Remover o que veio do Health Connect" + aviso de ovulação por temperatura importada | 10 segurança | S | Polimento |
 | /cso da fase 10 ficou parcial (finish encadeado após submit recusado); coberto por revisão manual | 10 | S | /cso completo antes do release |
