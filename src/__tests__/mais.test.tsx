@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import MaisScreen from '@/app/(tabs)/mais';
 import type { Profile } from '@/domain/profile';
+import { PIX_KEY } from '@/constants/support';
 import { ptBR } from '@/i18n/pt-BR';
 
 const mockErase = jest.fn();
@@ -31,6 +32,9 @@ jest.mock('@/profile/profile-context', () => ({
     saveProfile: jest.fn(),
   }),
 }));
+
+const mockCopy = jest.fn(async (..._a: unknown[]) => true);
+jest.mock('expo-clipboard', () => ({ setStringAsync: (...a: unknown[]) => mockCopy(...a) }));
 
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({
@@ -95,5 +99,28 @@ describe('Mais › apagar todos os dados', () => {
     await fireEvent.press(screen.getByRole('button', { name: ptBR.privacy.eraseButton }));
 
     await waitFor(() => expect(mockShow).toHaveBeenCalledWith(ptBR.privacy.eraseFailed));
+  });
+});
+
+describe('Me pague um café', () => {
+  const c = ptBR.coffee;
+
+  it('é o último item da tela e diz que o app é grátis, sem anúncios e que os dados são só da pessoa', async () => {
+    await renderMais();
+    const headers = screen.getAllByRole('header').map((h) => h.props.children);
+    expect(headers[headers.length - 1]).toBe(c.title);
+    expect(screen.getByText(c.body)).toBeOnTheScreen();
+    expect(c.body).toMatch(/grátis/);
+    expect(c.body).toMatch(/sem anúncios/);
+    expect(c.body).toMatch(/para sempre/);
+    expect(c.body).toMatch(/seus e de mais ninguém/);
+    expect(screen.getByText(PIX_KEY)).toBeOnTheScreen();
+  });
+
+  it('copia a chave Pix e avisa', async () => {
+    await renderMais();
+    await fireEvent.press(screen.getByRole('button', { name: c.copy }));
+    expect(mockCopy).toHaveBeenCalledWith(PIX_KEY);
+    expect(mockShow).toHaveBeenCalledWith(c.copied);
   });
 });

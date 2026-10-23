@@ -156,6 +156,14 @@ export const ptBR = {
       busy: 'Já tem um resumo sendo gerado. Espere ele terminar.',
     },
   },
+  coffee: {
+    title: 'Me pague um café',
+    body: 'O Ciclo Livre é grátis e sem anúncios, para sempre. Seus dados são seus e de mais ninguém: ficam só neste aparelho. Se o app te ajuda e você quiser retribuir, dá para mandar um café por Pix. É opcional e não muda nada no app.',
+    keyLabel: 'Chave Pix (aleatória)',
+    copy: 'Copiar chave Pix',
+    copied: 'Chave Pix copiada. É só colar no app do seu banco.',
+    copyFailed: 'Não deu para copiar. A chave está na tela para copiar à mão.',
+  },
   chat: {
     entry: 'Perguntar sobre meus dados',
     entryDetail: 'O Claude responde a partir de um resumo dos seus registros. Você vê o texto antes de enviar.',

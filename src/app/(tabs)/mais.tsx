@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { Alert, Text, View } from 'react-native';
 
+import { CoffeeSection } from '@/components/coffee-section';
 import { PrivacySection } from '@/components/privacy-section';
 import { ProfileSection } from '@/components/profile-section';
 import { ListRow } from '@/components/ui/list-row';
@@ -72,6 +73,8 @@ export default function MaisScreen() {
           <ListRow label={ptBR.ai.mais} detail={ptBR.ai.maisHint} onPress={() => router.push('/ia')} />
         </View>
         <PrivacySection onErase={eraseAndNotify} confirm={confirmEraseAll} />
+        {/* Pedido da pessoa usuária: sempre o último item da tela. */}
+        <CoffeeSection />
       </View>
     </Screen>
   );
