@@ -16,20 +16,20 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 10 of 11 (Wearables / Health Connect) — Planning
-Plan: 10-01 (domínio + banco, TDD) e 10-02 (nativo + tela) criados
-Status: PLAN created, ready for APPLY (10-01)
+Phase: 10 of 11 (Wearables / Health Connect) — In progress
+Plan: 10-01 completo; 10-02 (nativo + tela) a seguir
+Status: 10-01 UNIFY feito; próximo APPLY 10-02
 Last activity: 2026-10-23 — fase 9 fechada; "Me pague um café" em Mais
 
 Progress:
 - Milestone: [████████░░] 82%
-- Phase 10: [░░░░░░░░░░] 0%
+- Phase 10: [█████░░░░░] 50%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [Plan 10-01 criado; próximo: APPLY]
+  ✓        ✓        ✓     [10-01 fechado; próximo: APPLY 10-02]
 ```
 
 ## Accumulated Context
@@ -98,9 +98,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Plans 10-01 e 10-02 criados
-Next action: /paul:apply .paul/phases/10-health-connect/10-01-PLAN.md
-Resume file: .paul/phases/10-health-connect/10-01-PLAN.md
+Stopped at: 10-01 completo
+Next action: /paul:apply .paul/phases/10-health-connect/10-02-PLAN.md
+Resume file: .paul/phases/10-health-connect/10-02-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

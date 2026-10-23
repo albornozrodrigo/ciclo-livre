@@ -1,6 +1,7 @@
 import { type IsoDate, isValidDate } from '@/domain/dates';
 import { categoryById } from '@/domain/tracking/catalog';
 import { NOTE_MAX_LENGTH, validateMeasure } from '@/domain/tracking/rules';
+import { sleepBucket } from '@/domain/tracking/sleep';
 import { normalizeTagKey, TAG_MAX_LENGTH } from '@/domain/tracking/tags';
 
 /** Limites do arquivo do Clue: cobrem décadas de uso e barram arquivo forjado gigante. */
@@ -281,12 +282,6 @@ function optionsOf(value: unknown): { option: string; severity?: string }[] {
   return out;
 }
 
-function sleepBucket(minutes: number): string {
-  if (minutes < 180) return 'under_3h';
-  if (minutes < 360) return '3_6h';
-  if (minutes <= 540) return '6_9h';
-  return 'over_9h';
-}
 
 const round = (v: number, decimals: number) => Math.round(v * 10 ** decimals) / 10 ** decimals;
 

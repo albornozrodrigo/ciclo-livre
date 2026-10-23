@@ -31,7 +31,7 @@ Phases: 7 of 11 complete
 | 7 | Relatório médico + exportação (Google Drive) | 3 | ✅ Complete | 2026-10-22 |
 | 8 | Conteúdo + busca + resumo IA + importar do Clue | 4 | ✅ Complete | 2026-10-23 |
 | 9 | Chat com seus dados (IA BYOK) | 2 | ✅ Complete | 2026-10-23 |
-| 10 | Wearables (Health Connect) | 2 | Planning | - |
+| 10 | Wearables (Health Connect) | 2 | In progress | - |
 | 11 | Personalização + release | TBD | Not started | - |
 
 ## Phase Details
@@ -126,7 +126,7 @@ Phases: 7 of 11 complete
 **Research:** Feita (react-native-health-connect 4.1.3 com plugin Expo próprio; exige minSdk 26; leitura padrão de 30 dias)
 
 **Plans:**
-- [ ] 10-01: Conversão e gravação (TDD)
+- [x] 10-01: Conversão e gravação (TDD)
 - [ ] 10-02: Nativo, tela e aparelho
 
 ### Phase 11: Personalização + release

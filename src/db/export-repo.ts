@@ -66,6 +66,8 @@ export async function importAll(db: SqlExecutor, raw: unknown, now: Date = new D
         await db.runAsync(`DELETE FROM ${table}`);
       }
       await db.runAsync('DELETE FROM app_meta WHERE key = ?', DISCREET_KEY);
+      // Estado da conexão com o Health Connect é do aparelho, não do backup: restaurar desconecta.
+      await db.runAsync("DELETE FROM app_meta WHERE key LIKE 'hc\\_%' ESCAPE '\\'");
 
       const p = data.profile;
       if (p) {
