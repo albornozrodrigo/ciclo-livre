@@ -16,9 +16,9 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 10 of 11 (Wearables / Health Connect) — Not started
-Plan: não planejado
-Status: Fase 9 completa (2 planos + Impeccable + /code-review + revisão de privacidade); próximo: planejar a fase 10
+Phase: 10 of 11 (Wearables / Health Connect) — Planning
+Plan: 10-01 (domínio + banco, TDD) e 10-02 (nativo + tela) criados
+Status: PLAN created, ready for APPLY (10-01)
 Last activity: 2026-10-23 — fase 9 fechada; "Me pague um café" em Mais
 
 Progress:
@@ -29,7 +29,7 @@ Progress:
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [fase 9 fechada; próximo: PLAN da fase 10]
+  ✓        ○        ○     [Plan 10-01 criado; próximo: APPLY]
 ```
 
 ## Accumulated Context
@@ -60,6 +60,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Chat com dados: contexto montado no aparelho e mostrado igual antes do envio; histórico só no SQLCipher; consentimento próprio | 09 plan | Paridade com o Clue sem servidor |
 | Revogar consentimento do chat ou mudar o escopo apaga a conversa | 09 review | Respostas antigas não voltam a sair sob outro consentimento |
 | "Me pague um café" (Pix) como último item de Mais; app grátis e sem anúncios | 09 | Pedido da pessoa usuária |
+| Health Connect: só leitura, 30 dias, app vence no mesmo dia; react-native-health-connect 4.1.3 (plugin próprio); minSdk 26 | 10 plan | Phones abaixo do Android 8 deixam de ser suportados |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -97,9 +98,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Fase 9 completa (transição feita)
-Next action: /paul:plan (fase 10 — Health Connect)
-Resume file: .paul/ROADMAP.md
+Stopped at: Plans 10-01 e 10-02 criados
+Next action: /paul:apply .paul/phases/10-health-connect/10-01-PLAN.md
+Resume file: .paul/phases/10-health-connect/10-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

@@ -453,3 +453,15 @@ at = "2026-10-23"
 action = "transition"
 phase = 9
 at = "2026-10-23"
+
+[[entry]]
+action = "plan"
+phase = 10
+plan = "10-01"
+at = "2026-10-23"
+
+[[entry]]
+action = "plan"
+phase = 10
+plan = "10-02"
+at = "2026-10-23"
