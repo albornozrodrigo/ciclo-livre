@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Política de privacidade do Ciclo Livre</title>
+    <meta name="description" content="Como o app Ciclo Livre trata os seus dados: tudo fica no celular, num banco criptografado, sem conta, servidor, anúncios ou analytics." />
+    <meta name="theme-color" content="#F5F1E4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#151A17" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <!-- Gerado por scripts/build-site.mjs a partir de src/content/privacy-policy.ts. Não edite à mão. -->
+    <header class="top">
+      <a class="brand" href="/" aria-label="Ciclo Livre, início"><img src="/favicon.svg" alt="" width="36" height="36" />Ciclo Livre</a>
+      <nav aria-label="Principal"><a href="https://github.com/albornozrodrigo/ciclo-livre">GitHub</a></nav>
+    </header>
+    <main class="read" id="conteudo">
+      <div class="lobe" aria-hidden="true"><svg viewBox="0 0 400 400"><path fill="currentColor" d="M200 8C284 4 380 60 392 150C402 226 340 262 350 330C360 398 270 410 200 388C124 364 30 380 10 300C-8 228 52 196 46 128C40 58 120 12 200 8Z" /></svg></div>
+      <article>
+        <h1 class="display">Política de privacidade do Ciclo Livre</h1>
+        <p class="effective">Em vigor desde 23 de outubro de 2026</p>
+        <h2>Em resumo</h2>
+        <p>Tudo o que você registra fica só neste celular, num banco criptografado. O Ciclo Livre não tem conta, servidor, anúncios nem analytics, e quem faz o app não recebe os seus registros nem dados de uso. Algo só sai do celular quando você manda: ao usar a IA com a sua própria chave ou ao exportar e compartilhar um arquivo.</p>
+        <h2>O que fica guardado no celular</h2>
+        <ul><li>O que você registra: menstruação, sintomas, humor, medições (temperatura, peso, sono, batimentos), notas, tags e testes.</li><li>Seu perfil: ano de nascimento, modo de uso (por exemplo, tentando engravidar ou gravidez), duração média do ciclo e, se quiser contar, o método contraceptivo.</li><li>Suas configurações: lembretes, ordem das categorias e o que você escolheu na IA e no Health Connect.</li><li>A conversa com a IA, se você usar o chat.</li></ul>
+        <p>Tudo isso fica num banco de dados criptografado (SQLCipher), e a chave que abre o banco fica no armazenamento seguro do Android. O Ciclo Livre fica de fora do backup automático do Android, então nada disso vai para a sua conta Google.</p>
+        <h2>O que sai do celular, e só quando você pede</h2>
+        <h3>IA com a sua chave</h3>
+        <p>O Ciclo Livre não tem IA própria. Se você colocar uma chave da Anthropic (a empresa do Claude), o app manda para a Anthropic:</p>
+        <ul><li>no resumo de artigos: o que você digitou na busca e trechos de até 3 artigos do app;</li><li>no chat: a sua pergunta, as últimas mensagens da conversa (até 10) e um resumo dos seus dados: modo de uso, método contraceptivo (se você contou), fase do ciclo e previsões de hoje, ciclos, sintomas frequentes, medições dos últimos 90 dias e, se você marcar, as notas.</li></ul>
+        <p>Antes do primeiro envio do chat, o app mostra esse resumo inteiro e pede o seu consentimento. O ano de nascimento, as tags e o texto dos lembretes nunca vão. Nada é enviado até você tocar em &quot;Resumir&quot; ou &quot;Enviar&quot;.</p>
+        <p>A Anthropic trata esses dados conforme a política dela para a API, e o custo cai na sua conta lá. Em Mais › IA com sua chave você retira o consentimento ou apaga a chave quando quiser. Retirar o consentimento do chat apaga a conversa guardada.</p>
+        <h3>Exportar e compartilhar</h3>
+        <p>Quando você exporta os dados, gera o PDF para o médico ou faz um backup, o arquivo vai para onde você escolher na tela de compartilhar do Android (Drive, e-mail, outro app). A partir daí, valem as regras do destino. O backup é criptografado com uma senha que só você sabe.</p>
+        <h3>Me pague um café</h3>
+        <p>Copiar a chave Pix não envia nada. Se você pagar, o pagamento acontece no app do seu banco, e quem recebe vê o seu nome, como em qualquer Pix.</p>
+        <h2>Health Connect</h2>
+        <p>Se você conectar, o Ciclo Livre lê do Health Connect só os tipos que você marcar: sono, temperatura basal, frequência cardíaca em repouso, variabilidade da frequência cardíaca e peso. Na primeira vez ele lê os últimos 30 dias; depois, só o que for novo, e sempre com o app aberto. Esses dados entram no banco criptografado e seguem as mesmas regras do resto.</p>
+        <p>O Ciclo Livre nunca escreve no Health Connect. Para parar, toque em &quot;Desconectar&quot; ou tire as permissões no próprio Health Connect. O que já entrou continua no app até você apagar.</p>
+        <h2>Lembretes</h2>
+        <p>Os lembretes são agendados no próprio celular, e o Android guarda essa agenda fora do banco criptografado. Por isso, por padrão, o texto do lembrete é discreto e não fala de ciclo, nem na tela de bloqueio. Se você desligar as notificações discretas, o texto completo passa a ficar nessa agenda e a aparecer na notificação.</p>
+        <h2>Permissões do Android</h2>
+        <ul><li>Internet e estado da rede: só para a IA com a sua chave.</li><li>Notificações, iniciar com o aparelho, vibrar e manter o aparelho acordado por um instante: para os lembretes, inclusive depois de reiniciar o celular.</li><li>Contador no ícone: em algumas telas iniciais, mostra um número no ícone quando há lembrete.</li><li>Health Connect (leitura): o Android lista sempre, mas o app só usa se você conectar.</li><li>Biometria: o Android lista sempre, mas o app só usa se você ligar o bloqueio.</li></ul>
+        <h2>Seus direitos (LGPD)</h2>
+        <p>A LGPD trata dados de saúde como dados sensíveis. Como eles ficam com você, você exerce os seus direitos no próprio app:</p>
+        <ul><li>ver e exportar tudo em Mais › Seus dados;</li><li>corrigir qualquer registro no dia dele;</li><li>apagar tudo em Mais › Privacidade e segurança, o que apaga também a chave de criptografia e não tem volta;</li><li>retirar o consentimento da IA e desconectar o Health Connect quando quiser.</li></ul>
+        <p>Desinstalar o app também apaga tudo o que ele guardou. Arquivos que você exportou continuam onde você os salvou.</p>
+        <h2>Idade e uso</h2>
+        <p>O Ciclo Livre é para maiores de 18 anos. As previsões são estimativas, e o app não é método contraceptivo nem dispositivo médico.</p>
+        <h2>Contato e código</h2>
+        <p>O Ciclo Livre é código aberto, sob a licença GPL-3.0. O código, as dúvidas e as sugestões ficam em <a href="https://github.com/albornozrodrigo/ciclo-livre">github.com/albornozrodrigo/ciclo-livre</a>: é só abrir uma issue lá. As issues são públicas, então não escreva nelas nada sobre a sua saúde.</p>
+        <h2>Mudanças nesta política</h2>
+        <p>Se esta política mudar, a nova versão chega numa atualização do app, com a nova data no topo.</p>
+      </article>
+    </main>
+    <footer>
+      <div><p><strong>O Ciclo Livre não é método contraceptivo nem dispositivo médico.</strong> Para maiores de 18 anos.</p></div>
+      <div class="foot-links"><a href="/">Início</a><a href="https://github.com/albornozrodrigo/ciclo-livre">GitHub</a></div>
+    </footer>
+  </body>
+</html>

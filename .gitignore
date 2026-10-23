@@ -50,3 +50,6 @@ modules/*/android/.cxx/
 # Chave de assinatura e senhas (ficam só neste Mac; faça cópia de segurança fora do repositório)
 /credentials/
 credentials.json
+
+# Vercel (site/)
+.vercel

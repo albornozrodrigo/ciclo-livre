@@ -2,6 +2,8 @@
 
 App Android de acompanhamento do ciclo menstrual, grátis, sem anúncios e com os dados só no celular de quem usa. Tudo o que apps como o Clue cobram numa assinatura aqui é liberado: previsões, análises, relatório em PDF para a consulta, lembrete da janela fértil, Health Connect, IA, ícones e temas.
 
+Site: https://ciclo-livre.vercel.app · Política de privacidade: https://ciclo-livre.vercel.app/privacidade
+
 Este repositório é aberto para a comunidade. A ideia é que pessoas desenvolvedoras que menstruam, e quem mais quiser somar, ajudem a construir o app que gostariam de usar.
 
 > O Ciclo Livre não é método contraceptivo nem dispositivo médico. As previsões são estimativas.
@@ -81,7 +83,10 @@ src/
   content/      artigos e política de privacidade
 modules/        módulos nativos locais (ícone do app, intent de abertura, janela segura)
 plugins/        config plugins do Expo (backup, ícones alternativos)
-scripts/        geração dos ícones
+scripts/        geração dos ícones e da página de política do site
+site/           site estático (Vercel), mesmo visual do app
+store/          imagens da Google Play (ícone, arte de destaque, capturas)
+docs/           guia de publicação na Play Store
 .paul/          planejamento por fases (roadmap, planos e resumos)
 DESIGN.md       sistema visual "Território do Ciclo"
 PRODUCT.md      para quem é o app e como ele fala
