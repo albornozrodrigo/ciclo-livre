@@ -7,11 +7,12 @@ import { AppState, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CapsuleButton } from '@/components/ui/capsule-button';
+import { useSnackbar } from '@/components/ui/snackbar';
 import { getSecuritySettings, type SecuritySettings, setAppLock, setHideRecents } from '@/db/security-settings-repo';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
 
-import { isLockSuppressed, shouldLockOnReturn, withLockSuppressed } from './lock-policy';
+import { type Background, markAppLocked, markBackground, shouldLockOnReturn, withLockSuppressed } from './lock-policy';
 
 const s = ptBR.security;
 const CAPTURE_KEY = 'ciclo-livre';
@@ -30,12 +31,29 @@ export function useSecurity(): SecurityValue {
   return value;
 }
 
+/** Cancelamentos não são falha: a pessoa só fechou o pedido. */
+const CANCELS = new Set(['user_cancel', 'system_cancel', 'app_cancel']);
+
 /** Pede a credencial do aparelho (biometria com PIN/padrão de reserva). Sair para o PIN não conta como sair do app. */
-export async function authenticate(): Promise<boolean> {
+export async function authenticateDetailed(): Promise<{ ok: boolean; failed: boolean }> {
   const result = await withLockSuppressed(() =>
     LocalAuthentication.authenticateAsync({ promptMessage: s.prompt, cancelLabel: s.cancel, disableDeviceFallback: false }),
   );
-  return result.success;
+  return result.success ? { ok: true, failed: false } : { ok: false, failed: !CANCELS.has(result.error) };
+}
+
+export async function authenticate(): Promise<boolean> {
+  return (await authenticateDetailed()).ok;
+}
+
+/** O aparelho ainda tem PIN, padrão, senha ou biometria? Sem isso, a trava não teria como abrir. */
+async function deviceHasCredential(): Promise<boolean> {
+  try {
+    return (await LocalAuthentication.getEnrolledLevelAsync()) >= LocalAuthentication.SecurityLevel.SECRET;
+  } catch (e) {
+    log.error('auth_level_failed', e);
+    return true;
+  }
 }
 
 /** Configurações de proteção do aparelho, lidas do banco cifrado. */
@@ -58,11 +76,11 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
       settings,
       setLock: async (on) => {
         await setAppLock(db, on);
-        setSettings(await getSecuritySettings(db));
+        setSettings((prev) => (prev ? { ...prev, lock: on } : prev));
       },
       setHide: async (on) => {
         await setHideRecents(db, on);
-        setSettings(await getSecuritySettings(db));
+        setSettings((prev) => (prev ? { ...prev, hideRecents: on } : prev));
       },
     }),
     [db, settings],
@@ -70,7 +88,7 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
   return <SecurityContext.Provider value={value}>{children}</SecurityContext.Provider>;
 }
 
-function LockScreen({ onUnlock }: { onUnlock: () => void }) {
+function LockScreen({ onUnlock, failed }: { onUnlock: () => void; failed: boolean }) {
   const insets = useSafeAreaInsets();
   return (
     <View
@@ -82,6 +100,11 @@ function LockScreen({ onUnlock }: { onUnlock: () => void }) {
           {s.locked}
         </Text>
         <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{s.lockedHint}</Text>
+        {failed ? (
+          <Text accessibilityLiveRegion="polite" className="text-base font-bold leading-6 text-ink dark:text-ink-night">
+            {s.unlockFailed}
+          </Text>
+        ) : null}
       </View>
       <CapsuleButton label={s.unlock} onPress={onUnlock} />
     </View>
@@ -93,33 +116,56 @@ function LockScreen({ onUnlock }: { onUnlock: () => void }) {
  * O conteúdo continua montado (nada se perde), mas fica oculto, inclusive para o TalkBack.
  */
 export function AppLock({ children }: { children: ReactNode }) {
-  const { settings } = useSecurity();
+  const { settings, setLock } = useSecurity();
+  const { show } = useSnackbar();
   const [locked, setLocked] = useState<boolean | null>(null);
-  const backgroundAt = useRef<number | null>(null);
+  // Cobertura enquanto o app está fora: ao voltar, nada aparece antes de decidir se bloqueia.
+  const [covered, setCovered] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const background = useRef<Background | null>(null);
   const lockOn = settings?.lock ?? false;
 
   // Abertura do app: com trava, começa bloqueado.
   if (settings && locked === null) setLocked(settings.lock);
 
-  const unlock = useCallback(() => {
-    authenticate()
-      .then((ok) => {
-        if (ok) setLocked(false);
-      })
-      .catch((e: unknown) => log.error('unlock_failed', e));
-  }, []);
+  useEffect(() => {
+    markAppLocked(locked === true);
+  }, [locked]);
+
+  const unlock = useCallback(
+    () =>
+      // Sem PIN nem biometria no aparelho, a trava não tem como abrir: desliga em vez de trancar a pessoa fora.
+      deviceHasCredential().then(async (hasCredential) => {
+        if (!hasCredential) {
+          await setLock(false).catch((e: unknown) => log.error('security_save_failed', e));
+          setLocked(false);
+          show(s.lockRemoved);
+          return;
+        }
+        const result = await authenticateDetailed();
+        if (result.ok) {
+          setLocked(false);
+          setCovered(false);
+        } else setFailed(result.failed);
+      }),
+    [setLock, show],
+  );
 
   // Ao bloquear, já abre o pedido de credencial.
   useEffect(() => {
-    if (locked) unlock();
+    if (locked) unlock().catch((e: unknown) => log.error('unlock_failed', e));
   }, [locked, unlock]);
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', (status) => {
-      if (status === 'background') backgroundAt.current = isLockSuppressed() ? null : Date.now();
+      if (status === 'background') {
+        background.current = markBackground(Date.now());
+        if (lockOn && !background.current.suppressed) setCovered(true);
+      }
       if (status === 'active') {
-        if (lockOn && shouldLockOnReturn(backgroundAt.current, Date.now())) setLocked(true);
-        backgroundAt.current = null;
+        if (lockOn && shouldLockOnReturn(background.current, Date.now())) setLocked(true);
+        setCovered(false);
+        background.current = null;
       }
     });
     return () => sub.remove();
@@ -132,15 +178,26 @@ export function AppLock({ children }: { children: ReactNode }) {
   }, [hide]);
 
   if (locked === null) return null;
+  const hidden = locked || covered;
   return (
     <>
       <View
-        style={{ flex: 1, display: locked ? 'none' : 'flex' }}
-        accessibilityElementsHidden={locked}
-        importantForAccessibility={locked ? 'no-hide-descendants' : 'auto'}>
+        style={{ flex: 1, display: hidden ? 'none' : 'flex' }}
+        accessibilityElementsHidden={hidden}
+        importantForAccessibility={hidden ? 'no-hide-descendants' : 'auto'}>
         {children}
       </View>
-      {locked ? <LockScreen onUnlock={unlock} /> : null}
+      {locked ? (
+        <LockScreen
+          onUnlock={() => {
+            setFailed(false);
+            unlock().catch((e: unknown) => log.error('unlock_failed', e));
+          }}
+          failed={failed}
+        />
+      ) : covered ? (
+        <View className="flex-1 bg-water dark:bg-water-night" />
+      ) : null}
     </>
   );
 }

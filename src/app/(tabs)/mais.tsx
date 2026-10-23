@@ -10,6 +10,7 @@ import { Screen } from '@/components/ui/screen';
 import { useEraseAllData } from '@/db/database-root';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
+import { isAppLocked } from '@/security/lock-policy';
 
 /** Diálogo nativo (Material) com a ação destrutiva marcada; resolve true só em "Apagar tudo". */
 function confirmEraseAll(): Promise<boolean> {
@@ -27,7 +28,7 @@ function confirmEraseAll(): Promise<boolean> {
         {
           text: copy.confirmErase,
           style: 'destructive',
-          onPress: () => resolve(true),
+          onPress: () => resolve(!isAppLocked()),
         },
       ],
       { cancelable: true, onDismiss: () => resolve(false) },

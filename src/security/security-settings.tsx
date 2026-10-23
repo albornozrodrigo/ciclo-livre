@@ -1,6 +1,6 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { AppState, Text, View } from 'react-native';
 
 import { SwitchRow } from '@/components/reminders/switch-row';
 import { useSnackbar } from '@/components/ui/snackbar';
@@ -17,13 +17,20 @@ export function SecuritySettings() {
   const { show } = useSnackbar();
   const [canLock, setCanLock] = useState<boolean | null>(null);
 
+  // Relido ao voltar ao app: a pessoa pode ter cadastrado (ou tirado) o PIN nas configurações do Android.
   useEffect(() => {
-    LocalAuthentication.getEnrolledLevelAsync()
-      .then((level) => setCanLock(level >= LocalAuthentication.SecurityLevel.SECRET))
-      .catch((e: unknown) => {
-        log.error('auth_level_failed', e);
-        setCanLock(false);
-      });
+    const check = () =>
+      LocalAuthentication.getEnrolledLevelAsync()
+        .then((level) => setCanLock(level >= LocalAuthentication.SecurityLevel.SECRET))
+        .catch((e: unknown) => {
+          log.error('auth_level_failed', e);
+          setCanLock(false);
+        });
+    check();
+    const sub = AppState.addEventListener('change', (status) => {
+      if (status === 'active') check();
+    });
+    return () => sub.remove();
   }, []);
 
   if (!settings || canLock === null) return null;

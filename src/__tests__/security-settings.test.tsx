@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { AppState, type AppStateStatus } from 'react-native';
 
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import { getSecuritySettings } from '@/db/security-settings-repo';
@@ -44,6 +45,20 @@ describe('SecuritySettings', () => {
     await render(ui());
     expect(await screen.findByText(s.noCredential)).toBeOnTheScreen();
     expect(screen.queryByRole('switch', { name: s.lock })).toBeNull();
+  });
+
+  it('cadastrou um PIN nas configurações do Android e voltou: a opção aparece', async () => {
+    mockLevel = 0;
+    let listener: ((s: AppStateStatus) => void) | null = null;
+    jest.spyOn(AppState, 'addEventListener').mockImplementation((_t, h) => {
+      listener = h as (s: AppStateStatus) => void;
+      return { remove: jest.fn() } as never;
+    });
+    await render(ui());
+    await screen.findByText(s.noCredential);
+    mockLevel = 1;
+    await act(async () => listener?.('active'));
+    expect(await screen.findByRole('switch', { name: s.lock })).toBeOnTheScreen();
   });
 
   it('ligar a trava pede a credencial antes e liga também esconder nos recentes', async () => {

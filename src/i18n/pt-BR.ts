@@ -583,12 +583,15 @@ export const ptBR = {
     locked: 'Bloqueado',
     lockedHint: 'Use a digital, o rosto ou o PIN do celular para continuar.',
     unlock: 'Desbloquear',
+    unlockFailed: 'Não deu para desbloquear. Tente de novo.',
+    lockRemoved: 'O celular não tem mais PIN nem digital, então o pedido de desbloqueio foi desligado.',
     saveFailed: 'Não deu para salvar. Tente de novo.',
   },
   policy: {
     effective: (date: string) => `Vigente desde ${date}.`,
     link: 'Política de privacidade',
     linkHint: 'O que fica no celular, o que sai e quando',
+    disclaimer: 'Texto sem revisão jurídica.',
   },
   privacy: {
     title: 'Privacidade e segurança',

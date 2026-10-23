@@ -12,6 +12,7 @@ import { BACKUP_ERROR } from '@/domain/export/backup';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
+import { isAppLocked } from '@/security/lock-policy';
 
 const d = ptBR.data;
 /** Backup de décadas de registros cabe com folga; acima disso não é arquivo do app. */
@@ -24,7 +25,7 @@ function confirmReplace(): Promise<boolean> {
       d.confirmBody,
       [
         { text: d.confirmCancel, style: 'cancel', onPress: () => resolve(false) },
-        { text: d.confirmOk, style: 'destructive', onPress: () => resolve(true) },
+        { text: d.confirmOk, style: 'destructive', onPress: () => resolve(!isAppLocked()) },
       ],
       { cancelable: true, onDismiss: () => resolve(false) },
     );

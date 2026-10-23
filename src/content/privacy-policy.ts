@@ -14,7 +14,7 @@ export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyB
     { kind: 'h', text: 'Em resumo' },
     {
       kind: 'p',
-      text: 'Tudo o que você registra fica só neste celular, num banco criptografado. O Ciclo Livre não tem conta, servidor, anúncios nem analytics, e quem faz o app não recebe nenhum dado seu. Algo só sai do celular quando você manda: ao usar a IA com a sua própria chave ou ao exportar e compartilhar um arquivo.',
+      text: 'Tudo o que você registra fica só neste celular, num banco criptografado. O Ciclo Livre não tem conta, servidor, anúncios nem analytics, e quem faz o app não recebe os seus registros nem dados de uso. Algo só sai do celular quando você manda: ao usar a IA com a sua própria chave ou ao exportar e compartilhar um arquivo.',
     },
     { kind: 'h', text: 'O que fica guardado no celular' },
     {
@@ -40,7 +40,7 @@ export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyB
       kind: 'list',
       items: [
         'no resumo de artigos: o que você digitou na busca e trechos de até 3 artigos do app;',
-        'no chat: a sua pergunta e um resumo dos seus dados (ciclos, sintomas frequentes, medições dos últimos 90 dias e, se você marcar, as notas).',
+        'no chat: a sua pergunta, as últimas mensagens da conversa (até 10) e um resumo dos seus dados: modo de uso, método contraceptivo (se você contou), fase do ciclo e previsões de hoje, ciclos, sintomas frequentes, medições dos últimos 90 dias e, se você marcar, as notas.',
       ],
     },
     {
@@ -57,7 +57,10 @@ export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyB
       text: 'Quando você exporta os dados, gera o PDF para o médico ou faz um backup, o arquivo vai para onde você escolher na tela de compartilhar do Android (Drive, e-mail, outro app). A partir daí, valem as regras do destino. O backup é criptografado com uma senha que só você sabe.',
     },
     { kind: 'sub', text: 'Me pague um café' },
-    { kind: 'p', text: 'Copiar a chave Pix não envia nada. Se você pagar, o pagamento acontece no app do seu banco.' },
+    {
+      kind: 'p',
+      text: 'Copiar a chave Pix não envia nada. Se você pagar, o pagamento acontece no app do seu banco, e quem recebe vê o seu nome, como em qualquer Pix.',
+    },
     { kind: 'h', text: 'Health Connect' },
     {
       kind: 'p',
@@ -76,10 +79,11 @@ export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyB
     {
       kind: 'list',
       items: [
-        'Internet: só para a IA com a sua chave.',
-        'Notificações, iniciar com o aparelho e vibrar: para os lembretes, inclusive depois de reiniciar o celular.',
-        'Health Connect (leitura): só se você conectar.',
-        'Biometria: só se você ligar o bloqueio do app.',
+        'Internet e estado da rede: só para a IA com a sua chave.',
+        'Notificações, iniciar com o aparelho, vibrar e manter o aparelho acordado por um instante: para os lembretes, inclusive depois de reiniciar o celular.',
+        'Contador no ícone: em algumas telas iniciais, mostra um número no ícone quando há lembrete.',
+        'Health Connect (leitura): o Android lista sempre, mas o app só usa se você conectar.',
+        'Biometria: o Android lista sempre, mas o app só usa se você ligar o bloqueio.',
       ],
     },
     { kind: 'h', text: 'Seus direitos (LGPD)' },
@@ -104,6 +108,5 @@ export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyB
     },
     { kind: 'h', text: 'Mudanças nesta política' },
     { kind: 'p', text: 'Se esta política mudar, a nova versão chega numa atualização do app, com a nova data no topo.' },
-    { kind: 'p', text: 'Texto sem revisão jurídica.' },
   ],
 };

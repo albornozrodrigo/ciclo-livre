@@ -3,7 +3,11 @@ import { act, render } from '@testing-library/react-native';
 import { LaunchIntentBridge } from '@/navigation/launch-intent-bridge';
 
 const mockPush = jest.fn();
-jest.mock('expo-router', () => ({ router: { push: (href: unknown) => mockPush(href) } }));
+let mockNavKey: string | undefined = 'root';
+jest.mock('expo-router', () => ({
+  router: { push: (href: unknown) => mockPush(href) },
+  useRootNavigationState: () => (mockNavKey ? { key: mockNavKey } : undefined),
+}));
 let mockAction: string | null = null;
 let mockListener: ((action: string | null) => void) | null = null;
 jest.mock('../../../modules/launch-intent', () => ({
@@ -18,6 +22,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockAction = null;
   mockListener = null;
+  mockNavKey = 'root';
 });
 
 describe('LaunchIntentBridge', () => {
@@ -29,6 +34,16 @@ describe('LaunchIntentBridge', () => {
       expect(mockPush).toHaveBeenCalledWith('/privacidade');
     },
   );
+
+  it('espera a navegação estar pronta antes de abrir a política (abertura a frio)', async () => {
+    mockAction = 'androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE';
+    mockNavKey = undefined;
+    const view = await render(<LaunchIntentBridge />);
+    expect(mockPush).not.toHaveBeenCalled();
+    mockNavKey = 'root';
+    await view.rerender(<LaunchIntentBridge />);
+    expect(mockPush).toHaveBeenCalledWith('/privacidade');
+  });
 
   it('aberto pelo ícone: não navega', async () => {
     mockAction = 'android.intent.action.MAIN';

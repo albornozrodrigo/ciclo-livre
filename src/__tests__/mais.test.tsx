@@ -6,6 +6,7 @@ import MaisScreen from '@/app/(tabs)/mais';
 import type { Profile } from '@/domain/profile';
 import { PIX_KEY } from '@/constants/support';
 import { ptBR } from '@/i18n/pt-BR';
+import { markAppLocked } from '@/security/lock-policy';
 
 // Trava do app tem testes próprios (src/security); aqui só a tela.
 jest.mock('@/security/security-settings', () => ({ SecuritySettings: () => null }));
@@ -86,6 +87,14 @@ describe('Mais › seu perfil', () => {
 });
 
 describe('Mais › apagar todos os dados', () => {
+  it('com o app bloqueado, o diálogo que ficou aberto por cima não apaga nada', async () => {
+    await renderMais();
+    markAppLocked(true);
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.privacy.eraseButton }));
+    markAppLocked(false);
+    expect(mockErase).not.toHaveBeenCalled();
+  });
+
   it('confirma por snackbar que os dados foram apagados', async () => {
     await renderMais();
 

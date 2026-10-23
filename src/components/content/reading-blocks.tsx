@@ -33,12 +33,23 @@ function BlockView({ block }: { block: PolicyBlock }) {
   return <Text className="text-[17px] leading-7 text-ink dark:text-ink-night">{block.text}</Text>;
 }
 
-/** Texto corrido: 16dp entre blocos; título com mais espaço acima (32) do que abaixo (16). */
+/**
+ * Espaço extra acima: título de seção 32dp, subtítulo 24dp (nenhum logo depois do título, que fica colado ao conteúdo).
+ * Mais espaço acima do que abaixo (16dp entre blocos).
+ */
+function spaceAbove(blocks: readonly PolicyBlock[], i: number): string | undefined {
+  if (i === 0) return undefined;
+  if (blocks[i].kind === 'h') return 'mt-4';
+  if (blocks[i].kind === 'sub' && blocks[i - 1].kind !== 'h') return 'mt-2';
+  return undefined;
+}
+
+/** Texto corrido com hierarquia de leitura. */
 export function ReadingBlocks({ blocks }: { blocks: readonly PolicyBlock[] }) {
   return (
     <View className="gap-4">
       {blocks.map((block, i) => (
-        <View key={`${block.kind}-${i}`} className={(block.kind === 'h' || block.kind === 'sub') && i > 0 ? 'mt-4' : undefined}>
+        <View key={`${block.kind}-${i}`} className={spaceAbove(blocks, i)}>
           <BlockView block={block} />
         </View>
       ))}

@@ -1,6 +1,7 @@
 import { Alert } from 'react-native';
 
 import { ptBR } from '@/i18n/pt-BR';
+import { isAppLocked } from '@/security/lock-policy';
 
 const c = ptBR.chat;
 
@@ -12,7 +13,7 @@ export function confirmClearChat(): Promise<boolean> {
       c.clearBody,
       [
         { text: c.cancel, style: 'cancel', onPress: () => resolve(false) },
-        { text: c.clearOk, style: 'destructive', onPress: () => resolve(true) },
+        { text: c.clearOk, style: 'destructive', onPress: () => resolve(!isAppLocked()) },
       ],
       { cancelable: true, onDismiss: () => resolve(false) },
     );
