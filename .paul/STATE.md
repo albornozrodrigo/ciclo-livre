@@ -17,19 +17,19 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 
 Milestone: v0.1 Initial Release
 Phase: 11 of 11 (Personalização + release) — Planning
-Plan: 11-01..11-03 completos; 11-04 em andamento
-Status: 11-03 UNIFY feito; APPLY 11-04
+Plan: 11-01..11-04 completos; 11-05 (release) em andamento
+Status: 11-04 UNIFY feito; APPLY 11-05
 Last activity: 2026-10-23 — 11-02 (ícone, ícones alternativos, tema) fechado com revisões
 
 Progress:
 - Milestone: [█████████░] 91%
-- Phase 11: [██████░░░░] 60%
+- Phase 11: [████████░░] 80%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [11-03 fechado; APPLY 11-04]
+  ✓        ✓        ✓     [11-04 fechado; APPLY 11-05]
 ```
 
 ## Accumulated Context
@@ -76,16 +76,13 @@ PLAN ──▶ APPLY ──▶ UNIFY
 ### Deferred Issues
 | Issue | Origin | Effort | Revisit |
 |-------|--------|--------|---------|
-| Movimento (transições de território) e chip que cruza na cápsula | 02-02 review | M | Fase 11 / polimento |
-| Teto de design: lobo da próxima fase sobreposto; marca de sol para hoje no calendário | 04 review | M | Fase 11 |
 | /cso completo antes do release (runs da fase 8 parciais pelo teto de tempo; OWASP manual feito em 2026-10-23) | 08 | S | Antes do release |
 | KDF nativo (scrypt em JS limita N a 2^13–2^15) | 08-04 | M | Fase 11 |
 | Build de release assinado com a chave de debug; permissões SYSTEM_ALERT_WINDOW/armazenamento | OWASP 08 | S | Fase 11 |
 | KDF nativo para backup < 3 s (hoje scrypt 2^13 em JS ≈ 6,7 s no S21 FE) | 07 | M | Fase 11 |
 | Backup automático no Drive (OAuth/Drive API) | 07 plan | L | Só se pedido |
 | Visibilidade SECRET por notificação: Android ignora a do canal (comprovado no S21 FE); só com patch no nativo do expo-notifications | 06 / 11-03 | M | Só se pedido |
-| Interruptor em cápsula própria do mundo (teto do finish review) | 06 review | S | Fase 11 |
-| "média 29" na ponta da linha de referência; número principal em Display | 05 review | S | Polimento |
+| Teste instável `readZipEntry › ZipCrypto` (1 falha em 4 rodadas completas) | 11-04 | S | Investigar |
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
 | Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
@@ -102,9 +99,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-23
-Stopped at: 11-03 completo; 11-04 em andamento
-Next action: /paul:apply .paul/phases/11-personalizacao-release/11-04-PLAN.md
-Resume file: .paul/phases/11-personalizacao-release/11-04-PLAN.md
+Stopped at: 11-04 completo; 11-05 em andamento (build EAS)
+Next action: concluir 11-05 (APK de release no S21 FE, AAB)
+Resume file: .paul/phases/11-personalizacao-release/11-05-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
