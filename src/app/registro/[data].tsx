@@ -9,7 +9,7 @@ import { NoteField } from '@/components/tracking/note-field';
 import { TagsField } from '@/components/tracking/tags-field';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { formatLongDate } from '@/components/ui/date-field';
-import { addDays, toDayNumber, todayIso } from '@/domain/dates';
+import { addDays, isValidDate, todayIso } from '@/domain/dates';
 import type { Category, CategoryGroup } from '@/domain/tracking/catalog';
 import { ptBR } from '@/i18n/pt-BR';
 import { useProfile } from '@/profile/profile-context';
@@ -29,7 +29,7 @@ function groupCategories(categories: Category[]): [CategoryGroup, Category[]][] 
 export default function RegistroScreen() {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ data: string }>();
-  const date = typeof params.data === 'string' && toDayNumber(params.data) !== null ? params.data : todayIso();
+  const date = isValidDate(params.data) ? params.data : todayIso();
   const { state } = useProfile();
   const { day, toggle, saveMeasure, saveNote } = useDayLog(date);
   const profile = state.status === 'ready' ? state.profile : null;
@@ -44,7 +44,10 @@ export default function RegistroScreen() {
   return (
     <KeyboardAvoidingView behavior="padding" style={{ paddingTop: insets.top }} className="flex-1 bg-water dark:bg-water-night">
       <StatusBar style="auto" />
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: 32, paddingBottom: insets.bottom + 32 }} className="flex-1 px-5">
+      <ScrollView
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingTop: 32, paddingBottom: insets.bottom + 32 }}
+        className="flex-1 px-5">
         <Text accessibilityRole="header" className="text-[32px] font-bold leading-[34px] tracking-[-0.96px] text-ink dark:text-ink-night">
           {title}
         </Text>
@@ -54,7 +57,12 @@ export default function RegistroScreen() {
             <CapsuleButton variant="outline" label={t.previousDay} onPress={() => router.setParams({ data: addDays(date, -1) })} />
           </View>
           <View className="flex-1">
-            <CapsuleButton variant="outline" label={t.nextDay} disabled={isToday} onPress={() => router.setParams({ data: addDays(date, 1) })} />
+            <CapsuleButton
+              variant="outline"
+              label={t.nextDay}
+              disabled={isToday}
+              onPress={() => router.setParams({ data: addDays(date, 1) })}
+            />
           </View>
         </View>
 
@@ -65,7 +73,12 @@ export default function RegistroScreen() {
             </Text>
             {categories.map((category) =>
               category.kind === 'measure' ? (
-                <MeasureField key={`${date}:${category.id}`} category={category} value={day.measures[category.id]} onSave={(v) => saveMeasure(category.id, v)} />
+                <MeasureField
+                  key={`${date}:${category.id}`}
+                  category={category}
+                  value={day.measures[category.id]}
+                  onSave={(v) => saveMeasure(category.id, v)}
+                />
               ) : (
                 <ChoiceCategoryField
                   key={category.id}

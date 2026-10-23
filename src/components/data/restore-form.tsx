@@ -51,10 +51,13 @@ export function RestoreForm({ onDone, replacing = true }: Props) {
   const running = useRef(false);
 
   async function pick() {
+    let copy: File | null = null;
     try {
       const result = await getDocumentAsync({ copyToCacheDirectory: true, multiple: false });
       if (result.canceled) return;
       const asset = result.assets[0];
+      // A cópia no cache tem dado de saúde: sai em qualquer caminho (lida, grande demais ou com erro).
+      copy = new File(asset.uri);
       setPassword('');
       setError(null);
       if (asset.size !== undefined && asset.size > MAX_BYTES) {
@@ -62,10 +65,7 @@ export function RestoreForm({ onDone, replacing = true }: Props) {
         setError({ field: 'file', text: d.tooBig });
         return;
       }
-      const copy = new File(asset.uri);
       const text = await copy.text();
-      // A cópia no cache tem dado de saúde: apagar assim que lida.
-      if (copy.exists) copy.delete();
       // Decide pelo formato do arquivo (não por texto solto, que pode estar numa nota).
       const read = await readRestore(text).catch(() => null);
       if (!read) {
@@ -77,6 +77,8 @@ export function RestoreForm({ onDone, replacing = true }: Props) {
     } catch (e) {
       log.error('restore_pick_failed', e);
       show(d.restoreFailed);
+    } finally {
+      if (copy?.exists) copy.delete();
     }
   }
 

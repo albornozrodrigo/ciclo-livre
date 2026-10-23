@@ -4,15 +4,31 @@ export type IsoDate = string;
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const MS_PER_DAY = 86_400_000;
 
-/** Número de dias desde 1970-01-01 (UTC), ou null se a data não existe no calendário. */
+/** Faixa das contas: larga o bastante para somar ciclos e gestação a qualquer data de entrada. */
+const CALC_YEARS = { min: 1800, max: 2299 } as const;
+/**
+ * Faixa de entrada (arquivo restaurado, Clue, link, gravação). Ano 9999 ou 0500 vindos de fora quebravam
+ * as contas de ciclo (o ano 10000 não cabe em AAAA); nenhum registro real fica fora disto.
+ */
+const INPUT_YEARS = { min: 1900, max: 2100 } as const;
+
+/** Número de dias desde 1970-01-01 (UTC), ou null se a data não existe no calendário ou sai da faixa de contas. */
 export function toDayNumber(value: IsoDate): number | null {
   const match = ISO_DATE.exec(value);
   if (!match) return null;
   const [year, month, day] = [Number(match[1]), Number(match[2]), Number(match[3])];
+  if (year < CALC_YEARS.min || year > CALC_YEARS.max) return null;
   const ms = Date.UTC(year, month - 1, day);
   const back = new Date(ms);
   const exists = back.getUTCFullYear() === year && back.getUTCMonth() === month - 1 && back.getUTCDate() === day;
   return exists ? ms / MS_PER_DAY : null;
+}
+
+/** Data que pode entrar no app: existe no calendário e fica entre 1900 e 2100. Use em toda fronteira. */
+export function isValidDate(value: unknown): value is IsoDate {
+  if (typeof value !== 'string' || toDayNumber(value) === null) return false;
+  const year = Number(value.slice(0, 4));
+  return year >= INPUT_YEARS.min && year <= INPUT_YEARS.max;
 }
 
 /** Diferença em dias (b − a). Ambas precisam ser datas válidas. */
@@ -47,7 +63,9 @@ export function addDays(value: IsoDate, days: number): IsoDate {
   const dayNumber = toDayNumber(value);
   if (dayNumber === null) throw new RangeError('Data inválida.');
   const d = new Date((dayNumber + days) * MS_PER_DAY);
-  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+  const year = d.getUTCFullYear();
+  if (year < CALC_YEARS.min || year > CALC_YEARS.max) throw new RangeError('Data fora da faixa.');
+  return `${year}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
 }
 
 /** Hoje, como data de calendário local. */

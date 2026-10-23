@@ -1,10 +1,15 @@
-import { type IsoDate, toDayNumber } from '@/domain/dates';
+import { type IsoDate, isValidDate } from '@/domain/dates';
 import { categoryById } from '@/domain/tracking/catalog';
 import { NOTE_MAX_LENGTH, validateMeasure } from '@/domain/tracking/rules';
 import { normalizeTagKey, TAG_MAX_LENGTH } from '@/domain/tracking/tags';
 
 /** Limites do arquivo do Clue: cobrem décadas de uso e barram arquivo forjado gigante. */
-export const CLUE_LIMITS = { bytes: 50 * 1024 * 1024, records: 500_000 } as const;
+export const CLUE_LIMITS = { bytes: 50 * 1024 * 1024, records: 500_000, tags: 1000, optionsPerRecord: 50, unknownKeys: 50 } as const;
+
+/** Busca só chaves próprias: nomes vindos do arquivo como "constructor" ou "__proto__" não acham nada herdado. */
+function own<T>(table: Record<string, T>, key: string): { found: true; value: T } | { found: false } {
+  return Object.prototype.hasOwnProperty.call(table, key) ? { found: true, value: table[key] } : { found: false };
+}
 
 export type ClueRecord = { type: string; date: IsoDate; value: unknown };
 
@@ -39,7 +44,7 @@ export function parseClueMeasurements(text: string): { records: ClueRecord[]; in
   let invalid = 0;
   for (const item of raw) {
     const date = isObject(item) && typeof item.date === 'string' ? item.date.slice(0, 10) : '';
-    if (!isObject(item) || typeof item.type !== 'string' || item.type.length === 0 || item.type.length > 64 || toDayNumber(date) === null) {
+    if (!isObject(item) || typeof item.type !== 'string' || item.type.length === 0 || item.type.length > 64 || !isValidDate(date)) {
       invalid += 1;
       continue;
     }
@@ -298,12 +303,14 @@ export function mapClue(records: readonly ClueRecord[]): ClueImport {
   const dayTagKeys = new Set<string>();
   const tagNames = new Map<string, string>();
   const dayTags: ClueImport['dayTags'] = [];
-  const unknown: Record<string, number> = {};
+  const unknown = new Map<string, number>();
   const dates = new Set<IsoDate>();
   let truncatedNotes = 0;
 
   const miss = (key: string) => {
-    unknown[key] = (unknown[key] ?? 0) + 1;
+    // Arquivo forjado com milhões de nomes não pode encher a prévia: depois de 50 chaves, soma em "other".
+    const slot = unknown.has(key) || unknown.size < CLUE_LIMITS.unknownKeys ? key : 'other';
+    unknown.set(slot, (unknown.get(slot) ?? 0) + 1);
   };
   const select = (date: IsoDate, category: string, option: string) => {
     const key = `${date}|${category}|${option}`;
@@ -330,8 +337,13 @@ export function mapClue(records: readonly ClueRecord[]): ClueImport {
   };
 
   for (const r of sorted) {
-    const type = TYPE_ALIASES[r.type] ?? r.type;
+    const alias = own(TYPE_ALIASES, r.type);
+    const type = alias.found ? alias.value : r.type;
     const value = isObject(r.value) ? r.value : null;
+    if (Array.isArray(r.value) && r.value.length > CLUE_LIMITS.optionsPerRecord) {
+      miss(`${r.type}:too_many_options`);
+      continue;
+    }
 
     if (type === 'notes') {
       const text = typeof value?.text === 'string' ? value.text.trim() : '';
@@ -355,7 +367,10 @@ export function mapClue(records: readonly ClueRecord[]): ClueImport {
         const name = option.trim().replace(/\s+/g, ' ').slice(0, TAG_MAX_LENGTH).trim();
         if (!name) continue;
         const key = normalizeTagKey(name);
-        if (!tagNames.has(key)) tagNames.set(key, name);
+        if (!tagNames.has(key)) {
+          if (tagNames.size >= CLUE_LIMITS.tags) throw new ClueFormatError('too_many');
+          tagNames.set(key, name);
+        }
         const canonical = tagNames.get(key) as string;
         if (!dayTagKeys.has(`${r.date}|${key}`)) {
           dayTagKeys.add(`${r.date}|${key}`);
@@ -393,17 +408,19 @@ export function mapClue(records: readonly ClueRecord[]): ClueImport {
       continue;
     }
 
-    const table = OPTIONS[type];
-    if (!table) {
+    const entry = own(OPTIONS, type);
+    if (!entry.found) {
       miss(r.type);
       continue;
     }
+    const table = entry.value;
     for (const { option, severity } of optionsOf(r.value)) {
-      if (!(option in table)) {
+      const hit = own(table, option);
+      if (!hit.found) {
         miss(`${r.type}:${option}`);
         continue;
       }
-      const target = table[option];
+      const target = hit.value;
       if (target === SKIP) continue;
       select(r.date, target[0], target[1]);
       const level = SEVERITY.indexOf(severity as (typeof SEVERITY)[number]);
@@ -420,7 +437,7 @@ export function mapClue(records: readonly ClueRecord[]): ClueImport {
     notes,
     tags: [...tagNames.values()],
     dayTags,
-    unknown,
+    unknown: Object.fromEntries(unknown),
     truncatedNotes,
     range: allDates.length ? { from: allDates[0], to: allDates[allDates.length - 1] } : null,
     days: allDates.length,

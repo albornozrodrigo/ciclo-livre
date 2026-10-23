@@ -82,3 +82,19 @@ export async function setDiscreet(db: SqlExecutor, discreet: boolean): Promise<v
     ),
   );
 }
+
+const ID_SECRET_KEY = 'reminder_id_secret';
+
+/**
+ * Segredo dos identificadores de lembrete. O Android guarda a agenda em texto puro, fora do banco;
+ * com o segredo (que só existe aqui, cifrado), o identificador não revela tipo nem data.
+ */
+export async function getReminderIdSecret(db: SqlExecutor, random: (bytes: number) => Uint8Array): Promise<string> {
+  const row = await db.getFirstAsync<{ value: string }>('SELECT value FROM app_meta WHERE key = ?', ID_SECRET_KEY);
+  if (row?.value) return row.value;
+  const secret = Array.from(random(16), (b) => b.toString(16).padStart(2, '0')).join('');
+  await enqueueWrite(db, () => db.runAsync('INSERT OR IGNORE INTO app_meta (key, value) VALUES (?, ?)', ID_SECRET_KEY, secret));
+  const saved = await db.getFirstAsync<{ value: string }>('SELECT value FROM app_meta WHERE key = ?', ID_SECRET_KEY);
+  if (!saved) throw new Error('Segredo dos lembretes não foi salvo.');
+  return saved.value;
+}

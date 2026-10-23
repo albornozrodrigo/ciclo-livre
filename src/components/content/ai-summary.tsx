@@ -1,8 +1,9 @@
 import { router } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { summarize, type SummaryResult } from '@/ai/claude';
+import { requestSummary, type SummaryOutcome } from '@/ai/request-summary';
 import { useAi } from '@/ai/use-ai';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { ListRow } from '@/components/ui/list-row';
@@ -14,31 +15,34 @@ const t = ptBR.ai;
 
 /** "Resumir com IA" sobre os resultados da busca. Só envia com chave salva e consentimento dado. */
 export function AiSummary({ query, articles }: { query: string; articles: Article[] }) {
+  const db = useSQLiteContext();
   const { state } = useAi();
-  const [result, setResult] = useState<SummaryResult | null>(null);
+  const [result, setResult] = useState<Exclude<SummaryOutcome, { error: 'no_key' | 'no_consent' }> | null>(null);
   const [busy, setBusy] = useState(false);
   const running = useRef(false);
+  // Sair da tela (ou trocar a busca, que remonta este bloco) cancela o pedido em curso.
+  const abort = useRef<AbortController | null>(null);
+  useEffect(() => () => abort.current?.abort(), []);
 
   async function run() {
     if (!state || running.current) return;
-    if (!state.key) {
-      router.push('/ia');
-      return;
-    }
-    if (!state.settings.consent) {
-      router.push('/ia/consentimento');
-      return;
-    }
     running.current = true;
     setBusy(true);
+    const controller = new AbortController();
+    abort.current = controller;
     try {
-      setResult(await summarize({ apiKey: state.key, model: state.settings.model, query, articles }));
+      // Chave e consentimento são conferidos de novo no envio (requestSummary), não só aqui na tela.
+      const outcome = await requestSummary(db, query, articles, controller.signal);
+      if (controller.signal.aborted) return;
+      if (!outcome.ok && outcome.error === 'no_key') router.push('/ia');
+      else if (!outcome.ok && outcome.error === 'no_consent') router.push('/ia/consentimento');
+      else setResult(outcome);
     } catch (e) {
       log.error('ai_summary_failed', e);
-      setResult({ ok: false, error: 'unknown' });
+      if (!controller.signal.aborted) setResult({ ok: false, error: 'unknown' });
     } finally {
       running.current = false;
-      setBusy(false);
+      if (!controller.signal.aborted) setBusy(false);
     }
   }
 

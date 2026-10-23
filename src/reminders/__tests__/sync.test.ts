@@ -17,6 +17,13 @@ let mockGranted = true;
 const mockChannels = new Map<string, { lockscreenVisibility: number }>();
 let mockScheduleGate: Promise<void> | null = null;
 
+let mockRandomCalls = 0;
+jest.mock('expo-crypto', () => ({
+  getRandomBytes: (n: number) => {
+    mockRandomCalls += 1;
+    return Uint8Array.from({ length: n }, (_, i) => (i * 7 + mockRandomCalls) % 256);
+  },
+}));
 jest.mock('expo-notifications', () => ({
   AndroidImportance: { DEFAULT: 3 },
   AndroidNotificationVisibility: { PUBLIC: 1, PRIVATE: 2, SECRET: 3 },
@@ -38,6 +45,9 @@ jest.mock('expo-notifications', () => ({
   }),
   deleteNotificationChannelAsync: jest.fn(async (id: string) => {
     mockCalls.push(`deleteChannel ${id}`);
+  }),
+  dismissAllNotificationsAsync: jest.fn(async () => {
+    mockCalls.push('dismissAll');
   }),
   scheduleNotificationAsync: jest.fn(async (request: Request) => {
     if (mockScheduleGate) await mockScheduleGate;
@@ -87,7 +97,7 @@ describe('syncReminders', () => {
     await syncReminders(db, profile, NOW);
 
     const first = scheduled()[0];
-    expect(first.identifier).toMatch(/^period_due:2026-10-24@09:00#/);
+    expect(first.identifier).toMatch(/^r_[0-9a-f]{32}$/);
     expect(first.trigger).toEqual({ type: 'date', date: new Date(2026, 9, 24, 9, 0), channelId: CHANNELS.private });
     expect(first.content).toMatchObject({ title: 'Menstruação prevista para hoje' });
   });
@@ -121,8 +131,33 @@ describe('syncReminders', () => {
       options: { ...defaultReminder('daily_log').options, anchor: '2026-10-22' },
     });
     await syncReminders(db, profile, NOW);
-    const log = scheduled().find((r) => r.identifier.startsWith('daily_log:2026-10-22'));
-    expect(log?.content.data).toEqual({ kind: 'daily_log', date: '2026-10-22' });
+    const log = scheduled().find((r) => r.content.data.kind === 'daily_log' && r.content.data.date === '2026-10-22');
+    expect(log).toBeDefined();
+  });
+
+  it('o armazenamento de notificações (texto puro no Android) não guarda dado de saúde', async () => {
+    await syncReminders(db, profile, NOW);
+    for (const r of scheduled()) {
+      // Nada de tipo de lembrete nem data prevista no identificador ou nos dados.
+      expect(r.identifier).toMatch(/^r_[0-9a-f]{32}$/);
+      expect(r.content.data).toEqual({});
+    }
+  });
+
+  it('o identificador depende de um segredo guardado no banco cifrado: estável no mesmo aparelho, diferente em outro', async () => {
+    await syncReminders(db, profile, NOW);
+    const ids = scheduled().map((r) => r.identifier);
+    mockStore.clear();
+    await syncReminders(db, profile, NOW);
+    expect(scheduled().map((r) => r.identifier)).toEqual(ids);
+
+    const other = openMemoryDatabase();
+    await runMigrations(other, MIGRATIONS);
+    for (const d of ['2026-09-26', '2026-09-27', '2026-09-28']) await setSelection(other, d, 'period', ['medium']);
+    await saveReminder(other, { ...defaultReminder('period_due'), enabled: true });
+    mockStore.clear();
+    await syncReminders(other, profile, NOW);
+    expect(scheduled().map((r) => r.identifier)).not.toEqual(ids);
   });
 
   it('sem permissão ou sem perfil, cancela o que havia', async () => {
@@ -149,6 +184,13 @@ describe('syncReminders', () => {
     mockScheduleGate = null;
     await Promise.all([running, erasing]);
     expect(scheduled()).toEqual([]);
+  });
+});
+
+describe('cancelAllReminders', () => {
+  it('"apagar tudo" também tira da bandeja as notificações já exibidas', async () => {
+    await cancelAllReminders();
+    expect(mockCalls).toEqual(expect.arrayContaining(['cancelAll', 'dismissAll']));
   });
 });
 

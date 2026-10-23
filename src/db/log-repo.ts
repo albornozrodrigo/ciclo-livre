@@ -1,4 +1,4 @@
-import { type IsoDate, toDayNumber } from '@/domain/dates';
+import { type IsoDate, isValidDate } from '@/domain/dates';
 import { categoryById } from '@/domain/tracking/catalog';
 import { type CategoryPref, validateMeasure, validateNote } from '@/domain/tracking/rules';
 
@@ -12,7 +12,7 @@ export type DayLog = {
 };
 
 function assertDate(date: IsoDate) {
-  if (toDayNumber(date) === null) throw new Error('Data inválida.');
+  if (!isValidDate(date)) throw new Error('Data inválida.');
 }
 
 /** Garante que a seleção existe no catálogo e respeita single/multi antes de tocar no banco. */
@@ -60,12 +60,14 @@ export async function setSelection(db: SqlExecutor, date: IsoDate, categoryId: s
 export async function setMeasure(db: SqlExecutor, date: IsoDate, categoryId: string, value: number) {
   assertDate(date);
   if (validateMeasure(categoryId, value) !== null) throw new Error('Medição inválida.');
-  await enqueueWrite(db, () => db.runAsync(
-    'INSERT INTO log_measure (date, category, value) VALUES (?, ?, ?) ON CONFLICT (date, category) DO UPDATE SET value = excluded.value',
-    date,
-    categoryId,
-    value,
-  ));
+  await enqueueWrite(db, () =>
+    db.runAsync(
+      'INSERT INTO log_measure (date, category, value) VALUES (?, ?, ?) ON CONFLICT (date, category) DO UPDATE SET value = excluded.value',
+      date,
+      categoryId,
+      value,
+    ),
+  );
 }
 
 export async function clearMeasure(db: SqlExecutor, date: IsoDate, categoryId: string) {

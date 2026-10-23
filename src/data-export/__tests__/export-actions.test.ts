@@ -119,7 +119,7 @@ describe('prepareExport', () => {
 
   it('backup: só com senha, e o conteúdo sai criptografado', async () => {
     await expect(prepareExport('backup', { db, profile, today: TODAY, includeNotes: false })).rejects.toThrow('Senha curta');
-    const item = await prepareExport('backup', { db, profile, today: TODAY, includeNotes: false, password: 'senha-forte', kdf: FAST });
+    const item = await prepareExport('backup', { db, profile, today: TODAY, includeNotes: false, password: 'senha-forte!', kdf: FAST });
     expect(item.name).toBe('ciclo-livre-backup-2026-10-22.ciclolivre');
     expect(String(mockFiles.get(item.file.uri))).not.toContain('heavy');
   });
@@ -174,10 +174,10 @@ describe('restauração em duas etapas: ler e conferir, depois substituir', () =
 
   it('backup: pede senha; senha errada dá BACKUP_ERROR antes de qualquer confirmação', async () => {
     const plain = JSON.stringify(await exportAll(db));
-    const file = await encryptBackup(plain, 'senha-forte', { random: (n) => new Uint8Array(n).fill(1), kdf: FAST });
+    const file = await encryptBackup(plain, 'senha-forte!', { random: (n) => new Uint8Array(n).fill(1), kdf: FAST });
     expect(await readRestore(file)).toEqual({ kind: 'needs_password' });
     await expect(readRestore(file, 'errada-123')).rejects.toThrow(BACKUP_ERROR);
-    expect((await readRestore(file, 'senha-forte')).kind).toBe('ready');
+    expect((await readRestore(file, 'senha-forte!')).kind).toBe('ready');
   });
 
   it('arquivo qualquer ou exportação sem perfil: IMPORT_ERROR', async () => {

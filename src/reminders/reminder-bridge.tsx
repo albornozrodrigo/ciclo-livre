@@ -4,7 +4,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
 
-import { toDayNumber } from '@/domain/dates';
+import { isValidDate } from '@/domain/dates';
 import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 
@@ -49,7 +49,7 @@ export function ReminderBridge() {
     handled.add(id);
     const data = response.notification.request.content.data ?? {};
     // Dado vindo de fora do JS: só segue com uma data de calendário válida.
-    if (data.kind === 'daily_log' && typeof data.date === 'string' && toDayNumber(data.date) !== null) {
+    if (data.kind === 'daily_log' && isValidDate(data.date)) {
       router.push(`/registro/${data.date}`);
     }
   }, [response]);

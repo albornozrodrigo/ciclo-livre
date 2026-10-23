@@ -1,4 +1,4 @@
-import { daysBetween, type IsoDate, toDayNumber, yearOf } from './dates';
+import { daysBetween, type IsoDate, isValidDate, yearOf } from './dates';
 
 export const MODES = ['period', 'no_bleeding', 'conceive', 'pregnancy', 'perimenopause'] as const;
 export type Mode = (typeof MODES)[number];
@@ -10,7 +10,17 @@ export const TRYING_SINCE = ['lt_1m', '1_3m', '4_6m', '7_9m', '10_12m', 'gt_12m'
 export type TryingSince = (typeof TRYING_SINCE)[number];
 
 export const BIRTH_CONTROL = [
-  'none', 'pill', 'iud_hormonal', 'iud_copper', 'implant', 'injection', 'ring', 'patch', 'condom', 'other', 'prefer_not_to_say',
+  'none',
+  'pill',
+  'iud_hormonal',
+  'iud_copper',
+  'implant',
+  'injection',
+  'ring',
+  'patch',
+  'condom',
+  'other',
+  'prefer_not_to_say',
 ] as const;
 export type BirthControl = (typeof BIRTH_CONTROL)[number];
 
@@ -40,7 +50,7 @@ export type ProfileInput = Pick<Profile, 'birthYear' | 'mode' | 'lastPeriodStart
 
 export type ProfileField = keyof Profile;
 export type ProfileErrorCode =
-  | 'under_18' | 'out_of_range' | 'invalid_date' | 'in_future' | 'too_old' | 'required' | 'not_shorter_than_cycle';
+  'under_18' | 'out_of_range' | 'invalid_date' | 'in_future' | 'too_old' | 'required' | 'not_shorter_than_cycle';
 export type ProfileError = { field: ProfileField; code: ProfileErrorCode };
 
 export type ValidationResult = { ok: true; profile: Profile } | { ok: false; errors: ProfileError[] };
@@ -90,7 +100,7 @@ function checkBirthYear(birthYear: number, today: IsoDate): ProfileError[] {
 
 function checkLastPeriod(value: IsoDate | null, today: IsoDate): ProfileError[] {
   if (value === null) return [];
-  if (toDayNumber(value) === null) return [{ field: 'lastPeriodStart', code: 'invalid_date' }];
+  if (!isValidDate(value)) return [{ field: 'lastPeriodStart', code: 'invalid_date' }];
   const daysAgo = daysBetween(value, today);
   if (daysAgo < 0) return [{ field: 'lastPeriodStart', code: 'in_future' }];
   if (daysAgo > LIMITS.lastPeriodMaxDaysAgo) return [{ field: 'lastPeriodStart', code: 'too_old' }];
@@ -115,7 +125,7 @@ function checkModeFields(profile: Profile, today: IsoDate): ProfileError[] {
   if (profile.mode === 'conceive' && profile.tryingSince === null) return [{ field: 'tryingSince', code: 'required' }];
   if (profile.mode !== 'pregnancy') return [];
   if (profile.dueDate === null) return [{ field: 'dueDate', code: 'required' }];
-  if (toDayNumber(profile.dueDate) === null) return [{ field: 'dueDate', code: 'invalid_date' }];
+  if (!isValidDate(profile.dueDate)) return [{ field: 'dueDate', code: 'invalid_date' }];
   const daysAhead = daysBetween(today, profile.dueDate);
   const inRange = daysAhead >= 0 && daysAhead <= LIMITS.dueDateMaxDaysAhead;
   return inRange ? [] : [{ field: 'dueDate', code: 'out_of_range' }];

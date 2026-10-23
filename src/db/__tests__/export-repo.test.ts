@@ -104,6 +104,14 @@ describe('importAll', () => {
     ],
     ['data impossível', (d: Record<string, unknown>) => ({ ...d, notes: [{ date: '2026-02-30', text: 'a' }] })],
     [
+      'data absurda que quebraria as contas de ciclo (ano 9999)',
+      (d: Record<string, unknown>) => ({ ...d, selections: [{ date: '9999-12-31', category: 'period', option: 'heavy' }] }),
+    ],
+    [
+      'última menstruação no ano 0500',
+      (d: Record<string, unknown>) => ({ ...d, profile: { ...(d.profile as object), lastPeriodStart: '0500-01-01' } }),
+    ],
+    [
       'medição fora da faixa',
       (d: Record<string, unknown>) => ({ ...d, measures: [{ date: '2026-10-12', category: 'weight', value: 9999 }] }),
     ],
@@ -114,12 +122,34 @@ describe('importAll', () => {
       (d: Record<string, unknown>) => ({ ...d, reminders: [{ ...defaultReminder('daily_log'), time: '99:99' }] }),
     ],
     ['não é objeto', () => 'texto'],
+    ['mais de 1000 tags', (d: Record<string, unknown>) => ({ ...d, tags: Array.from({ length: 1001 }, (_, i) => `t${i}`), dayTags: [] })],
+    ['tags repetidas (mesma chave sem acento)', (d: Record<string, unknown>) => ({ ...d, tags: ['Plantão', 'plantao'], dayTags: [] })],
   ])('recusa %s sem mudar nada', async (_name, mutate) => {
     const target = await seeded();
     const before = await exportAll(target, NOW);
     const bad = mutate(JSON.parse(JSON.stringify(before)) as Record<string, unknown>);
     await expect(importAll(target, bad)).rejects.toThrow(IMPORT_ERROR);
     expect(await exportAll(target, NOW)).toEqual(before);
+  });
+
+  it('arquivo forjado com 200 mil tags é recusado rápido (sem travar o app)', async () => {
+    const target = await seeded();
+    const data = JSON.parse(JSON.stringify(await exportAll(target, NOW)));
+    data.tags = Array.from({ length: 200_000 }, (_, i) => `t${i}`);
+    data.dayTags = [];
+    const t0 = Date.now();
+    await expect(importAll(target, data)).rejects.toThrow(IMPORT_ERROR);
+    expect(Date.now() - t0).toBeLessThan(1000);
+  });
+
+  it('1000 tags ainda restauram em tempo curto', async () => {
+    const target = await migratedDb();
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    data.tags = [...data.tags, ...Array.from({ length: 999 }, (_, i) => `t${i}`)];
+    const t0 = Date.now();
+    await importAll(target, data);
+    expect(Date.now() - t0).toBeLessThan(3000);
+    expect((await exportAll(target, NOW)).tags).toHaveLength(1000);
   });
 
   it('falha no meio da gravação desfaz tudo', async () => {

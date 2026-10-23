@@ -38,7 +38,14 @@ export async function readClueBytes(bytes: Uint8Array, password?: string): Promi
   } catch (e) {
     throw new ClueReadError(e instanceof ClueFormatError && e.message === 'too_many' ? 'too_large' : 'not_clue');
   }
-  const data = mapClue(parsed.records);
+  let data: ClueImport;
+  try {
+    data = mapClue(parsed.records);
+  } catch (e) {
+    // Só os limites lançam aqui (ex.: tags demais); outro erro é bug e sobe.
+    if (e instanceof ClueFormatError) throw new ClueReadError('too_large');
+    throw e;
+  }
   if (data.days === 0 && Object.keys(data.unknown).length === 0) throw new ClueReadError('empty');
   return { kind: 'ready', data, invalid: parsed.invalid };
 }

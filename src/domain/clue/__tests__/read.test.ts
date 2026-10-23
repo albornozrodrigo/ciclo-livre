@@ -41,6 +41,16 @@ describe('readClueBytes', () => {
     expect(out).toMatchObject({ kind: 'ready', invalid: 0, data: { days: 3 } });
   });
 
+  it('tags demais (arquivo forjado) viram "grande demais", sem travar', async () => {
+    const recs = Array.from({ length: 30 }, (_, k) => ({
+      type: 'tags',
+      id: `t${k}`,
+      date: `2024-03-${String(k + 1).padStart(2, '0')}`,
+      value: Array.from({ length: 40 }, (_, i) => ({ option: `tag-${k}-${i}` })),
+    }));
+    expect(await reason(readClueBytes(strToU8(JSON.stringify(recs))))).toBe('too_large');
+  });
+
   it('recusa o que não é do Clue ou está vazio', async () => {
     expect(await reason(readClueBytes(strToU8('{"format":"ciclo-livre"}')))).toBe('not_clue');
     expect(await reason(readClueBytes(strToU8('[]')))).toBe('empty');

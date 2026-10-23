@@ -40,10 +40,12 @@ jest.mock('@/data-export/export-actions', () => ({
   applyRestore: (...args: unknown[]) => mockApply(...args),
 }));
 let mockPicked = '{"format":"ciclo-livre-backup"}';
+let mockPickedSize = 100;
 jest.mock('expo-document-picker', () => ({
-  getDocumentAsync: async () => ({ canceled: false, assets: [{ uri: 'cache/picked', name: 'backup.ciclolivre', size: 100 }] }),
+  getDocumentAsync: async () => ({ canceled: false, assets: [{ uri: 'cache/picked', name: 'backup.ciclolivre', size: mockPickedSize }] }),
 }));
 const mockDeleted: string[] = [];
+jest.mock('expo-crypto', () => ({ getRandomBytes: (n: number) => Uint8Array.from({ length: n }, (_, i) => (i * 13 + 5) % 256) }));
 jest.mock('expo-file-system', () => ({
   File: class {
     uri: string;
@@ -67,6 +69,7 @@ const wrap = (node: React.ReactNode) => <SafeAreaProvider initialMetrics={metric
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockPickedSize = 100;
   mockDeleted.length = 0;
   mockTipo = 'backup';
   mockPicked = '{"format":"ciclo-livre-backup"}';
@@ -78,14 +81,29 @@ describe('Exportar', () => {
     await render(wrap(<ExportarScreen />));
     const share = screen.getByRole('button', { name: d.share });
     expect(share).toBeDisabled();
-    await fireEvent.changeText(screen.getByLabelText(d.password), 'senha-forte');
-    await fireEvent.changeText(screen.getByLabelText(d.passwordConfirm), 'outra-senha');
+    // 11 caracteres: abaixo do mínimo de 12.
+    await fireEvent.changeText(screen.getByLabelText(d.password), 'senha-curta');
+    await fireEvent.changeText(screen.getByLabelText(d.passwordConfirm), 'senha-curta');
+    expect(screen.getByText(d.passwordStrength.short)).toBeOnTheScreen();
+    expect(share).toBeDisabled();
+    await fireEvent.changeText(screen.getByLabelText(d.password), 'senha-forte!');
+    await fireEvent.changeText(screen.getByLabelText(d.passwordConfirm), 'outra-senha!');
     expect(screen.getByText(`Erro: ${d.passwordMismatch}`)).toBeOnTheScreen();
     expect(share).toBeDisabled();
-    await fireEvent.changeText(screen.getByLabelText(d.passwordConfirm), 'senha-forte');
+    await fireEvent.changeText(screen.getByLabelText(d.passwordConfirm), 'senha-forte!');
     await fireEvent.press(screen.getByRole('button', { name: d.share }));
-    expect(mockPrepare).toHaveBeenCalledWith('backup', expect.objectContaining({ password: 'senha-forte' }));
+    expect(mockPrepare).toHaveBeenCalledWith('backup', expect.objectContaining({ password: 'senha-forte!' }));
     expect(mockShareFile).toHaveBeenCalled();
+  });
+
+  it('backup: "Gerar senha forte" preenche os dois campos e mostra a senha para anotar', async () => {
+    await render(wrap(<ExportarScreen />));
+    await fireEvent.press(screen.getByRole('button', { name: d.generate }));
+    const shown = screen.getByText(/^[2-9A-HJ-NP-Z]{5}(-[2-9A-HJ-NP-Z]{5}){3}$/);
+    const generated = String(shown.props.children);
+    expect(screen.getByText(d.generatedHint)).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: d.share }));
+    expect(mockPrepare).toHaveBeenCalledWith('backup', expect.objectContaining({ password: generated }));
   });
 
   it('relatório: notas fora por padrão; marcar inclui', async () => {
@@ -111,6 +129,16 @@ describe('Exportar', () => {
     await render(wrap(<ExportarScreen />));
     await fireEvent.press(screen.getByRole('button', { name: d.share }));
     expect(mockShow).toHaveBeenCalledWith(d.failed);
+  });
+});
+
+describe('Restaurar: cópia do arquivo', () => {
+  it('arquivo grande demais: avisa e apaga a cópia que o seletor deixou no cache', async () => {
+    mockPickedSize = 60 * 1024 * 1024;
+    await render(wrap(<RestaurarScreen />));
+    await fireEvent.press(screen.getByRole('button', { name: d.pick }));
+    expect(await screen.findByText(`Erro: ${d.tooBig}`)).toBeOnTheScreen();
+    expect(mockDeleted).toEqual(['cache/picked']);
   });
 });
 

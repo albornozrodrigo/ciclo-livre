@@ -1,3 +1,4 @@
+import { getRandomBytes } from 'expo-crypto';
 import { useLocalSearchParams } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useRef, useState } from 'react';
@@ -10,7 +11,7 @@ import { PasswordField } from '@/components/ui/password-field';
 import { useSnackbar } from '@/components/ui/snackbar';
 import { EXPORT_KINDS, type ExportKind, prepareExport, saveToFolder, shareFile } from '@/data-export/export-actions';
 import { todayIso } from '@/domain/dates';
-import { MIN_PASSWORD, passwordStrength } from '@/domain/export/backup';
+import { generateBackupPassword, MIN_PASSWORD, passwordStrength } from '@/domain/export/backup';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
@@ -27,6 +28,8 @@ export default function ExportarScreen() {
   const [includeNotes, setIncludeNotes] = useState(false);
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  // Senha gerada fica visível para anotar; some se a pessoa editar os campos.
+  const [generated, setGenerated] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   // Trava síncrona: dois toques rápidos não geram duas exportações (o `busy` só desabilita após o render).
   const running = useRef(false);
@@ -84,14 +87,44 @@ export default function ExportarScreen() {
 
       {isBackup ? (
         <View className="gap-4">
-          <PasswordField label={d.password} value={password} onChange={setPassword} newPassword />
+          <CapsuleButton
+            label={d.generate}
+            variant="outline"
+            onPress={() => {
+              const next = generateBackupPassword(getRandomBytes);
+              setPassword(next);
+              setConfirm(next);
+              setGenerated(next);
+            }}
+            disabled={busy}
+          />
+          {generated ? (
+            <View className="gap-1">
+              <Text selectable className="font-mono text-xl font-bold tracking-[1px] text-ink dark:text-ink-night">
+                {generated}
+              </Text>
+              <Text className="text-sm leading-5 text-ink dark:text-ink-night">{d.generatedHint}</Text>
+            </View>
+          ) : null}
+          <PasswordField
+            label={d.password}
+            value={password}
+            onChange={(v) => {
+              setPassword(v);
+              setGenerated(null);
+            }}
+            newPassword
+          />
           <Text accessibilityLiveRegion="polite" className="text-sm font-bold text-ink dark:text-ink-night">
             {password ? d.passwordStrength[passwordStrength(password)] : d.passwordRules}
           </Text>
           <PasswordField
             label={d.passwordConfirm}
             value={confirm}
-            onChange={setConfirm}
+            onChange={(v) => {
+              setConfirm(v);
+              setGenerated(null);
+            }}
             error={mismatch ? d.passwordMismatch : null}
             newPassword
           />

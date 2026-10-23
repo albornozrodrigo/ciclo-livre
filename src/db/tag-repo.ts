@@ -1,4 +1,4 @@
-import { type IsoDate, toDayNumber } from '@/domain/dates';
+import { type IsoDate, isValidDate } from '@/domain/dates';
 import { normalizeTagKey, validateTagName } from '@/domain/tracking/tags';
 
 import type { SqlExecutor } from './types';
@@ -50,7 +50,7 @@ export async function getDayTags(db: SqlExecutor, date: IsoDate): Promise<Tag[]>
 
 /** Substitui as tags do dia. */
 export async function setDayTags(db: SqlExecutor, date: IsoDate, tagIds: readonly number[]): Promise<void> {
-  if (toDayNumber(date) === null) throw new Error('Data inválida.');
+  if (!isValidDate(date)) throw new Error('Data inválida.');
   await enqueueWrite(db, () =>
     db.withTransactionAsync(async () => {
       await db.runAsync('DELETE FROM log_tag WHERE date = ?', date);

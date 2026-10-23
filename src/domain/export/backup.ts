@@ -2,7 +2,8 @@ import { gcm } from '@noble/ciphers/aes.js';
 import { bytesToUtf8, utf8ToBytes } from '@noble/ciphers/utils.js';
 import { scryptAsync } from '@noble/hashes/scrypt.js';
 
-export const MIN_PASSWORD = 8;
+/** O KDF em JS é leve (ver DEFAULT_KDF): a proteção contra força bruta vem da senha longa. */
+export const MIN_PASSWORD = 12;
 /** Mensagem única para senha errada e arquivo danificado: não dá pista a quem tenta adivinhar. */
 export const BACKUP_ERROR = 'Senha incorreta ou arquivo danificado.';
 
@@ -12,8 +13,8 @@ export type KdfParams = { N: number; r: number; p: number };
  * arquivo, então backups antigos continuam abrindo e dá para subir quando houver KDF nativo.
  */
 export const DEFAULT_KDF: KdfParams = { N: 2 ** 13, r: 8, p: 1 };
-// Limites ao abrir: um arquivo forjado com N enorme travaria o app.
-const N_RANGE = { min: 2 ** 10, max: 2 ** 17 } as const;
+// Limites ao abrir: um arquivo forjado com N enorme deixaria o app minutos calculando (2^15 ≈ 30 s em JS).
+const N_RANGE = { min: 2 ** 10, max: 2 ** 15 } as const;
 const SALT_BYTES = 16;
 const NONCE_BYTES = 12;
 const KEY_BYTES = 32;
@@ -82,21 +83,31 @@ function readEnvelope(file: string): Envelope {
 export async function decryptBackup(file: string, password: string): Promise<string> {
   try {
     const e = readEnvelope(file);
-    const key = await deriveKey(password, fromBase64(e.kdf.salt), e.kdf);
-    return bytesToUtf8(gcm(key, fromBase64(e.cipher.nonce)).decrypt(fromBase64(e.data)));
+    const salt = fromBase64(e.kdf.salt);
+    const nonce = fromBase64(e.cipher.nonce);
+    if (salt.length !== SALT_BYTES || nonce.length !== NONCE_BYTES) throw new Error('envelope');
+    const key = await deriveKey(password, salt, e.kdf);
+    return bytesToUtf8(gcm(key, nonce).decrypt(fromBase64(e.data)));
   } catch {
     // Detalhe do erro omitido de propósito (ver BACKUP_ERROR).
     throw new Error(BACKUP_ERROR);
   }
 }
 
-export type PasswordStrength = 'short' | 'ok' | 'good' | 'great';
+export type PasswordStrength = 'short' | 'good' | 'great';
 
-/** Força estimada pelo tamanho e pela variedade de caracteres (para orientar, não para bloquear). */
+/** Força estimada pelo tamanho e pela variedade de caracteres. Abaixo do mínimo, o backup não é criado. */
 export function passwordStrength(password: string): PasswordStrength {
   if (password.length < MIN_PASSWORD) return 'short';
   const kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((re) => re.test(password)).length;
-  if (password.length >= 16 || (password.length >= 12 && kinds >= 3)) return 'great';
-  if (password.length >= 12 || kinds >= 3) return 'good';
-  return 'ok';
+  return password.length >= 16 || kinds >= 3 ? 'great' : 'good';
+}
+
+/** 32 símbolos sem os que se confundem ao anotar (0/O, 1/I): 5 bits por caractere, sem viés (256 % 32 = 0). */
+const ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+/** Senha aleatória de 20 caracteres (100 bits) em 4 grupos, fácil de anotar. */
+export function generateBackupPassword(random: (bytes: number) => Uint8Array): string {
+  const chars = Array.from(random(20), (b) => ALPHABET[b % ALPHABET.length]);
+  return [0, 5, 10, 15].map((i) => chars.slice(i, i + 5).join('')).join('-');
 }

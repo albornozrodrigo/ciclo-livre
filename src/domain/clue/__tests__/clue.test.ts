@@ -1,4 +1,4 @@
-import { CLUE_LIMITS, mapClue, parseClueMeasurements } from '@/domain/clue/clue';
+import { CLUE_LIMITS, ClueFormatError, mapClue, parseClueMeasurements } from '@/domain/clue/clue';
 
 const rec = (type: string, date: string, value: unknown, id = `${type}-${date}`) => ({ type, id, date, value });
 
@@ -13,6 +13,13 @@ describe('parseClueMeasurements', () => {
     const out = parseClueMeasurements(text);
     expect(out.records).toHaveLength(1);
     expect(out.invalid).toBe(3);
+  });
+
+  it('data absurda (ano 9999 ou 0500) conta como inválida', () => {
+    const out = parseClueMeasurements(
+      JSON.stringify([rec('period', '9999-12-31', { option: 'heavy' }), rec('period', '0500-01-01', { option: 'heavy' })]),
+    );
+    expect(out).toEqual({ records: [], invalid: 2 });
   });
 
   it('aceita data com horário (usa só o dia)', () => {
@@ -149,5 +156,43 @@ describe('contracepção', () => {
       'bc_implant:removed',
     ]);
     expect(o.unknown).toEqual({ iud: 1 });
+  });
+});
+
+describe('limites contra arquivo forjado', () => {
+  it('nomes herdados de objeto (constructor, __proto__) não viram categoria', () => {
+    const o = mapClue([
+      rec('pain', '2024-01-01', [{ option: 'constructor' }, { option: '__proto__' }]),
+      rec('constructor', '2024-01-02', [{ option: 'x' }]),
+      rec('toString', '2024-01-03', [{ option: 'x' }]),
+    ]);
+    expect(o.selections).toEqual([]);
+    expect(o.unknown).toEqual({ 'pain:constructor': 1, 'pain:__proto__': 1, constructor: 1, toString: 1 });
+  });
+
+  it('registro com mais de 50 opções é ignorado e contado', () => {
+    const many = Array.from({ length: 51 }, () => ({ option: 'headache' }));
+    const o = mapClue([rec('pain', '2024-01-01', many)]);
+    expect(o.selections).toEqual([]);
+    expect(o.unknown).toEqual({ 'pain:too_many_options': 1 });
+  });
+
+  it('não reconhecidos: no máximo 50 chaves; o resto soma em "other"', () => {
+    const recs = Array.from({ length: 60 }, (_, i) => rec(`tipo_${i}`, '2024-01-01', [{ option: 'x' }]));
+    const o = mapClue(recs);
+    expect(Object.keys(o.unknown)).toHaveLength(51);
+    expect(o.unknown.other).toBe(10);
+  });
+
+  it('mais de 1000 tags distintas: arquivo recusado', () => {
+    const tags = Array.from({ length: 1001 }, (_, i) => ({ option: `t${i}` }));
+    expect(() =>
+      mapClue([
+        rec('tags', '2024-01-01', tags.slice(0, 40)),
+        ...Array.from({ length: 25 }, (_, k) =>
+          rec('tags', `2024-02-${String(k + 1).padStart(2, '0')}`, tags.slice(40 * k + 40, 40 * k + 80)),
+        ),
+      ]),
+    ).toThrow(ClueFormatError);
   });
 });

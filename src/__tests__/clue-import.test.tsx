@@ -41,8 +41,12 @@ jest.mock('@/db/clue-import-repo', () => ({
   previewClueImport: async () => mockPreview,
   applyClueImport: (...a: unknown[]) => mockApply(...a),
 }));
+let mockPickedSize = 100;
 jest.mock('expo-document-picker', () => ({
-  getDocumentAsync: async () => ({ canceled: false, assets: [{ uri: 'cache/clue.zip', name: 'ClueDataDownload.zip', size: 100 }] }),
+  getDocumentAsync: async () => ({
+    canceled: false,
+    assets: [{ uri: 'cache/clue.zip', name: 'ClueDataDownload.zip', size: mockPickedSize }],
+  }),
 }));
 const mockDeleted: string[] = [];
 jest.mock('expo-file-system', () => ({
@@ -68,6 +72,7 @@ const wrap = (node: React.ReactNode) => <SafeAreaProvider initialMetrics={metric
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockPickedSize = 100;
   mockDeleted.length = 0;
   mockPreview = {
     range: { from: '2023-01-05', to: '2024-05-10' },
@@ -116,6 +121,14 @@ describe('Importar do Clue', () => {
     expect(mockSync).toHaveBeenCalled();
     expect(mockShow).toHaveBeenCalledWith(c.done);
     expect(mockBack).toHaveBeenCalled();
+  });
+
+  it('arquivo grande demais: avisa e apaga a cópia que o seletor deixou no cache', async () => {
+    mockPickedSize = 60 * 1024 * 1024;
+    await render(wrap(<ClueScreen />));
+    fireEvent.press(screen.getByRole('button', { name: c.pick }));
+    expect(await screen.findByText(c.errors.too_large, { exact: false })).toBeTruthy();
+    expect(mockDeleted).toEqual(['cache/clue.zip']);
   });
 
   it('sem nada novo: avisa e não oferece importar', async () => {

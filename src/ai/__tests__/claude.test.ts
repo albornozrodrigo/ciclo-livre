@@ -119,3 +119,14 @@ describe('testKey', () => {
     expect(AI_MODELS[0]).toBe('claude-opus-5-5');
   });
 });
+
+describe('tempo limite', () => {
+  it('cobre também a leitura da resposta (corpo que nunca chega não prende a tela)', async () => {
+    jest.useFakeTimers();
+    mockFetch.mockResolvedValue({ ok: true, status: 200, json: () => new Promise(() => undefined) });
+    const pending = summarize({ apiKey: KEY, model: 'claude-haiku-5-5', query: 'x', articles: [art('a')] });
+    await jest.advanceTimersByTimeAsync(46_000);
+    expect(await pending).toEqual({ ok: false, error: 'offline' });
+    jest.useRealTimers();
+  });
+});

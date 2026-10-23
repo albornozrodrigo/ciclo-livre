@@ -18,8 +18,9 @@ const BOM = '﻿';
 /** `;` entre colunas: o Excel em pt-BR usa `;` (a vírgula é o separador decimal). O Sheets detecta sozinho. */
 const SEP = ';';
 const NEEDS_QUOTES = /[";\r\n]/;
-// Começo que planilhas tratam como fórmula (injeção de fórmula em CSV).
-const FORMULA_START = /^[=+\-@\t\r]/;
+// Começo que planilhas tratam como fórmula (injeção de fórmula em CSV), inclusive depois de espaços
+// ou quebras e com os sinais de largura total (＝＋－＠) que algumas planilhas também aceitam.
+const FORMULA_START = /^[\t\r]|^\s*[=+\-@\uFF1D\uFF0B\uFF0D\uFF20]/;
 
 /** Célula de texto: neutraliza fórmula (apóstrofo) e escapa conforme a RFC 4180. */
 function textCell(value: string): string {

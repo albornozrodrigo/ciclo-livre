@@ -1,4 +1,4 @@
-import { type IsoDate, toDayNumber } from '@/domain/dates';
+import { type IsoDate, isValidDate } from '@/domain/dates';
 import { modeHasCycle } from '@/domain/cycle/for-profile';
 import type { BirthControl, Profile } from '@/domain/profile';
 
@@ -101,7 +101,7 @@ const validDaysBefore = (v: unknown): v is number =>
   Number.isInteger(v) && (v as number) >= DAYS_BEFORE.min && (v as number) <= DAYS_BEFORE.max;
 const oneOf = <T extends string>(list: readonly T[], v: unknown): v is T =>
   typeof v === 'string' && (list as readonly string[]).includes(v);
-const validAnchor = (v: unknown): v is IsoDate => typeof v === 'string' && toDayNumber(v) !== null;
+const validAnchor = (v: unknown): v is IsoDate => isValidDate(v);
 
 /** Opções válidas? (o repositório recusa as inválidas ao salvar) */
 export function validOptions(o: ReminderOptions): boolean {

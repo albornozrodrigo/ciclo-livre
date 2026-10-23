@@ -75,7 +75,7 @@ export default function IaScreen() {
           </>
         ) : (
           <>
-            <PasswordField label={t.keyLabel} value={draft} onChange={setDraft} error={error} />
+            <PasswordField label={t.keyLabel} value={draft} onChange={setDraft} error={error} noAutofill />
             <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{t.keyHelp}</Text>
             {busy ? (
               <Text accessibilityLiveRegion="polite" className="text-sm text-ink-muted dark:text-ink-muted-night">

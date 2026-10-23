@@ -39,4 +39,21 @@ describe('buildCsv', () => {
     expect(csv).toContain(`"'=SOMA(A1)"`);
     expect(csv).toContain('"Dia ""difícil"",\ncom vírgula"');
   });
+
+  it('neutraliza fórmula escondida atrás de espaço/quebra ou com sinais de largura total', () => {
+    const tricky = buildCsv(
+      {
+        selections: [],
+        measures: [],
+        dayTags: [],
+        notes: [
+          { date: '2026-10-14', text: ' =HYPERLINK("x")' },
+          { date: '2026-10-15', text: '＝1+1' },
+        ],
+      },
+      labels,
+    );
+    expect(tricky).toContain(`"' =HYPERLINK(""x"")"`);
+    expect(tricky).toContain(`"'＝1+1"`);
+  });
 });

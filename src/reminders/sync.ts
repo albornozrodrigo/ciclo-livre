@@ -1,8 +1,11 @@
+import { sha256 } from '@noble/hashes/sha2.js';
+import { bytesToHex, utf8ToBytes } from '@noble/hashes/utils.js';
+import { getRandomBytes } from 'expo-crypto';
 import * as Notifications from 'expo-notifications';
 import { AndroidImportance, AndroidNotificationVisibility } from 'expo-notifications';
 
 import { getCycleSignals } from '@/db/cycle-repo';
-import { getDiscreet, listReminders } from '@/db/reminder-repo';
+import { getDiscreet, getReminderIdSecret, listReminders } from '@/db/reminder-repo';
 import type { SqlExecutor } from '@/db/types';
 import { cycleModelFor } from '@/domain/cycle/for-profile';
 import { dateFromIso, isoFromDate } from '@/domain/dates';
@@ -49,11 +52,13 @@ const localDateTime = (date: string, time: string) => {
   return d;
 };
 
-/** Hash curto (djb2) do conteúdo: muda o identificador quando o texto ou o canal mudam. */
-function shortHash(text: string): string {
-  let h = 5381;
-  for (let i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) | 0;
-  return (h >>> 0).toString(36);
+/**
+ * Identificador opaco. O expo-notifications guarda a agenda em SharedPreferences (texto puro, fora do SQLCipher):
+ * "period_due:2026-11-03" ali revelaria a data prevista. O hash com segredo do banco muda quando muda o tipo,
+ * a data, o horário, o canal ou o texto, e mantém o "agenda só o que mudou".
+ */
+function opaqueId(secret: string, parts: string): string {
+  return `r_${bytesToHex(sha256(utf8ToBytes(`${secret}|${parts}`))).slice(0, 32)}`;
 }
 
 let queue: Promise<unknown> = Promise.resolve();
@@ -82,7 +87,12 @@ async function doSync(db: SqlExecutor, profile: Profile | null, now: Date, start
     await Notifications.cancelAllScheduledNotificationsAsync();
     return;
   }
-  const [reminders, discreet, signals] = await Promise.all([listReminders(db), getDiscreet(db), getCycleSignals(db)]);
+  const [reminders, discreet, signals, secret] = await Promise.all([
+    listReminders(db),
+    getDiscreet(db),
+    getCycleSignals(db),
+    getReminderIdSecret(db, getRandomBytes),
+  ]);
   const today = isoFromDate(now);
   const fires = planSchedule({
     reminders,
@@ -99,11 +109,11 @@ async function doSync(db: SqlExecutor, profile: Profile | null, now: Date, start
     const reminder = byKind.get(fire.kind);
     if (!reminder) continue;
     const content = reminderContent(reminder, fire.variant, discreet);
-    const identifier = `${fire.key}@${fire.time}#${shortHash(`${channelId}|${content.title}|${content.body}`)}`;
+    const identifier = opaqueId(secret, `${fire.key}@${fire.time}|${channelId}|${content.title}|${content.body}`);
     wanted.set(identifier, {
       identifier,
-      // Nos dados, só o tipo e a data (para abrir a tela certa); nada de registro de saúde.
-      content: { ...content, data: fire.kind === 'daily_log' ? { kind: fire.kind, date: fire.date } : { kind: fire.kind } },
+      // Dados também ficam em texto puro: só o lembrete diário leva a data (para abrir o registro do dia).
+      content: { ...content, data: fire.kind === 'daily_log' ? { kind: fire.kind, date: fire.date } : {} },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: localDateTime(fire.date, fire.time), channelId },
     });
   }
@@ -122,5 +132,9 @@ async function doSync(db: SqlExecutor, profile: Profile | null, now: Date, start
 /** "Apagar tudo": interrompe qualquer reagendamento em curso e cancela tudo depois dele. */
 export function cancelAllReminders(): Promise<void> {
   generation += 1;
-  return enqueue(() => Notifications.cancelAllScheduledNotificationsAsync());
+  return enqueue(async () => {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    // As já exibidas também saem da bandeja.
+    await Notifications.dismissAllNotificationsAsync();
+  });
 }

@@ -63,25 +63,27 @@ export function ClueImportForm({ onDone }: Props) {
 
   const pick = () =>
     guarded('reading', async () => {
+      let copy: File | null = null;
       try {
         const result = await getDocumentAsync({ copyToCacheDirectory: true, multiple: false });
         if (result.canceled) return;
         const asset = result.assets[0];
+        // A cópia no cache tem dado de saúde: sai em qualquer caminho (lida, grande demais ou com erro).
+        copy = new File(asset.uri);
         setFile(null);
         setReady(null);
         setPassword('');
         setError(null);
         if (asset.size !== undefined && asset.size > CLUE_LIMITS.bytes) return fail('too_large');
-        const copy = new File(asset.uri);
         const bytes = await copy.bytes();
-        // A cópia no cache tem dado de saúde: apagar assim que lida.
-        if (copy.exists) copy.delete();
         const opened = await loadPreview(bytes);
         setFile({ name: asset.name, bytes, encrypted: !opened });
       } catch (e) {
         if (e instanceof ClueReadError) return fail(e.reason);
         log.error('clue_pick_failed', e);
         show(c.failed);
+      } finally {
+        if (copy?.exists) copy.delete();
       }
     });
 

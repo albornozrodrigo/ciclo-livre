@@ -46,6 +46,12 @@ describe('renderReportHtml', () => {
     expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt; &amp; &quot;x&quot;');
   });
 
+  it('política de conteúdo bloqueia qualquer acesso à rede, mesmo se um escape falhar no futuro', () => {
+    expect(html).toContain(
+      `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">`,
+    );
+  });
+
   it('não carrega nada de fora (sem rede)', () => {
     expect(html).not.toMatch(/(src|href)=["']?https?:/i);
     expect(html).not.toMatch(/@import|url\(/i);
@@ -108,4 +114,3 @@ describe('renderReportHtml', () => {
     expect(out).toContain('Tracejado: linha de cobertura');
   });
 });
-

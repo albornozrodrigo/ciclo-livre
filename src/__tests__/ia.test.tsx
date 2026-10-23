@@ -54,6 +54,13 @@ beforeEach(async () => {
 });
 
 describe('IA com sua chave', () => {
+  it('campo da chave não oferece salvar no gerenciador de senhas (a chave fica só no armazenamento seguro)', async () => {
+    await render(wrap(<IaScreen />));
+    const field = await screen.findByLabelText(t.keyLabel);
+    expect(field.props.autoComplete).toBe('off');
+    expect(field.props.importantForAutofill).toBe('no');
+  });
+
   it('formato errado: erro no campo, nada salvo', async () => {
     await render(wrap(<IaScreen />));
     await fireEvent.changeText(await screen.findByLabelText(t.keyLabel), 'abc');

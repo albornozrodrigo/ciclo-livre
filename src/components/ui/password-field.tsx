@@ -1,9 +1,17 @@
 import { Text, TextInput, View } from 'react-native';
 
-type Props = { label: string; value: string; onChange: (value: string) => void; error?: string | null; newPassword?: boolean };
+type Props = {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string | null;
+  newPassword?: boolean;
+  /** Segredo que não é senha da pessoa (ex.: chave de API): sem autofill, para não ir ao gerenciador de senhas. */
+  noAutofill?: boolean;
+};
 
 /** Campo de senha: cápsula de contorno; erro = contorno de 3dp + "Erro: …" anunciado (como o campo de medição). */
-export function PasswordField({ label, value, onChange, error, newPassword = false }: Props) {
+export function PasswordField({ label, value, onChange, error, newPassword = false, noAutofill = false }: Props) {
   return (
     <View className="gap-2">
       <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{label}</Text>
@@ -14,7 +22,8 @@ export function PasswordField({ label, value, onChange, error, newPassword = fal
         secureTextEntry
         autoCapitalize="none"
         autoCorrect={false}
-        autoComplete={newPassword ? 'new-password' : 'current-password'}
+        autoComplete={noAutofill ? 'off' : newPassword ? 'new-password' : 'current-password'}
+        importantForAutofill={noAutofill ? 'no' : 'auto'}
         style={{ paddingHorizontal: 20, paddingVertical: 14, minHeight: 56 }}
         className={`rounded-[28px] text-base text-ink dark:text-ink-night ${
           error ? 'border-[3px] border-ink dark:border-ink-night' : 'border-[1.5px] border-ink dark:border-ink-night'

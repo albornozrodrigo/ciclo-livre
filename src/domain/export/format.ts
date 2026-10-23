@@ -1,4 +1,4 @@
-import { type IsoDate, toDayNumber } from '@/domain/dates';
+import { type IsoDate, isValidDate } from '@/domain/dates';
 import { BIRTH_CONTROL, MODES, type Profile, REGULARITIES, TRYING_SINCE } from '@/domain/profile';
 import { type Reminder, REMINDER_KINDS, validOptions, validTime } from '@/domain/reminders/catalog';
 import { validateMessage } from '@/domain/reminders/message';
@@ -11,6 +11,8 @@ export const IMPORT_ERROR = 'Arquivo de exportação inválido ou de uma versão
 
 /** Limite por lista: cobre décadas de registros diários e impede arquivo forjado gigante. */
 const MAX_ITEMS = 200_000;
+/** Tags são nomes escolhidos à mão: mil é muito mais do que alguém cria, e mantém a validação barata. */
+export const MAX_TAGS = 1000;
 
 export type Selection = { date: IsoDate; category: string; option: string };
 export type Measure = { date: IsoDate; category: string; value: number };
@@ -40,7 +42,7 @@ function check(condition: unknown): asserts condition {
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
-const isDate = (v: unknown): v is IsoDate => typeof v === 'string' && toDayNumber(v) !== null;
+const isDate = (v: unknown): v is IsoDate => isValidDate(v);
 const isInt = (v: unknown, min: number, max: number): v is number => Number.isInteger(v) && (v as number) >= min && (v as number) <= max;
 const oneOf = <T extends string>(list: readonly T[], v: unknown): v is T =>
   typeof v === 'string' && (list as readonly string[]).includes(v);
@@ -111,11 +113,18 @@ function notesOf(v: unknown): Note[] {
 }
 
 function tagsOf(v: unknown): string[] {
+  const raws = list(v);
+  check(raws.length <= MAX_TAGS);
   const names: string[] = [];
-  for (const raw of list(v)) {
+  // Duplicata pela chave num conjunto: validar contra a lista inteira a cada tag era O(n²).
+  const keys = new Set<string>();
+  for (const raw of raws) {
     check(typeof raw === 'string');
-    const result = validateTagName(raw, names);
+    const result = validateTagName(raw, []);
     check(result.ok && result.name === raw);
+    const key = normalizeTagKey(raw);
+    check(!keys.has(key));
+    keys.add(key);
     names.push(raw);
   }
   return names;
