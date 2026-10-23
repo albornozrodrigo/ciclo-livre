@@ -17,19 +17,19 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 
 Milestone: v0.1 Initial Release
 Phase: 11 of 11 (Personalização + release) — Planning
-Plan: 11-01 e 11-02 completos; 11-03 a seguir
-Status: 11-02 UNIFY feito; próximo APPLY 11-03
+Plan: 11-01..11-03 completos; 11-04 em andamento
+Status: 11-03 UNIFY feito; APPLY 11-04
 Last activity: 2026-10-23 — 11-02 (ícone, ícones alternativos, tema) fechado com revisões
 
 Progress:
 - Milestone: [█████████░] 91%
-- Phase 11: [████░░░░░░] 40%
+- Phase 11: [██████░░░░] 60%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [11-02 fechado; próximo: APPLY 11-03]
+  ✓        ✓        ✓     [11-03 fechado; APPLY 11-04]
 ```
 
 ## Accumulated Context
@@ -76,29 +76,20 @@ PLAN ──▶ APPLY ──▶ UNIFY
 ### Deferred Issues
 | Issue | Origin | Effort | Revisit |
 |-------|--------|--------|---------|
-| Tokens repetidos em `@theme`/`:root`/`theme.ts` (agora com `line`) | 01-01 review | S | Teste de paridade ou remover `:root` |
 | Movimento (transições de território) e chip que cruza na cápsula | 02-02 review | M | Fase 11 / polimento |
-| Erro de medição atrás do teclado (rolar até o campo) | 03-02 review | S | Polimento |
-| Lógica de ordem duplicada em personalizar × useCategoryOrder | 03 code-review | S | Refatorar quando mexer |
-| Célula do calendário < 48dp de largura em telas de 360dp | 04-03 | S | Testar em aparelho pequeno |
 | Teto de design: lobo da próxima fase sobreposto; marca de sol para hoje no calendário | 04 review | M | Fase 11 |
 | /cso completo antes do release (runs da fase 8 parciais pelo teto de tempo; OWASP manual feito em 2026-10-23) | 08 | S | Antes do release |
 | KDF nativo (scrypt em JS limita N a 2^13–2^15) | 08-04 | M | Fase 11 |
 | Build de release assinado com a chave de debug; permissões SYSTEM_ALERT_WINDOW/armazenamento | OWASP 08 | S | Fase 11 |
 | KDF nativo para backup < 3 s (hoje scrypt 2^13 em JS ≈ 6,7 s no S21 FE) | 07 | M | Fase 11 |
 | Backup automático no Drive (OAuth/Drive API) | 07 plan | L | Só se pedido |
-| `lastInsertRowId` na restauração de tags | 07 code-review | S | Polimento |
-| Visibilidade SECRET por notificação (patch/plugin nativo) para quem desliga o modo discreto | 06 | M | Fase 11 |
+| Visibilidade SECRET por notificação: Android ignora a do canal (comprovado no S21 FE); só com patch no nativo do expo-notifications | 06 / 11-03 | M | Só se pedido |
 | Interruptor em cápsula própria do mundo (teto do finish review) | 06 review | S | Fase 11 |
-| Análise e relatório PDF leem o banco duas vezes (getCycleSignals + getAnalysisData) e sem limite de data | 05 code-review | S | Polimento (fase 11) |
 | "média 29" na ponta da linha de referência; número principal em Display | 05 review | S | Polimento |
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
 | Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
-| Helper único para gravar em `app_meta` (SQL repetido em 5 repositórios) | 11-01 code-review | S | 11-03 |
-| "Remover o que veio do Health Connect" + aviso de ovulação por temperatura importada | 10 segurança | S | Polimento |
 | /cso da fase 10 ficou parcial (finish encadeado após submit recusado); coberto por revisão manual | 10 | S | /cso completo antes do release |
-| `reminders_sync_failed`/`today_*_failed` ("Access to closed resource") quando a tela de erro raiz desmonta o banco com leituras em curso: efeito de um erro anterior, sem perda (reagenda ao abrir) | 08 investigação | S | Opcional: tratar conexão fechada como cancelamento no polimento |
 
 ### Blockers/Concerns
 None yet.
@@ -111,9 +102,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-23
-Stopped at: 11-02 completo
-Next action: /paul:apply .paul/phases/11-personalizacao-release/11-03-PLAN.md
-Resume file: .paul/phases/11-personalizacao-release/11-03-PLAN.md
+Stopped at: 11-03 completo; 11-04 em andamento
+Next action: /paul:apply .paul/phases/11-personalizacao-release/11-04-PLAN.md
+Resume file: .paul/phases/11-personalizacao-release/11-04-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

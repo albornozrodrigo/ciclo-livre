@@ -141,7 +141,7 @@ Phases: 10 of 11 complete
 **Plans:**
 - [x] 11-01: Política de privacidade + trava do app + Recentes
 - [x] 11-02: Ícone próprio, ícones alternativos e tema
-- [ ] 11-03: Polimento funcional (pendências S)
+- [x] 11-03: Polimento funcional (pendências S)
 - [ ] 11-04: Polimento visual (teto de design adiado)
 - [ ] 11-05: Release (KDF nativo, permissões, assinatura, /cso completo)
 
