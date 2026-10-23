@@ -582,8 +582,10 @@ export const ptBR = {
     themes: { system: 'Igual ao celular', light: 'Claro', dark: 'Escuro' },
     iconTitle: 'Ícone',
     icons: { padrao: 'Território', noite: 'Noite', sol: 'Sol', discreto: 'Discreto' },
-    discreetDetail: 'Sem cores de ciclo e com o nome "Diário" na tela inicial',
-    iconPending: 'O ícone muda quando você sair do app. Alguns launchers levam alguns segundos.',
+    discreetDetail:
+      'Discreto: ícone de caderno, abertura neutra e o nome "Diário" na tela inicial. As notificações e os apps recentes ainda dizem "Ciclo Livre"; para esconder o texto das notificações, use Notificações discretas em Lembretes.',
+    iconPending:
+      'O ícone muda quando você sair do app. O Android tira o app da lista de recentes e, na próxima vez, ele abre do começo. Alguns launchers levam alguns segundos.',
   },
   security: {
     lock: 'Pedir desbloqueio',

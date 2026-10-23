@@ -7,7 +7,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { AndroidConfig, withAndroidManifest, withDangerousMod } = require('expo/config-plugins');
+const { AndroidConfig, withAndroidManifest, withAndroidStyles, withDangerousMod } = require('expo/config-plugins');
 
 const ICONS = [
   { name: 'padrao', alias: 'MainActivityPadrao', isDefault: true },
@@ -46,13 +46,26 @@ function applyToApplication(app) {
   return app;
 }
 
+/** O discreto tem silhueta própria: com ícones temáticos ligados, os lobos não aparecem. */
+const monochromeFor = (name) => (name === 'discreto' ? 'ic_launcher_discreto_monochrome' : 'ic_launcher_alt_monochrome');
+
 const adaptiveXml = (name) => `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
   <background android:drawable="@color/ic_launcher_${name}_background"/>
   <foreground android:drawable="@drawable/ic_launcher_${name}_foreground"/>
-  <monochrome android:drawable="@drawable/ic_launcher_alt_monochrome"/>
+  <monochrome android:drawable="@drawable/${monochromeFor(name)}"/>
 </adaptive-icon>
 `;
+
+/** Abertura com o ícone discreto (Android 13+; o módulo app-icon escolhe este tema ao trocar). */
+const DISCREET_SPLASH = 'DiscreetSplash';
+const discreetSplashStyle = () => ({
+  $: { name: DISCREET_SPLASH, parent: 'Theme.App.SplashScreen' },
+  item: [
+    { $: { name: 'windowSplashScreenBackground' }, _: '@color/ic_launcher_discreto_background' },
+    { $: { name: 'windowSplashScreenAnimatedIcon' }, _: '@drawable/ic_launcher_discreto_foreground' },
+  ],
+});
 
 const colorsXml = () => `<?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -74,12 +87,18 @@ function writeResources(projectRoot, platformRoot) {
     fs.writeFileSync(path.join(res, 'mipmap-anydpi-v26', `ic_launcher_${icon.name}.xml`), adaptiveXml(icon.name));
   }
   fs.copyFileSync(path.join(src, 'monochrome-432.png'), path.join(res, 'drawable-nodpi', 'ic_launcher_alt_monochrome.png'));
+  fs.copyFileSync(path.join(src, 'discreto-monochrome-432.png'), path.join(res, 'drawable-nodpi', 'ic_launcher_discreto_monochrome.png'));
   fs.writeFileSync(path.join(res, 'values', 'ic_launcher_alt_colors.xml'), colorsXml());
 }
 
 const withAlternateIcons = (config) => {
   config = withAndroidManifest(config, (c) => {
     applyToApplication(AndroidConfig.Manifest.getMainApplicationOrThrow(c.modResults));
+    return c;
+  });
+  config = withAndroidStyles(config, (c) => {
+    const styles = c.modResults.resources.style || [];
+    c.modResults.resources.style = [...styles.filter((st) => st.$.name !== DISCREET_SPLASH), discreetSplashStyle()];
     return c;
   });
   return withDangerousMod(config, [
@@ -95,3 +114,4 @@ module.exports = withAlternateIcons;
 module.exports.ICONS = ICONS;
 module.exports.applyToApplication = applyToApplication;
 module.exports.adaptiveXml = adaptiveXml;
+module.exports.discreetSplashStyle = discreetSplashStyle;

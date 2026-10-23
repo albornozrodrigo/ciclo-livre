@@ -47,9 +47,10 @@
         {
           "backgroundColor": "#F5F1E4",
           "image": "./assets/images/icons/padrao-foreground.png",
-          "imageWidth": 160,
+          "imageWidth": 200,
           "dark": {
-            "backgroundColor": "#151A17"
+            "backgroundColor": "#151A17",
+            "image": "./assets/images/icons/noite-foreground.png"
           }
         }
       ],
@@ -69,7 +70,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/icons/monochrome.png",
+          "icon": "./assets/images/icons/discreto-monochrome.png",
           "color": "#2C2E2A"
         }
       ],

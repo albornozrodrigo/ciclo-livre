@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 import { APP_ICONS } from '@/appearance/icons';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -22,8 +25,14 @@ function application() {
 }
 
 describe('plugin with-alternate-icons', () => {
-  it('os ícones do plugin são os mesmos da tela de Aparência', () => {
+  it('os ícones do plugin, do módulo nativo e da tela de Aparência são os mesmos', () => {
     expect(plugin.ICONS.map((i: { name: string }) => i.name)).toEqual(APP_ICONS);
+    const kotlin = readFileSync(
+      join(__dirname, '../../modules/app-icon/android/src/main/java/app/ciclolivre/appicon/AppIconModule.kt'),
+      'utf8',
+    );
+    const native = [...kotlin.matchAll(/"(\w+)" to "(MainActivity\w+)"/g)].map((m) => [m[1], `.${m[2]}`]);
+    expect(native).toEqual(plugin.ICONS.map((i: { name: string; alias: string }) => [i.name, `.${i.alias}`]));
   });
 
   it('a MainActivity continua com deep links e sem LAUNCHER; cada ícone vira um alias com LAUNCHER', () => {
@@ -67,5 +76,19 @@ describe('plugin with-alternate-icons', () => {
     expect(xml).toContain('@color/ic_launcher_noite_background');
     expect(xml).toContain('@drawable/ic_launcher_noite_foreground');
     expect(xml).toContain('@drawable/ic_launcher_alt_monochrome');
+  });
+
+  it('o discreto tem monocromático próprio: ícones temáticos do Android não mostram os lobos', () => {
+    expect(plugin.adaptiveXml('discreto')).toContain('@drawable/ic_launcher_discreto_monochrome');
+  });
+
+  it('tela de abertura discreta: fundo e desenho do ícone discreto, herdando o resto da abertura do app', () => {
+    const style = plugin.discreetSplashStyle();
+    expect(style.$).toEqual({ name: 'DiscreetSplash', parent: 'Theme.App.SplashScreen' });
+    const items = Object.fromEntries(style.item.map((i: { $: { name: string }; _: string }) => [i.$.name, i._]));
+    expect(items).toEqual({
+      windowSplashScreenBackground: '@color/ic_launcher_discreto_background',
+      windowSplashScreenAnimatedIcon: '@drawable/ic_launcher_discreto_foreground',
+    });
   });
 });

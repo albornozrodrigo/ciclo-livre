@@ -27,7 +27,12 @@ export function applySavedTheme(): void {
   apply(getSavedTheme());
 }
 
+/** Aplica na hora; se o armazenamento falhar, o tema vale nesta sessão e o erro vai para o log. */
 export function saveTheme(theme: Theme): void {
-  SecureStore.setItem(KEY, theme);
   apply(theme);
+  try {
+    SecureStore.setItem(KEY, theme);
+  } catch (e) {
+    log.error('theme_save_failed', e);
+  }
 }

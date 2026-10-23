@@ -37,11 +37,17 @@ function ChoiceRow<T extends string>({ option, selected, onPress }: { option: Ch
           : 'min-h-14 flex-row items-center gap-3 rounded-[28px] border-[1.5px] border-ink px-5 py-3 active:opacity-70 dark:border-ink-night'
       }>
       <View className="flex-1 gap-0.5">
-        <Text className={selected ? 'text-base font-bold text-water dark:text-water-night' : 'text-base font-bold text-ink dark:text-ink-night'}>
+        <Text
+          className={
+            selected ? 'text-base font-bold text-water dark:text-water-night' : 'text-base font-bold text-ink dark:text-ink-night'
+          }>
           {option.label}
         </Text>
         {option.detail ? (
-          <Text className={selected ? 'text-sm leading-5 text-water dark:text-water-night' : 'text-sm leading-5 text-ink-muted dark:text-ink-muted-night'}>
+          <Text
+            className={
+              selected ? 'text-sm leading-5 text-water dark:text-water-night' : 'text-sm leading-5 text-ink-muted dark:text-ink-muted-night'
+            }>
             {option.detail}
           </Text>
         ) : null}
@@ -51,11 +57,19 @@ function ChoiceRow<T extends string>({ option, selected, onPress }: { option: Ch
   );
 }
 
-function Check() {
+/** Marca de selecionado (sol com visto de tinta), também usada nas prévias de ícone. */
+export function Check() {
   return (
     <View className="h-8 w-8 items-center justify-center rounded-full bg-sun">
       <Svg width={16} height={16} viewBox="0 0 24 24">
-        <Path d="M5 12.5l4.5 4.5L19 7.5" stroke={Palette.light.ink} strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <Path
+          d="M5 12.5l4.5 4.5L19 7.5"
+          stroke={Palette.light.ink}
+          strokeWidth={3}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
       </Svg>
     </View>
   );
