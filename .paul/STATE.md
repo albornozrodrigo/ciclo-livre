@@ -11,25 +11,25 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.1 — Fase 8 (08-01 artigos e busca)
+**Current focus:** v0.1 — Fase 8 (fechamento: reviews)
 
 ## Current Position
 
 Milestone: v0.1 Initial Release
 Phase: 8 of 11 (Conteúdo + busca + resumo IA + importar do Clue) — Planned
 Plan: 08-01 (artigos + busca), 08-02 (resumo IA BYOK), 08-03 (importar do Clue)
-Status: 08-02 complete; next APPLY 08-03 (importar do Clue)
-Last activity: 2026-10-22 — Phase 7 complete (relatório PDF, exportação, backup/restauração, Drive pelo compartilhar; reviews aplicados)
+Status: 08-03 complete; next fechamento da fase 8 (Impeccable + /code-review)
+Last activity: 2026-10-22 — 08-03 importar do Clue (provado no S21 FE)
 
 Progress:
 - Milestone: [██████░░░░] 64%
-- Phase 8: [░░░░░░░░░░] 0%
+- Phase 8: [█████████░] 90%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [08-02 fechado; próximo: 08-03]
+  ✓        ✓        ✓     [08-03 fechado; próximo: reviews da fase 8]
 ```
 
 ## Accumulated Context
@@ -50,6 +50,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Artigos escritos pelo app com a skill no-ai-slop, rodapé "sem revisão profissional" | 08 plan | Decisão do usuário |
 | IA BYOK: Claude primeiro, chave no secure-store, consentimento explícito | 08 plan | Decisão do usuário |
 | Importar do Clue (ZIP com senha + measurements.json), juntando sem apagar | 08 plan | Requisito do usuário |
+| Leitor de ZIP próprio (JS puro, AES/ZipCrypto); zip.js só nos testes | 08-03 | zip.js depende de Workers/crypto.subtle no Hermes |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -83,9 +84,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Phase 7 complete
-Next action: /paul:apply .paul/phases/08-conteudo-ia/08-03-PLAN.md
-Resume file: .paul/phases/08-conteudo-ia/08-03-PLAN.md
+Stopped at: 08-03 complete
+Next action: fechamento da fase 8 (Impeccable finish review + /code-review high desde 0365a94) e transição
+Resume file: .paul/phases/08-conteudo-ia/08-03-SUMMARY.md
 
 ---
 *STATE.md — Updated after every significant action*

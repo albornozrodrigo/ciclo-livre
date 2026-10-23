@@ -27,7 +27,7 @@ export const ptBR = {
     },
     mais: {
       title: 'Mais',
-      lead: 'Seu perfil e sua privacidade. Lembretes e exportação de dados chegam nas próximas etapas.',
+      lead: 'Seu perfil, lembretes, seus dados e privacidade.',
     },
   },
   analysis: {
@@ -233,7 +233,7 @@ export const ptBR = {
     title: 'Seus dados',
     hint: 'Tudo é gerado neste aparelho. Nada sai daqui até você escolher para onde mandar.',
     mais: 'Seus dados',
-    maisHint: 'Relatório para consulta, exportação, backup e restauração',
+    maisHint: 'Relatório para consulta, exportação, backup, restauração e importar do Clue',
     kinds: {
       relatorio: { title: 'Relatório para consulta', detail: 'PDF com os últimos 6 ciclos para mostrar a quem cuida da sua saúde' },
       planilha: { title: 'Exportar planilha', detail: 'CSV com um dia por linha, para abrir no Sheets ou no Excel' },
@@ -272,6 +272,47 @@ export const ptBR = {
     restoreFailed: 'Não deu para restaurar. Tente de novo.',
     wrongPassword: 'senha errada. Confira e tente de novo.',
     notAppFile: 'este arquivo não é um backup nem uma exportação do Ciclo Livre.',
+    clue: {
+      title: 'Importar do Clue',
+      detail: 'Traga o histórico do Clue. Nada do que já está aqui é apagado.',
+      steps: [
+        'No Clue, abra o menu ☰ → Configurações → Baixar meus dados e peça os dados.',
+        'Copie a senha que aparece na tela. Ela abre o arquivo.',
+        'O link chega no seu e-mail e vale por 72 horas. Baixe o arquivo ZIP no celular.',
+      ],
+      pick: 'Escolher o ZIP do Clue',
+      password: 'Senha mostrada no Clue',
+      check: 'Ler arquivo',
+      reading: 'Lendo o arquivo…',
+      previewTitle: 'O que vai entrar',
+      range: (from: string, to: string) => `De ${from} a ${to}`,
+      days: (n: number) => `${n} ${n === 1 ? 'dia com registro' : 'dias com registro'}`,
+      existing: (n: number) =>
+        n === 0
+          ? 'Nenhum desses dias tem registro no Ciclo Livre.'
+          : `${n} ${n === 1 ? 'desses dias já tem' : 'desses dias já têm'} registro aqui.`,
+      kept: (n: number) =>
+        `${n} ${n === 1 ? 'item fica' : 'itens ficam'} de fora porque você já registrou aquela categoria no mesmo dia. Vale o que está aqui.`,
+      notesLabel: 'Notas',
+      tagsLabel: 'Tags',
+      truncated: (n: number) =>
+        `${n} ${n === 1 ? 'nota passa' : 'notas passam'} de 1000 caracteres e ${n === 1 ? 'será cortada' : 'serão cortadas'}.`,
+      unknownTitle: 'Não reconhecido (fica de fora)',
+      unknownHint: 'Coisas do Clue que não têm par aqui. Continuam guardadas no arquivo original.',
+      invalid: (n: number) => `${n} ${n === 1 ? 'registro ilegível ignorado' : 'registros ilegíveis ignorados'}.`,
+      nothingNew: 'Tudo o que está no arquivo já está aqui. Não há nada para importar.',
+      importButton: 'Importar',
+      importing: 'Importando…',
+      done: 'Histórico do Clue importado.',
+      failed: 'Não deu para importar. Nada foi alterado. Tente de novo.',
+      errors: {
+        not_clue: 'este arquivo não é uma exportação do Clue. Escolha o ZIP que veio no e-mail.',
+        wrong_password: 'senha errada. Copie de novo a senha mostrada no Clue.',
+        too_large: 'arquivo grande demais (o limite é 50 MB).',
+        empty: 'o arquivo não tem registros para importar.',
+      },
+      onboardingNext: 'Agora complete seu perfil para as previsões.',
+    },
   },
   report: {
     title: 'Relatório do ciclo',
@@ -428,6 +469,7 @@ export const ptBR = {
       ],
       start: 'Começar',
       restore: 'Já tenho um backup',
+      clue: 'Vim do Clue',
     },
     birthYear: {
       title: 'Em que ano você nasceu?',

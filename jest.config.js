@@ -33,7 +33,7 @@ module.exports = {
       ],
       transform: { '^.+\\.[jt]sx?$': ['babel-jest', { presets: ['babel-preset-expo'] }] },
       // @noble/* só publica ESM.
-      transformIgnorePatterns: ['/node_modules/(?!@noble/)'],
+      transformIgnorePatterns: ['/node_modules/(?!@noble/|@zip.js/)'],
       moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' },
     },
   ],

@@ -22,6 +22,7 @@ export default function DadosScreen() {
           />
         ))}
         <ListRow label={d.restore.title} detail={d.restore.detail} onPress={() => router.push('/dados/restaurar')} />
+        <ListRow label={d.clue.title} detail={d.clue.detail} onPress={() => router.push('/dados/clue')} />
       </View>
       <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{d.notEncrypted}</Text>
     </FormScreen>
