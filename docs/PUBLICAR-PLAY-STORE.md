@@ -311,8 +311,10 @@ Quando sair, troque no site o "Chega à Google Play em breve" pelo link da loja 
 
 ```bash
 node scripts/build-site.mjs        # só se a política mudou
-cd site && npx vercel@latest deploy --prod
+git commit -am "Site: link da Play Store" && git push
 ```
+
+O projeto da Vercel está ligado ao GitHub com a pasta raiz `site/`: cada push na `main` publica o site sozinho.
 
 ---
 
