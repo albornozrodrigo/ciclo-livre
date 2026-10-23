@@ -17,19 +17,19 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 
 Milestone: v0.1 Initial Release
 Phase: 11 of 11 (Personalização + release) — Planning
-Plan: 11-01 completo; 11-02 a seguir
-Status: 11-01 UNIFY feito; próximo APPLY 11-02
-Last activity: 2026-10-23 — 11-01 (política, trava, Recentes) fechado com revisões
+Plan: 11-01 e 11-02 completos; 11-03 a seguir
+Status: 11-02 UNIFY feito; próximo APPLY 11-03
+Last activity: 2026-10-23 — 11-02 (ícone, ícones alternativos, tema) fechado com revisões
 
 Progress:
 - Milestone: [█████████░] 91%
-- Phase 11: [██░░░░░░░░] 20%
+- Phase 11: [████░░░░░░] 40%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [11-01 fechado; próximo: APPLY 11-02]
+  ✓        ✓        ✓     [11-02 fechado; próximo: APPLY 11-03]
 ```
 
 ## Accumulated Context
@@ -67,6 +67,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Release local assinado com chave própria (EAS só se a pessoa fizer login) | 11 plan | Checkpoint para guardar a chave |
 | Trava: credencial do aparelho, decisão por tempo (1 min; 5 min com teto se saiu por tela do sistema); sem PIN no aparelho desliga em vez de trancar | 11-01 review | Nunca tranca a pessoa fora dos próprios dados |
 | Política de privacidade: só fatos verificados no código, com teste; módulo local launch-intent para o link do Health Connect | 11-01 | Mudou o app → revisar a política e a data |
+| FLAG_SECURE por módulo local (secure-window), sem expo-screen-capture | 11-02 | DETECT_SCREEN_CAPTURE bloqueada; depois de mexer em permissões, abrir o app no aparelho |
+| Ícones: plugin + módulo app-icon; troca ao sair do app; Discreto com abertura neutra (Android 13+) e notificação sempre com o caderno | 11-02 | Ao trocar, o Android tira o app dos recentes |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -109,9 +111,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-23
-Stopped at: 11-01 completo
-Next action: /paul:apply .paul/phases/11-personalizacao-release/11-02-PLAN.md
-Resume file: .paul/phases/11-personalizacao-release/11-02-PLAN.md
+Stopped at: 11-02 completo
+Next action: /paul:apply .paul/phases/11-personalizacao-release/11-03-PLAN.md
+Resume file: .paul/phases/11-personalizacao-release/11-03-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
