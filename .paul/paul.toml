@@ -15,15 +15,13 @@ status = "in_progress"
 phases = 11
 
 [phase]
-number = 9
-name = "Chat com seus dados (IA BYOK)"
-status = "in_progress"
-plans_completed = 2
+number = 10
+name = "Wearables (Health Connect)"
+status = "not_started"
+plans_completed = 0
 
 [loop]
 position = "IDLE"
-plan = "09-02"
-plan_path = "phases/09-chat-dados/09-02-PLAN.md"
 
 [satellite]
 groom = true
@@ -31,4 +29,4 @@ groom = true
 [stats]
 total_plans = 26
 total_phases = 11
-last_activity = "2026-10-23T14:40:00Z"
+last_activity = "2026-10-23T15:30:00Z"

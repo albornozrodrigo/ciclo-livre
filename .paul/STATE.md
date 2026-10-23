@@ -11,25 +11,25 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.1 — Fase 9 (chat com seus dados, IA BYOK)
+**Current focus:** v0.1 — Fase 10 (Health Connect)
 
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 9 of 11 (Chat com seus dados, IA BYOK) — In progress
-Plan: 09-01 e 09-02 completos
-Status: fechamento da fase 9 (code-review + revisão de segurança)
-Last activity: 2026-10-23 — 09-02 telas do chat (686 testes; consentimento com texto exato no S21 FE)
+Phase: 10 of 11 (Wearables / Health Connect) — Not started
+Plan: não planejado
+Status: Fase 9 completa (2 planos + Impeccable + /code-review + revisão de privacidade); próximo: planejar a fase 10
+Last activity: 2026-10-23 — fase 9 fechada; "Me pague um café" em Mais
 
 Progress:
-- Milestone: [███████░░░] 73%
-- Phase 9: [█████████░] 90%
+- Milestone: [████████░░] 82%
+- Phase 10: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [09-02 fechado; próximo: revisões da fase 9]
+  ○        ○        ○     [fase 9 fechada; próximo: PLAN da fase 10]
 ```
 
 ## Accumulated Context
@@ -58,6 +58,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Datas de fora: entrada 1900–2100, contas 1800–2299 | 08-04 | Arquivo/link com ano 9999 não quebra o app |
 | App fora do backup do Android (plugin with-no-backup); lembretes com id opaco | 08-04 | Agenda de notificações fica em texto puro no Android |
 | Chat com dados: contexto montado no aparelho e mostrado igual antes do envio; histórico só no SQLCipher; consentimento próprio | 09 plan | Paridade com o Clue sem servidor |
+| Revogar consentimento do chat ou mudar o escopo apaga a conversa | 09 review | Respostas antigas não voltam a sair sob outro consentimento |
+| "Me pague um café" (Pix) como último item de Mais; app grátis e sem anúncios | 09 | Pedido da pessoa usuária |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -95,9 +97,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: 09-02 completo
-Next action: fechamento da fase 9 (/code-review + segurança) e transição
-Resume file: .paul/phases/09-chat-dados/09-02-SUMMARY.md
+Stopped at: Fase 9 completa (transição feita)
+Next action: /paul:plan (fase 10 — Health Connect)
+Resume file: .paul/ROADMAP.md
 
 ---
 *STATE.md — Updated after every significant action*

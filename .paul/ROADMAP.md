@@ -30,7 +30,7 @@ Phases: 7 of 11 complete
 | 6 | Lembretes | 2 | ✅ Complete | 2026-10-22 |
 | 7 | Relatório médico + exportação (Google Drive) | 3 | ✅ Complete | 2026-10-22 |
 | 8 | Conteúdo + busca + resumo IA + importar do Clue | 4 | ✅ Complete | 2026-10-23 |
-| 9 | Chat com seus dados (IA BYOK) | 2 | In progress | - |
+| 9 | Chat com seus dados (IA BYOK) | 2 | ✅ Complete | 2026-10-23 |
 | 10 | Wearables (Health Connect) | TBD | Not started | - |
 | 11 | Personalização + release | TBD | Not started | - |
 

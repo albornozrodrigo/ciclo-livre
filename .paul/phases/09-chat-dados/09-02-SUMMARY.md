@@ -24,3 +24,9 @@ about: "ciclo-livre"
 
 ## Pendências
 - Prova de uma conversa real (e do teclado sobre o campo) no S21 FE quando houver uma chave da Anthropic.
+
+## Fechamento da fase 9 (2026-10-23)
+- `/code-review high ffd84ba..HEAD`: 10 achados, todos aplicados. O mais grave: o limpador cortava a pergunta no primeiro "<" (vinha da 08 e afetava também a busca de artigos).
+- Revisão de privacidade (fluxo de dados de saúde para a IA): sem crítico/alto. F1 médio corrigido: respostas antigas que citavam notas voltavam a sair depois de desligar as notas ou revogar e concordar de novo. Agora revogar ou mudar o escopo apaga a conversa, e o consentimento avisa que respostas anteriores vão junto.
+- Também: "Me pague um café" (pedido da pessoa usuária) como último item de Mais, com chave Pix para copiar (expo-clipboard; rebuild no S21 FE).
+- 706 testes, tsc e lint limpos.
