@@ -21,12 +21,8 @@ jest.mock('expo-local-authentication', () => ({
 }));
 const mockShow = jest.fn();
 jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: mockShow }) }));
-const mockPrevent = jest.fn(async () => undefined);
-const mockAllow = jest.fn(async () => undefined);
-jest.mock('expo-screen-capture', () => ({
-  preventScreenCaptureAsync: (...a: unknown[]) => mockPrevent(...(a as [])),
-  allowScreenCaptureAsync: (...a: unknown[]) => mockAllow(...(a as [])),
-}));
+const mockSecure = jest.fn(async (_on: boolean) => undefined);
+jest.mock('../../../modules/secure-window', () => ({ setSecureWindow: (on: boolean) => mockSecure(on) }));
 
 let listener: ((s: AppStateStatus) => void) | null = null;
 let now = 1_000_000;
@@ -152,6 +148,6 @@ describe('AppLock', () => {
     await setHideRecents(mockDb, true);
     await render(app());
     await screen.findByText('conteúdo do ciclo');
-    expect(mockPrevent).toHaveBeenCalledWith('ciclo-livre');
+    expect(mockSecure).toHaveBeenLastCalledWith(true);
   });
 });

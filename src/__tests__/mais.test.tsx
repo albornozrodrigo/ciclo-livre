@@ -114,6 +114,14 @@ describe('Mais › apagar todos os dados', () => {
   });
 });
 
+describe('Mais › Aparência', () => {
+  it('leva à tela de Aparência', async () => {
+    await renderMais();
+    await fireEvent.press(screen.getByRole('button', { name: new RegExp(ptBR.appearance.maisHint) }));
+    expect(mockPush).toHaveBeenCalledWith('/aparencia');
+  });
+});
+
 describe('Mais › Health Connect', () => {
   it('fora do Android não aparece', async () => {
     await renderMais();

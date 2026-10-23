@@ -20,10 +20,7 @@ jest.mock('expo-local-authentication', () => ({
 }));
 const mockShow = jest.fn();
 jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: mockShow }) }));
-jest.mock('expo-screen-capture', () => ({
-  preventScreenCaptureAsync: jest.fn(async () => undefined),
-  allowScreenCaptureAsync: jest.fn(async () => undefined),
-}));
+jest.mock('../../modules/secure-window', () => ({ setSecureWindow: jest.fn(async () => undefined) }));
 
 beforeEach(async () => {
   jest.clearAllMocks();

@@ -1,5 +1,4 @@
 import * as LocalAuthentication from 'expo-local-authentication';
-import * as ScreenCapture from 'expo-screen-capture';
 import { useSQLiteContext } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -12,10 +11,11 @@ import { getSecuritySettings, type SecuritySettings, setAppLock, setHideRecents 
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
 
+import { setSecureWindow } from '../../modules/secure-window';
+
 import { type Background, markAppLocked, markBackground, shouldLockOnReturn, withLockSuppressed } from './lock-policy';
 
 const s = ptBR.security;
-const CAPTURE_KEY = 'ciclo-livre';
 
 type SecurityValue = {
   settings: SecuritySettings | null;
@@ -173,8 +173,7 @@ export function AppLock({ children }: { children: ReactNode }) {
 
   const hide = settings?.hideRecents ?? false;
   useEffect(() => {
-    const apply = hide ? ScreenCapture.preventScreenCaptureAsync(CAPTURE_KEY) : ScreenCapture.allowScreenCaptureAsync(CAPTURE_KEY);
-    apply.catch((e: unknown) => log.error('screen_capture_failed', e));
+    setSecureWindow(hide).catch((e: unknown) => log.error('screen_capture_failed', e));
   }, [hide]);
 
   if (locked === null) return null;

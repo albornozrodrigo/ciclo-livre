@@ -4,6 +4,7 @@ import { DarkTheme, DefaultTheme, type ErrorBoundaryProps, ThemeProvider } from 
 import { StatusBar } from 'expo-status-bar';
 import { Alert, useColorScheme } from 'react-native';
 
+import { applySavedTheme } from '@/appearance/theme';
 import { AppError } from '@/components/ui/app-error';
 import { SnackbarProvider } from '@/components/ui/snackbar';
 import { DatabaseRoot, resetUnopenableDatabase } from '@/db/database-root';
@@ -14,6 +15,9 @@ import { RootNavigator } from '@/navigation/root-navigator';
 import { ProfileProvider, useProfile } from '@/profile/profile-context';
 import { ReminderBridge } from '@/reminders/reminder-bridge';
 import { AppLock, SecurityProvider } from '@/security/app-lock';
+
+// Tema escolhido em Aparência: aplicado antes do primeiro desenho (leitura síncrona).
+applySavedTheme();
 
 /** Falhas ao abrir o banco (ou qualquer erro não tratado) caem aqui, sem detalhes técnicos. */
 export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {

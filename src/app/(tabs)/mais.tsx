@@ -82,6 +82,12 @@ export default function MaisScreen() {
             <ListRow label={ptBR.health.mais} detail={ptBR.health.maisHint} onPress={() => router.push('/health')} />
           </View>
         ) : null}
+        <View className="gap-1">
+          <Text accessibilityRole="header" className="mb-2 text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
+            {ptBR.appearance.section}
+          </Text>
+          <ListRow label={ptBR.appearance.mais} detail={ptBR.appearance.maisHint} onPress={() => router.push('/aparencia')} />
+        </View>
         <PrivacySection onErase={eraseAndNotify} confirm={confirmEraseAll} />
         {/* Pedido da pessoa usuária: sempre o último item da tela. */}
         <CoffeeSection />
