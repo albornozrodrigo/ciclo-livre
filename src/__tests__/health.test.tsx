@@ -13,9 +13,10 @@ let mockDb: ReturnType<typeof openMemoryDatabase>;
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDb }));
 jest.mock('expo-router', () => ({
   useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]),
-  router: { push: jest.fn(), back: jest.fn(), canGoBack: () => true },
+  router: { push: (href: unknown) => mockPushRoute(href), back: jest.fn(), canGoBack: () => true },
 }));
 const mockShow = jest.fn();
+const mockPushRoute = jest.fn();
 jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: mockShow }) }));
 let mockStatus = 'available';
 const mockConnect = jest.fn();
@@ -76,6 +77,12 @@ describe('Health Connect', () => {
     expect(await screen.findByLabelText(`${h.types.sleep}: ${h.days(1)}`)).toBeOnTheScreen();
     expect(screen.getByLabelText(`${h.types.weight}: ${h.days(1)}`)).toBeOnTheScreen();
     expect(await getHealthSettings(mockDb)).toMatchObject({ connected: true, types: ['sleep', 'weight'] });
+  });
+
+  it('leva à política de privacidade (o que acontece com os dados do Health Connect)', async () => {
+    await render(wrap(<HealthScreen />));
+    await fireEvent.press(await screen.findByRole('button', { name: new RegExp(ptBR.policy.link) }));
+    expect(mockPushRoute).toHaveBeenCalledWith('/privacidade');
   });
 
   it('nenhuma permissão concedida: não conecta e explica', async () => {

@@ -12,6 +12,7 @@ import { Platform } from 'react-native';
 
 import { HEALTH_TYPES, type HealthType } from '@/db/health-settings-repo';
 import type { HealthInput, InstantSample, SleepSample } from '@/domain/health/health-import';
+import { withLockSuppressed } from '@/security/lock-policy';
 
 /** Tipo do app → tipo de registro do Health Connect (só leitura). */
 const RECORD = {
@@ -51,7 +52,9 @@ function readTypes(permissions: readonly { accessType?: string; recordType?: str
 export async function connectHealth(types: readonly HealthType[]): Promise<HealthType[]> {
   await initialize();
   const wanted = HEALTH_TYPES.filter((t) => types.includes(t));
-  const granted = await requestPermission(wanted.map((t) => ({ accessType: 'read' as const, recordType: RECORD[t] })));
+  const granted = await withLockSuppressed(() =>
+    requestPermission(wanted.map((t) => ({ accessType: 'read' as const, recordType: RECORD[t] }))),
+  );
   return readTypes(granted as { accessType?: string; recordType?: string }[]);
 }
 

@@ -9,6 +9,9 @@ import HojeScreen from '@/app/(tabs)/index';
 import MaisScreen from '@/app/(tabs)/mais';
 import { ptBR, type ScreenKey } from '@/i18n/pt-BR';
 
+// Trava do app tem testes próprios (src/security); aqui só a tela.
+jest.mock('@/security/security-settings', () => ({ SecuritySettings: () => null }));
+
 // O banco nativo (SQLCipher) não existe no Jest; as telas só precisam do hook.
 jest.mock('@/db/database-root', () => ({ useEraseAllData: () => jest.fn() }));
 // Hoje lê o resumo do dia; nesta suíte basta um banco vazio.

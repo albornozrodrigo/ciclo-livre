@@ -1,7 +1,10 @@
+import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { ListRow } from '@/components/ui/list-row';
 import { ptBR } from '@/i18n/pt-BR';
+import { SecuritySettings } from '@/security/security-settings';
 
 type Props = {
   /** Apaga e avisa o resultado (a tela é remontada depois, então o aviso fica com quem chama). */
@@ -37,6 +40,8 @@ export function PrivacySection({ onErase, confirm }: Props) {
       </Text>
       <Text className="text-base leading-6 text-ink dark:text-ink-night">{copy.localData}</Text>
       <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{copy.medicalDisclaimer}</Text>
+      <SecuritySettings />
+      <ListRow label={ptBR.policy.link} detail={ptBR.policy.linkHint} onPress={() => router.push('/privacidade')} />
 
       <View className="gap-2 pt-3">
         <Pressable

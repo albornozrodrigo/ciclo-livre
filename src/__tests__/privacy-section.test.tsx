@@ -3,9 +3,21 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react-nativ
 import { PrivacySection } from '@/components/privacy-section';
 import { ptBR } from '@/i18n/pt-BR';
 
+// Trava do app tem testes próprios (src/security); aqui só a tela.
+jest.mock('@/security/security-settings', () => ({ SecuritySettings: () => null }));
+
 const copy = ptBR.privacy;
+const mockPush = jest.fn();
+jest.mock('expo-router', () => ({ router: { push: (href: unknown) => mockPush(href) } }));
 
 describe('PrivacySection', () => {
+  it('leva à política de privacidade', async () => {
+    await render(<PrivacySection onErase={jest.fn()} confirm={jest.fn()} />);
+
+    await fireEvent.press(screen.getByRole('button', { name: new RegExp(ptBR.policy.link) }));
+    expect(mockPush).toHaveBeenCalledWith('/privacidade');
+  });
+
   it('mostra o aviso de que o app não é contraceptivo nem dispositivo médico', async () => {
     await render(<PrivacySection onErase={jest.fn()} confirm={jest.fn()} />);
 

@@ -12,6 +12,7 @@ import { dateFromIso, isoFromDate } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { planSchedule } from '@/domain/reminders/schedule';
 import { reminderContent } from '@/i18n/pt-BR-reminders';
+import { withLockSuppressed } from '@/security/lock-policy';
 
 /**
  * Dois canais (a pessoa pode silenciar um sem o outro nos ajustes do Android):
@@ -42,7 +43,7 @@ async function ensureChannels() {
 /** Pede a permissão de notificação. No Android 13+ o pedido só aparece depois que existe um canal. */
 export async function requestReminderPermission(): Promise<{ granted: boolean; canAskAgain: boolean }> {
   await ensureChannels();
-  const { granted, canAskAgain } = await Notifications.requestPermissionsAsync();
+  const { granted, canAskAgain } = await withLockSuppressed(() => Notifications.requestPermissionsAsync());
   return { granted, canAskAgain };
 }
 

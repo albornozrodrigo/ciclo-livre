@@ -1,5 +1,6 @@
 import { getDocumentAsync } from 'expo-document-picker';
 import { File } from 'expo-file-system';
+import { withLockSuppressed } from '@/security/lock-policy';
 
 export type Picked<T> = { status: 'cancelled' } | { status: 'too_large' } | { status: 'ok'; name: string; content: T };
 
@@ -8,7 +9,7 @@ export type Picked<T> = { status: 'cancelled' } | { status: 'too_large' } | { st
  * essa cópia pode ter dado de saúde e é apagada em qualquer caminho (lida, grande demais ou com erro).
  */
 export async function pickDocument<T>(maxBytes: number, read: (file: File) => Promise<T>): Promise<Picked<T>> {
-  const result = await getDocumentAsync({ copyToCacheDirectory: true, multiple: false });
+  const result = await withLockSuppressed(() => getDocumentAsync({ copyToCacheDirectory: true, multiple: false }));
   if (result.canceled) return { status: 'cancelled' };
   const asset = result.assets[0];
   const copy = new File(asset.uri);

@@ -21,6 +21,11 @@ const routes = (onboarded: boolean) => ({
     return <Slot />;
   },
   'perfil/modo': () => <Text>trocar modo</Text>,
+  'privacidade/_layout': () => {
+    const { Slot } = jest.requireActual('expo-router');
+    return <Slot />;
+  },
+  'privacidade/index': () => <Text>política</Text>,
 });
 
 describe('RootNavigator', () => {
@@ -59,5 +64,11 @@ describe('RootNavigator', () => {
     await renderRouter(routes(true), { initialUrl: '/perfil/modo' });
 
     expect(screen.getByText('trocar modo')).toBeOnTheScreen();
+  });
+
+  it.each([true, false])('a política de privacidade abre com ou sem perfil (perfil: %s)', async (onboarded) => {
+    await renderRouter(routes(onboarded), { initialUrl: '/privacidade' });
+
+    expect(screen.getByText('política')).toBeOnTheScreen();
   });
 });

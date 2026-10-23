@@ -7,6 +7,9 @@ import type { Profile } from '@/domain/profile';
 import { PIX_KEY } from '@/constants/support';
 import { ptBR } from '@/i18n/pt-BR';
 
+// Trava do app tem testes próprios (src/security); aqui só a tela.
+jest.mock('@/security/security-settings', () => ({ SecuritySettings: () => null }));
+
 const mockErase = jest.fn();
 jest.mock('@/db/database-root', () => ({ useEraseAllData: () => mockErase }));
 

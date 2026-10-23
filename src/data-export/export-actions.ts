@@ -12,6 +12,7 @@ import type { Profile } from '@/domain/profile';
 import { csvLabels } from '@/i18n/pt-BR-export';
 import { log } from '@/lib/logger';
 import { createReportPdf } from '@/report/report-pdf';
+import { withLockSuppressed } from '@/security/lock-policy';
 
 export type ExportKind = 'relatorio' | 'planilha' | 'completo' | 'backup';
 export const EXPORT_KINDS: readonly ExportKind[] = ['relatorio', 'planilha', 'completo', 'backup'];
@@ -84,7 +85,7 @@ export async function prepareExport(kind: ExportKind, { db, profile, today, incl
 
 /** Menu de compartilhar do Android: Google Drive, e-mail e outros apps aparecem como destino. */
 export async function shareFile(item: ExportItem): Promise<void> {
-  await shareAsync(item.file.uri, { mimeType: item.mimeType, dialogTitle: item.name });
+  await withLockSuppressed(() => shareAsync(item.file.uri, { mimeType: item.mimeType, dialogTitle: item.name }));
 }
 
 /**
@@ -96,7 +97,7 @@ export async function saveToFolder(item: ExportItem): Promise<'saved' | 'cancell
   try {
     let directory: Directory;
     try {
-      directory = await Directory.pickDirectoryAsync();
+      directory = await withLockSuppressed(() => Directory.pickDirectoryAsync());
     } catch {
       // O seletor rejeita quando a pessoa fecha sem escolher (e em falhas raras): registrado, tratado como cancelado.
       log.event('folder_pick_closed');

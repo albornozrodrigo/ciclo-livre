@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CapsuleButton } from '@/components/ui/capsule-button';
@@ -38,6 +38,14 @@ export default function WelcomeScreen() {
               <Text className="flex-1 text-base leading-6 text-ink dark:text-ink-night">{promise}</Text>
             </View>
           ))}
+          {/* Antes de qualquer dado: a política fica a um toque. */}
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={ptBR.policy.link}
+            onPress={() => router.push('/privacidade')}
+            className="min-h-12 justify-center self-start active:opacity-70">
+            <Text className="text-base font-bold text-ink underline dark:text-ink-night">{ptBR.policy.link}</Text>
+          </Pressable>
         </View>
         <View className="gap-3">
           <CapsuleButton label={copy.start} onPress={() => router.push(STEP_ROUTES.birth_year)} />

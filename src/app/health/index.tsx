@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useRef, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
@@ -210,7 +210,12 @@ export default function HealthScreen() {
     </>
   );
 
-  const settingsRow = <ListRow label={h.openSettings} detail={h.openSettingsHint} onPress={openHealthSettings} />;
+  const settingsRow = (
+    <View>
+      <ListRow label={h.openSettings} detail={h.openSettingsHint} onPress={openHealthSettings} />
+      <ListRow label={ptBR.policy.link} detail={ptBR.policy.linkHint} onPress={() => router.push('/privacidade')} />
+    </View>
+  );
 
   if (!settings?.connected) {
     const toggle = (t: HealthType, on: boolean) => setChosen((prev) => HEALTH_TYPES.filter((x) => (x === t ? on : prev.includes(x))));

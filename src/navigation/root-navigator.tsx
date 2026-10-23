@@ -23,6 +23,8 @@ export function RootNavigator({ onboarded }: Props) {
       <Stack.Protected guard={!onboarded}>
         <Stack.Screen name="onboarding" />
       </Stack.Protected>
+      {/* Sem guarda: o link do Health Connect pode abrir antes do cadastro. */}
+      <Stack.Screen name="privacidade" />
     </Stack>
   );
 }
