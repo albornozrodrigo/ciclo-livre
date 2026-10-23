@@ -70,5 +70,10 @@
     "lint": "expo lint",
     "test": "jest"
   },
-  "private": true
+  "private": true,
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/albornozrodrigo/ciclo-livre.git"
+  }
 }

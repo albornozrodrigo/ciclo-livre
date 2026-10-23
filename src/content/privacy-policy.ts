@@ -106,6 +106,11 @@ export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyB
       kind: 'p',
       text: 'O Ciclo Livre é para maiores de 18 anos. As previsões são estimativas, e o app não é método contraceptivo nem dispositivo médico.',
     },
+    { kind: 'h', text: 'Contato e código' },
+    {
+      kind: 'p',
+      text: 'O Ciclo Livre é código aberto, sob a licença GPL-3.0. O código, as dúvidas e as sugestões ficam em github.com/albornozrodrigo/ciclo-livre: é só abrir uma issue lá. As issues são públicas, então não escreva nelas nada sobre a sua saúde.',
+    },
     { kind: 'h', text: 'Mudanças nesta política' },
     { kind: 'p', text: 'Se esta política mudar, a nova versão chega numa atualização do app, com a nova data no topo.' },
   ],

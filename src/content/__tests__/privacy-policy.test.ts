@@ -45,4 +45,9 @@ describe('política de privacidade', () => {
     expect(text).toContain(`Mais › ${ptBR.ai.mais}`);
     expect(text).toContain(`Mais › ${ptBR.privacy.title}`);
   });
+
+  it('tem canal de contato (o repositório público) e avisa para não pôr dados de saúde nas issues', () => {
+    expect(text).toContain('github.com/albornozrodrigo/ciclo-livre');
+    expect(text).toMatch(/issues são públicas/);
+  });
 });

@@ -46,3 +46,7 @@ coverage/
 # Saída de build dos módulos locais
 modules/*/android/build/
 modules/*/android/.cxx/
+
+# Chave de assinatura e senhas (ficam só neste Mac; faça cópia de segurança fora do repositório)
+/credentials/
+credentials.json
