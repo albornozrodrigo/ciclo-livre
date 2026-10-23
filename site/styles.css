@@ -651,70 +651,6 @@ pre .c {
   margin-bottom: 8px;
 }
 
-/* ---------- Café ---------- */
-
-.coffee {
-  margin: 0 var(--gutter) clamp(72px, 10vw, 128px);
-  border-radius: 40px;
-  background: var(--sun);
-  color: #2c2e2a;
-  padding: clamp(32px, 6vw, 72px);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 24px 48px;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.coffee .lobe {
-  position: absolute;
-  z-index: -1;
-  width: 420px;
-  aspect-ratio: 1;
-  right: -120px;
-  top: -160px;
-  color: var(--coral);
-}
-
-.coffee p {
-  color: #2c2e2a;
-}
-
-.pix {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.pix code {
-  font-family: 'Roboto Mono', ui-monospace, Menlo, monospace;
-  font-size: 0.875rem;
-  background: #f5f1e4;
-  color: #2c2e2a;
-  padding: 10px 16px;
-  border-radius: 999px;
-  word-break: break-all;
-}
-
-.coffee .capsule {
-  background: #2c2e2a;
-  color: #f5e211;
-}
-
-.coffee .capsule .chip-dot {
-  background: #f5e211;
-  color: #2c2e2a;
-}
-
-.copied {
-  font-weight: 700;
-  font-size: 0.9375rem;
-  min-height: 1.5em;
-}
-
 /* ---------- Rodapé ---------- */
 
 footer {
@@ -727,6 +663,23 @@ footer {
 
 footer p {
   font-size: 0.9375rem;
+}
+
+.support code {
+  font-family: 'Roboto Mono', ui-monospace, Menlo, monospace;
+  font-size: 0.8125rem;
+  word-break: break-all;
+}
+
+.text-btn {
+  background: none;
+  border: 0;
+  padding: 4px 2px;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
 }
 
 .foot-links {
@@ -859,16 +812,6 @@ footer p {
     width: 70vw;
     right: -34vw;
     bottom: -26vw;
-  }
-
-  .coffee {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .coffee .lobe {
-    width: 260px;
-    right: -120px;
-    top: -140px;
   }
 
   .foot-links {

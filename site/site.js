@@ -44,9 +44,9 @@
   btn.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(key);
-      out.textContent = 'Chave copiada. Obrigado!';
+      out.textContent = 'copiada, obrigado!';
     } catch {
-      out.textContent = 'Não deu para copiar. Selecione a chave acima e copie.';
+      out.textContent = 'Não deu para copiar. Selecione a chave e copie.';
     }
   });
 })();
