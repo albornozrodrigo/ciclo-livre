@@ -72,6 +72,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | "média 29" na ponta da linha de referência; número principal em Display | 05 review | S | Polimento |
 | `npm audit`: 19 high vulnerabilities vindas do template (não triadas; /cso sem OSV) | Init | S | Fase 2 |
 | FLAG_SECURE / ocultar miniatura em Recentes | /cso | S | Fase 3 (quando houver dados na tela) |
+| `reminders_sync_failed`/`today_*_failed` ("Access to closed resource") quando a tela de erro raiz desmonta o banco com leituras em curso: efeito de um erro anterior, sem perda (reagenda ao abrir) | 08 investigação | S | Opcional: tratar conexão fechada como cancelamento no polimento |
 
 ### Blockers/Concerns
 None yet.
