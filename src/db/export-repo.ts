@@ -50,7 +50,18 @@ export async function importAll(db: SqlExecutor, raw: unknown, now: Date = new D
   const data = parseExport(raw);
   await enqueueWrite(db, () =>
     db.withTransactionAsync(async () => {
-      for (const table of ['log_tag', 'tag', 'log_selection', 'log_measure', 'log_note', 'category_pref', 'reminder', 'profile']) {
+      // A conversa do chat sai junto: ela citaria dados que não existem mais.
+      for (const table of [
+        'log_tag',
+        'tag',
+        'log_selection',
+        'log_measure',
+        'log_note',
+        'category_pref',
+        'reminder',
+        'profile',
+        'chat_message',
+      ]) {
         // Nomes fixos acima (não vêm do arquivo).
         await db.runAsync(`DELETE FROM ${table}`);
       }

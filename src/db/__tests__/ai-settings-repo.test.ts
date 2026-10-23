@@ -1,4 +1,4 @@
-import { getAiSettings, setAiConsent, setAiModel } from '@/db/ai-settings-repo';
+import { getAiSettings, getChatSettings, setAiConsent, setAiModel, setChatConsent, setChatScope } from '@/db/ai-settings-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 
 import { openMemoryDatabase } from './node-sqlite-adapter';
@@ -22,5 +22,18 @@ describe('ai-settings-repo', () => {
     await setAiConsent(db, false);
     expect((await getAiSettings(db)).consent).toBe(false);
     await expect(setAiModel(db, 'gpt-5' as never)).rejects.toThrow('Modelo inválido');
+  });
+
+  it('chat: consentimento próprio (independe do resumo de artigos) e escopo com padrão 6 ciclos, sem notas', async () => {
+    const db = await migratedDb();
+    expect(await getChatSettings(db)).toEqual({ consent: false, cycles: 6, includeNotes: false });
+    await setAiConsent(db, true);
+    expect((await getChatSettings(db)).consent).toBe(false);
+    await setChatConsent(db, true);
+    await setChatScope(db, { cycles: 12, includeNotes: true });
+    expect(await getChatSettings(db)).toEqual({ consent: true, cycles: 12, includeNotes: true });
+    await setChatConsent(db, false);
+    expect((await getAiSettings(db)).consent).toBe(true);
+    await expect(setChatScope(db, { cycles: 7 as never, includeNotes: false })).rejects.toThrow();
   });
 });

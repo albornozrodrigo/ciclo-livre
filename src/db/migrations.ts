@@ -89,6 +89,18 @@ export const MIGRATIONS: Migration[] = [
       ) STRICT`,
     ],
   },
+  {
+    // Conversa do chat com os dados: só no aparelho, cifrada como o resto.
+    version: 6,
+    statements: [
+      `CREATE TABLE chat_message (
+        id INTEGER PRIMARY KEY,
+        role TEXT NOT NULL CHECK (role IN ('user', 'assistant')),
+        text TEXT NOT NULL CHECK (length(text) BETWEEN 1 AND 4000),
+        created_at TEXT NOT NULL
+      ) STRICT`,
+    ],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

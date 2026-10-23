@@ -1,4 +1,4 @@
-import { AI_MODELS, summarize, testKey } from '@/ai/claude';
+import { AI_MODELS, chat, summarize, testKey } from '@/ai/claude';
 import { deleteApiKey, getApiKey, saveApiKey } from '@/ai/key-store';
 import type { Article } from '@/content/search';
 
@@ -121,6 +121,23 @@ describe('summarize', () => {
       ok: false,
       error: 'offline',
     });
+  });
+});
+
+describe('chat', () => {
+  it('manda as instruções e as mensagens recebidas como estão; devolve o texto', async () => {
+    mockFetch.mockResolvedValue(reply(200, { stop_reason: 'end_turn', content: [{ type: 'text', text: 'Seus ciclos variam pouco.' }] }));
+    const messages = [
+      { role: 'user' as const, content: '<dados>x</dados>\n\n<pergunta>a</pergunta>' },
+      { role: 'assistant' as const, content: 'b' },
+      { role: 'user' as const, content: '<pergunta>c</pergunta>' },
+    ];
+    expect(await chat({ apiKey: KEY, model: 'claude-sonnet-5-5', system: 'S', messages })).toEqual({
+      ok: true,
+      text: 'Seus ciclos variam pouco.',
+    });
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+    expect(body).toMatchObject({ model: 'claude-sonnet-5-5', system: 'S', messages });
   });
 });
 

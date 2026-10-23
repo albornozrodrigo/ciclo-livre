@@ -16,20 +16,20 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 9 of 11 (Chat com seus dados, IA BYOK) — Planning
-Plan: 09-01 (base: contexto, histórico, consentimento, envio — TDD) e 09-02 (telas) criados
-Status: PLAN created, ready for APPLY (09-01)
-Last activity: 2026-10-23 — Created .paul/phases/09-chat-dados/09-01-PLAN.md e 09-02-PLAN.md
+Phase: 9 of 11 (Chat com seus dados, IA BYOK) — In progress
+Plan: 09-01 completo; 09-02 (telas) a seguir
+Status: 09-01 UNIFY feito; próximo APPLY 09-02
+Last activity: 2026-10-23 — 09-01 base do chat (670 testes)
 
 Progress:
 - Milestone: [███████░░░] 73%
-- Phase 9: [░░░░░░░░░░] 0%
+- Phase 9: [█████░░░░░] 50%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [Plan 09-01 criado; próximo: APPLY]
+  ✓        ✓        ✓     [09-01 fechado; próximo: APPLY 09-02]
 ```
 
 ## Accumulated Context
@@ -94,9 +94,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Plans 09-01 e 09-02 criados
-Next action: /paul:apply .paul/phases/09-chat-dados/09-01-PLAN.md
-Resume file: .paul/phases/09-chat-dados/09-01-PLAN.md
+Stopped at: 09-01 completo
+Next action: /paul:apply .paul/phases/09-chat-dados/09-02-PLAN.md
+Resume file: .paul/phases/09-chat-dados/09-02-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

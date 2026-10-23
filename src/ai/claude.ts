@@ -73,13 +73,21 @@ async function aboutFallback(response: Response, race: <U>(p: Promise<U>) => Pro
   }
 }
 
-type SummaryInput = { apiKey: string; model: AiModel; query: string; articles: readonly Article[]; signal?: AbortSignal };
-export type SummaryResult = { ok: true; text: string; cited: Article[] } | { ok: false; error: AiError };
+type ChatInput = {
+  apiKey: string;
+  model: AiModel;
+  system: string;
+  messages: readonly { role: 'user' | 'assistant'; content: string }[];
+  signal?: AbortSignal;
+};
+export type ChatResult = { ok: true; text: string } | { ok: false; error: AiError };
 type MessageResponse = { stop_reason?: string; content?: { type: string; text?: string }[] };
 
-/** Resume os artigos encontrados para a pergunta. Vai só a pergunta e trechos dos artigos. */
-export async function summarize({ apiKey, model, query, articles, signal: outer }: SummaryInput): Promise<SummaryResult> {
-  const prompt = buildSummaryPrompt(query, articles);
+/**
+ * Um pedido ao Claude com instruções e mensagens prontas. Prazo único (tentativas e leitura da resposta),
+ * cancelável; repete sem o fallback só no 400 que fala dele; resposta como texto simples.
+ */
+export async function chat({ apiKey, model, system, messages, signal: outer }: ChatInput): Promise<ChatResult> {
   return withDeadline(outer, async (signal, race) => {
     const request = (withFallback: boolean) =>
       call('/messages', apiKey, signal, {
@@ -90,14 +98,14 @@ export async function summarize({ apiKey, model, query, articles, signal: outer 
           // O raciocínio adaptativo (ligado por padrão nesses modelos) conta neste limite: folga para a resposta curta.
           max_tokens: 8000,
           output_config: { effort: 'low' },
-          system: prompt.system,
-          messages: [{ role: 'user', content: prompt.user }],
+          system,
+          messages,
           ...(withFallback ? { fallbacks: 'default' } : {}),
         },
       });
     // Haiku não tem fallback do lado do servidor; os outros caem no modelo recomendado se recusarem.
     const wantsFallback = model !== 'claude-haiku-5-5';
-    const failed = (): SummaryResult => ({ ok: false, error: outer?.aborted ? 'cancelled' : 'offline' });
+    const failed = (): ChatResult => ({ ok: false, error: outer?.aborted ? 'cancelled' : 'offline' });
     let response: Response;
     try {
       response = await race(request(wantsFallback));
@@ -115,16 +123,26 @@ export async function summarize({ apiKey, model, query, articles, signal: outer 
       return signal.aborted ? failed() : { ok: false, error: 'unknown' };
     }
     if (data.stop_reason === 'refusal') return { ok: false, error: 'refusal' };
-    // Cortada no limite: texto pela metade e sem as citações; melhor dizer que não deu.
+    // Cortada no limite: texto pela metade; melhor dizer que não deu.
     if (data.stop_reason === 'max_tokens') return { ok: false, error: 'unknown' };
-    const raw = (data.content ?? [])
+    const text = (data.content ?? [])
       .flatMap((b) => (b.type === 'text' && typeof b.text === 'string' ? [b.text] : []))
       .join('\n')
       .trim();
-    if (!raw) return { ok: false, error: 'unknown' };
-    const text = raw.replace(/\s*\[\[[a-z0-9-]+\]\]/g, '').trim();
-    return { ok: true, text, cited: citedArticles(raw, articles) };
+    return text ? { ok: true, text } : { ok: false, error: 'unknown' };
   });
+}
+
+type SummaryInput = { apiKey: string; model: AiModel; query: string; articles: readonly Article[]; signal?: AbortSignal };
+export type SummaryResult = { ok: true; text: string; cited: Article[] } | { ok: false; error: AiError };
+
+/** Resume os artigos encontrados para a pergunta. Vai só a pergunta e trechos dos artigos. */
+export async function summarize({ apiKey, model, query, articles, signal }: SummaryInput): Promise<SummaryResult> {
+  const prompt = buildSummaryPrompt(query, articles);
+  const result = await chat({ apiKey, model, system: prompt.system, messages: [{ role: 'user', content: prompt.user }], signal });
+  if (!result.ok) return result;
+  const text = result.text.replace(/\s*\[\[[a-z0-9-]+\]\]/g, '').trim();
+  return { ok: true, text, cited: citedArticles(result.text, articles) };
 }
 
 /** Confere a chave listando modelos (não gera texto, não tem custo). */
