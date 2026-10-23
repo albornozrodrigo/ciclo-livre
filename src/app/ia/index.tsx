@@ -1,17 +1,20 @@
-import { router } from 'expo-router';
-import { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { AI_MODELS, testKey } from '@/ai/claude';
 import { deleteApiKey, maskKey, saveApiKey } from '@/ai/key-store';
 import { useAi } from '@/ai/use-ai';
+import { confirmClearChat } from '@/components/chat/confirm-clear';
 import { FormScreen } from '@/components/form-screen';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { ChoiceList } from '@/components/ui/choice-list';
 import { ListRow } from '@/components/ui/list-row';
 import { PasswordField } from '@/components/ui/password-field';
 import { useSnackbar } from '@/components/ui/snackbar';
-import { setAiConsent, setAiModel } from '@/db/ai-settings-repo';
+import { getChatSettings, setAiConsent, setAiModel, setChatConsent } from '@/db/ai-settings-repo';
+import { clearChat, listChat } from '@/db/chat-repo';
+import type { SqlExecutor } from '@/db/types';
 import { validApiKeyFormat } from '@/domain/ai/prompt';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
@@ -19,9 +22,65 @@ import { log } from '@/lib/logger';
 const t = ptBR.ai;
 const modelOptions = AI_MODELS.map((value) => ({ value, label: t.models[value].label, detail: t.models[value].detail }));
 
+const c = ptBR.chat;
+
+/** Perguntas sobre os dados: consentimento próprio (revogável) e apagar a conversa guardada no aparelho. */
+function ChatSection({ db, show }: { db: SqlExecutor; show: (text: string) => void }) {
+  const [consent, setConsent] = useState<boolean | null>(null);
+  const [hasConversation, setHasConversation] = useState(false);
+  useEffect(() => {
+    Promise.all([getChatSettings(db), listChat(db)])
+      .then(([s, turns]) => {
+        setConsent(s.consent);
+        setHasConversation(turns.length > 0);
+      })
+      .catch((e: unknown) => log.error('chat_settings_failed', e));
+  }, [db]);
+
+  async function revoke() {
+    try {
+      await setChatConsent(db, false);
+      setConsent(false);
+      show(c.revoked);
+    } catch (e) {
+      log.error('chat_consent_failed', e);
+      show(t.saveFailed);
+    }
+  }
+
+  async function clear() {
+    if (!(await confirmClearChat())) return;
+    try {
+      await clearChat(db);
+      setHasConversation(false);
+      show(c.cleared);
+    } catch (e) {
+      log.error('chat_clear_failed', e);
+      show(t.saveFailed);
+    }
+  }
+
+  if (consent === null) return null;
+  return (
+    <View className="gap-3">
+      <Text accessibilityRole="header" className="text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
+        {c.section}
+      </Text>
+      <Text className="text-base text-ink dark:text-ink-night">{consent ? c.consentOn : c.consentOff}</Text>
+      {consent ? (
+        <CapsuleButton label={c.revoke} variant="outline" onPress={revoke} />
+      ) : (
+        <ListRow label={c.review} onPress={() => router.push('/chat/consentimento')} />
+      )}
+      {hasConversation ? <CapsuleButton label={c.clear} variant="outline" onPress={clear} /> : null}
+    </View>
+  );
+}
+
 /** Mais → IA com sua chave: chave (armazenamento seguro), modelo e consentimento. */
 export default function IaScreen() {
   const { db, state, reload } = useAi();
+  const { next } = useLocalSearchParams<{ next?: string }>();
   const { show } = useSnackbar();
   const [draft, setDraft] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +106,8 @@ export default function IaScreen() {
       setDraft('');
       await reload();
       show(t.keyOk);
+      // Veio do chat sem chave: segue para o consentimento das perguntas.
+      if (next === 'chat') router.replace('/chat/consentimento');
     } catch (e) {
       log.error('ai_key_save_failed', e);
       setError(t.errors.unknown);
@@ -132,6 +193,7 @@ export default function IaScreen() {
           />
         ) : null}
       </View>
+      <ChatSection db={db} show={show} />
     </FormScreen>
   );
 }

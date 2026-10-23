@@ -63,10 +63,10 @@ describe('buildDataContext', () => {
     expect(out.text).toContain('Modo: Menstruação e ciclo');
     expect(out.text).toContain('Método contraceptivo: Pílula');
     expect(out.text).toContain('Ciclo atual: dia 11, janela fértil');
-    expect(out.text).toContain('2026-11-09');
+    expect(out.text).toContain('09/11/2026');
     expect(out.text).toContain('média 25 dias, de 19 a 29 dias');
-    expect(out.text).toContain('início 2026-09-22: 20 dias');
-    expect(out.text).toContain('início 2026-10-12: em andamento');
+    expect(out.text).toContain('início 22/09/2026: 20 dias');
+    expect(out.text).toContain('início 12/10/2026: em andamento');
     expect(out.text).toContain('Dor: Cólica');
     expect(out.text).toContain('6 de 7 ciclos');
     expect(out.text).toMatch(/Peso: último 64,5 kg/);
@@ -78,7 +78,7 @@ describe('buildDataContext', () => {
     expect(out.text).not.toContain('Dia difícil');
     expect(out.text).toContain('Notas: não incluídas');
     const withNotes = buildDataContext(base, { cycles: 6, includeNotes: true }, labels);
-    expect(withNotes.text).toContain('2026-10-13: Dia difícil no trabalho');
+    expect(withNotes.text).toContain('13/10/2026: Dia difícil no trabalho');
     expect(withNotes.includedNotes).toBe(1);
   });
 
@@ -88,7 +88,7 @@ describe('buildDataContext', () => {
       { cycles: 6, includeNotes: true },
       labels,
     );
-    const line = long.text.split('\n').find((l) => l.startsWith('- 2026-10-13:')) ?? '';
+    const line = long.text.split('\n').find((l) => l.startsWith('- 13/10/2026:')) ?? '';
     expect(line).not.toContain('<dados>');
     expect(line).not.toContain('\u0007');
     expect(line.length).toBeLessThanOrEqual(320);
@@ -109,7 +109,7 @@ describe('buildDataContext', () => {
       labels,
     );
     expect(capped.text.length).toBeLessThanOrEqual(CONTEXT_MAX_CHARS);
-    expect(capped.text).toContain('início 2026-10-12');
+    expect(capped.text).toContain('início 12/10/2026');
     expect(capped.cycles).toBe(13);
     expect(capped.includedNotes).toBeLessThan(40);
   });
@@ -126,8 +126,14 @@ describe('buildDataContext', () => {
   it('plural certo na contagem de registros', () => {
     const one: MeasureSeries = { points: [{ date: '2026-10-20', value: 64.5 }], summary: { last: 64.5, mean: 64.5, min: 64.5, max: 64.5 } };
     const t = buildDataContext({ ...base, measures: { ...noMeasures, weight: one } }, { cycles: 6, includeNotes: false }, labels).text;
-    expect(t).toContain('(1 registro)');
+    expect(t).toContain('- Peso: 64,5 kg (1 registro)');
+    expect(t).not.toContain('de 64,5 a 64,5');
     expect(out.text).toContain('(2 registros)');
+  });
+
+  it('menstruação só do cadastro dita em linguagem simples', () => {
+    const t = buildDataContext({ ...base, history: [row('2026-10-12', null, null)] }, { cycles: 6, includeNotes: false }, labels).text;
+    expect(t).toContain('dias de menstruação não registrados (data do cadastro)');
   });
 
   it('determinístico: mesmos dados, mesmo texto', () => {

@@ -17,19 +17,19 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 
 Milestone: v0.1 Initial Release
 Phase: 9 of 11 (Chat com seus dados, IA BYOK) — In progress
-Plan: 09-01 completo; 09-02 (telas) a seguir
-Status: 09-01 UNIFY feito; próximo APPLY 09-02
-Last activity: 2026-10-23 — 09-01 base do chat (670 testes)
+Plan: 09-01 e 09-02 completos
+Status: fechamento da fase 9 (code-review + revisão de segurança)
+Last activity: 2026-10-23 — 09-02 telas do chat (686 testes; consentimento com texto exato no S21 FE)
 
 Progress:
 - Milestone: [███████░░░] 73%
-- Phase 9: [█████░░░░░] 50%
+- Phase 9: [█████████░] 90%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [09-01 fechado; próximo: APPLY 09-02]
+  ✓        ✓        ✓     [09-02 fechado; próximo: revisões da fase 9]
 ```
 
 ## Accumulated Context
@@ -81,6 +81,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | "média 29" na ponta da linha de referência; número principal em Display | 05 review | S | Polimento |
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
+| Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
 | `reminders_sync_failed`/`today_*_failed` ("Access to closed resource") quando a tela de erro raiz desmonta o banco com leituras em curso: efeito de um erro anterior, sem perda (reagenda ao abrir) | 08 investigação | S | Opcional: tratar conexão fechada como cancelamento no polimento |
 
 ### Blockers/Concerns
@@ -94,9 +95,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: 09-01 completo
-Next action: /paul:apply .paul/phases/09-chat-dados/09-02-PLAN.md
-Resume file: .paul/phases/09-chat-dados/09-02-PLAN.md
+Stopped at: 09-02 completo
+Next action: fechamento da fase 9 (/code-review + segurança) e transição
+Resume file: .paul/phases/09-chat-dados/09-02-SUMMARY.md
 
 ---
 *STATE.md — Updated after every significant action*

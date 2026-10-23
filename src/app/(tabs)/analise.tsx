@@ -1,7 +1,9 @@
+import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
 import { useAnalysis } from '@/analysis/use-analysis';
 import { CycleBars, CycleHistory, CycleNumbers, Measures, SectionTitle, Symptoms, Temperature } from '@/components/analysis/sections';
+import { ListRow } from '@/components/ui/list-row';
 import { Screen } from '@/components/ui/screen';
 import { ptBR } from '@/i18n/pt-BR';
 import { useProfile } from '@/profile/profile-context';
@@ -16,6 +18,8 @@ export default function AnaliseScreen() {
     <Screen screen="analise" territory="lilac" shape={2}>
       {view ? (
         <View className="gap-8">
+          {/* Perguntar sobre os dados: linha discreta no topo; o envio só acontece depois do consentimento. */}
+          <ListRow label={ptBR.chat.entry} detail={ptBR.chat.entryDetail} onPress={() => router.push('/chat')} />
           {view.cycles ? (
             <>
               <View className="gap-4">

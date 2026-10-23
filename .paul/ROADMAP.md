@@ -118,7 +118,7 @@ Phases: 7 of 11 complete
 
 **Plans:**
 - [x] 09-01: Contexto exato, histórico cifrado, consentimento próprio e envio (TDD)
-- [ ] 09-02: Telas (entrada na Análise, consentimento com o texto exato, conversa) + aparelho
+- [x] 09-02: Telas (entrada na Análise, consentimento com o texto exato, conversa) + aparelho
 
 ### Phase 10: Wearables (Health Connect)
 **Goal:** Importar sono, temperatura, FC e peso do Health Connect e mostrá-los na Análise.

@@ -40,6 +40,8 @@ export type ContextInput = {
 export type DataContext = { text: string; cycles: number; includedNotes: number };
 
 const decimal = (n: number, digits = 1) => n.toFixed(digits).replace('.', ',');
+/** Data como a pessoa lê (dd/mm/aaaa): ela precisa entender o texto para consentir. */
+const br = (iso: IsoDate) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}`;
 
 /** Texto livre da pessoa vai como dado: sem marcação nem caracteres de controle, e curto. */
 function cleanNote(text: string): string {
@@ -60,8 +62,8 @@ function currentLines(view: TodayView | null, labels: ContextLabels): string[] {
   const late = view.late ? ` Atraso de ${view.lateDays ?? 0} dias em relação à previsão.` : '';
   return [
     `Ciclo atual: dia ${view.cycleDay}, ${labels.phase(view.phase)}.${late}`,
-    `Próxima menstruação prevista entre ${view.next.earliest} e ${view.next.latest} (mais provável ${view.next.start}).`,
-    `Janela fértil estimada: ${view.fertile.start} a ${view.fertile.end}.`,
+    `Próxima menstruação prevista entre ${br(view.next.earliest)} e ${br(view.next.latest)} (mais provável ${br(view.next.start)}).`,
+    `Janela fértil estimada: ${br(view.fertile.start)} a ${br(view.fertile.end)}.`,
   ];
 }
 
@@ -73,9 +75,10 @@ function summaryLine(summary: CycleSummary | null): string {
 
 function cycleLine(row: CycleRow, labels: ContextLabels): string {
   const length = row.length === null ? 'em andamento' : `${row.length} dias`;
-  const period = row.periodLength === null ? 'menstruação só informada no cadastro' : `menstruação ${row.periodLength} dias`;
-  const ovulation = row.length === null ? '' : `; ovulação estimada ${row.ovulation.date} (${labels.method(row.ovulation.method)})`;
-  return `- início ${row.start}: ${length}; ${period}${ovulation}`;
+  const period =
+    row.periodLength === null ? 'dias de menstruação não registrados (data do cadastro)' : `menstruação ${row.periodLength} dias`;
+  const ovulation = row.length === null ? '' : `; ovulação estimada ${br(row.ovulation.date)} (${labels.method(row.ovulation.method)})`;
+  return `- início ${br(row.start)}: ${length}; ${period}${ovulation}`;
 }
 
 function measureLines(measures: Record<MeasureKey, MeasureSeries>, labels: ContextLabels): string[] {
@@ -83,8 +86,11 @@ function measureLines(measures: Record<MeasureKey, MeasureSeries>, labels: Conte
     const s = measures[key].summary;
     if (!s) return [];
     const unit = labels.unit(key);
+    const count = measures[key].points.length;
+    // Um registro só: média e faixa não dizem nada além do próprio valor.
+    if (count === 1) return [`- ${labels.category(key)}: ${decimal(s.last)} ${unit} (1 registro)`];
     return [
-      `- ${labels.category(key)}: último ${decimal(s.last)} ${unit}; média ${decimal(s.mean)}; de ${decimal(s.min)} a ${decimal(s.max)} (${measures[key].points.length} ${measures[key].points.length === 1 ? 'registro' : 'registros'})`,
+      `- ${labels.category(key)}: último ${decimal(s.last)} ${unit}; média ${decimal(s.mean)}; de ${decimal(s.min)} a ${decimal(s.max)} (${count} registros)`,
     ];
   });
   return lines.length ? ['Medições dos últimos 90 dias:', ...lines] : ['Sem medições nos últimos 90 dias.'];
@@ -102,7 +108,7 @@ function render(head: string[], cycles: string[], tail: string[], notes: string[
  */
 export function buildDataContext(input: ContextInput, options: ContextOptions, labels: ContextLabels): DataContext {
   const head = [
-    `Dados registrados no app Ciclo Livre (hoje: ${input.today}).`,
+    `Dados registrados no app Ciclo Livre (hoje: ${br(input.today)}).`,
     `Modo: ${labels.mode(input.profile.mode)}.${
       // "Prefiro não dizer" fica de fora: a pessoa escolheu não contar nem para o app.
       input.profile.birthControl && input.profile.birthControl !== 'prefer_not_to_say'
@@ -134,7 +140,7 @@ export function buildDataContext(input: ContextInput, options: ContextOptions, l
     ? input.notes
         .filter((n) => n.date >= oldest && n.date <= input.today)
         .sort((a, b) => (a.date < b.date ? 1 : -1))
-        .map((n) => `- ${n.date}: ${cleanNote(n.text)}`)
+        .map((n) => `- ${br(n.date)}: ${cleanNote(n.text)}`)
         .filter((line) => !line.endsWith(': '))
     : null;
 

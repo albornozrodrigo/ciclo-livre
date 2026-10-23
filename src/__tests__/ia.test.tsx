@@ -1,11 +1,13 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import ExplorarScreen from '@/app/(tabs)/explorar';
 import IaScreen from '@/app/ia/index';
 import ConsentimentoScreen from '@/app/ia/consentimento';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
-import { getAiSettings, setAiConsent } from '@/db/ai-settings-repo';
+import { getAiSettings, getChatSettings, setAiConsent, setChatConsent } from '@/db/ai-settings-repo';
+import { addChatPair, listChat } from '@/db/chat-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import { ptBR } from '@/i18n/pt-BR';
 
@@ -16,9 +18,12 @@ let mockDb: ReturnType<typeof openMemoryDatabase>;
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDb }));
 const mockPush = jest.fn();
 const mockBack = jest.fn();
+const mockReplace = jest.fn();
+let mockParams: Record<string, string> = {};
 jest.mock('expo-router', () => ({
   useIsFocused: () => true,
-  router: { push: (h: unknown) => mockPush(h), back: () => mockBack(), canGoBack: () => true },
+  router: { push: (h: unknown) => mockPush(h), back: () => mockBack(), canGoBack: () => true, replace: (h: unknown) => mockReplace(h) },
+  useLocalSearchParams: () => mockParams,
   useFocusEffect: (effect: () => void) => jest.requireActual('react').useEffect(effect, [effect]),
 }));
 const mockShow = jest.fn();
@@ -49,8 +54,41 @@ const wrap = (node: React.ReactNode) => <SafeAreaProvider initialMetrics={metric
 beforeEach(async () => {
   jest.clearAllMocks();
   mockKey = null;
+  mockParams = {};
   mockDb = openMemoryDatabase();
   await runMigrations(mockDb, MIGRATIONS);
+});
+
+describe('IA com sua chave › perguntas sobre seus dados', () => {
+  const c = ptBR.chat;
+  it('mostra o estado; revogar desliga o envio do chat sem mexer no dos artigos', async () => {
+    await setAiConsent(mockDb, true);
+    await setChatConsent(mockDb, true);
+    await render(wrap(<IaScreen />));
+    expect(await screen.findByText(c.consentOn)).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: c.revoke }));
+    await waitFor(() => expect(mockShow).toHaveBeenCalledWith(c.revoked));
+    expect((await getChatSettings(mockDb)).consent).toBe(false);
+    expect((await getAiSettings(mockDb)).consent).toBe(true);
+    expect(screen.getByText(c.consentOff)).toBeOnTheScreen();
+  });
+
+  it('sem consentimento: leva a revisar e concordar; sem conversa, não oferece apagar', async () => {
+    await render(wrap(<IaScreen />));
+    expect(await screen.findByText(c.consentOff)).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: c.clear })).toBeNull();
+    await fireEvent.press(screen.getByRole('button', { name: c.review }));
+    expect(mockPush).toHaveBeenCalledWith('/chat/consentimento');
+  });
+
+  it('apagar conversa confirma e limpa', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation((_t, _m, buttons) => buttons?.find((b) => b.style === 'destructive')?.onPress?.());
+    await addChatPair(mockDb, 'p', 'r');
+    await render(wrap(<IaScreen />));
+    await fireEvent.press(await screen.findByRole('button', { name: c.clear }));
+    await waitFor(() => expect(mockShow).toHaveBeenCalledWith(c.cleared));
+    expect(await listChat(mockDb)).toEqual([]);
+  });
 });
 
 describe('IA com sua chave', () => {
@@ -77,6 +115,14 @@ describe('IA com sua chave', () => {
     expect(await screen.findByText(t.keySaved('sk-ant-…xxxx'))).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: t.removeKey }));
     expect(mockKey).toBeNull();
+  });
+
+  it('vindo do chat (sem chave), salvar a chave segue para o consentimento das perguntas', async () => {
+    mockParams = { next: 'chat' };
+    await render(wrap(<IaScreen />));
+    await fireEvent.changeText(await screen.findByLabelText(t.keyLabel), KEY);
+    await fireEvent.press(screen.getByRole('button', { name: t.saveKey }));
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/chat/consentimento'));
   });
 
   it('chave recusada pela API: não salva e explica', async () => {
