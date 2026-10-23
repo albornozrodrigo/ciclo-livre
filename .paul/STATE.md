@@ -16,10 +16,10 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 9 of 11 (Chat com seus dados, IA BYOK) — Not started
-Plan: não planejado
-Status: Fase 8 completa (4 planos + Impeccable + /code-review aplicados); próximo: planejar a fase 9
-Last activity: 2026-10-23 — fase 8 fechada (verificação OWASP corrigida, revisões aplicadas, provas no S21 FE)
+Phase: 9 of 11 (Chat com seus dados, IA BYOK) — Planning
+Plan: 09-01 (base: contexto, histórico, consentimento, envio — TDD) e 09-02 (telas) criados
+Status: PLAN created, ready for APPLY (09-01)
+Last activity: 2026-10-23 — Created .paul/phases/09-chat-dados/09-01-PLAN.md e 09-02-PLAN.md
 
 Progress:
 - Milestone: [███████░░░] 73%
@@ -29,7 +29,7 @@ Progress:
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ○        ○        ○     [fase 8 fechada; próximo: PLAN da fase 9]
+  ✓        ○        ○     [Plan 09-01 criado; próximo: APPLY]
 ```
 
 ## Accumulated Context
@@ -57,6 +57,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | scrypt N=2^13 no backup (JS); senha mínima 12 + gerador de 100 bits | 07 / 08-04 | Troca de segurança registrada; KDF nativo na fase 11 |
 | Datas de fora: entrada 1900–2100, contas 1800–2299 | 08-04 | Arquivo/link com ano 9999 não quebra o app |
 | App fora do backup do Android (plugin with-no-backup); lembretes com id opaco | 08-04 | Agenda de notificações fica em texto puro no Android |
+| Chat com dados: contexto montado no aparelho e mostrado igual antes do envio; histórico só no SQLCipher; consentimento próprio | 09 plan | Paridade com o Clue sem servidor |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -93,9 +94,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-22
-Stopped at: Fase 8 completa (transição feita)
-Next action: /paul:plan (fase 9 — chat com seus dados, IA BYOK)
-Resume file: .paul/ROADMAP.md
+Stopped at: Plans 09-01 e 09-02 criados
+Next action: /paul:apply .paul/phases/09-chat-dados/09-01-PLAN.md
+Resume file: .paul/phases/09-chat-dados/09-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

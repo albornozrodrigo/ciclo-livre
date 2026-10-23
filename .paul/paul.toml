@@ -17,11 +17,13 @@ phases = 11
 [phase]
 number = 9
 name = "Chat com seus dados (IA BYOK)"
-status = "not_started"
+status = "planning"
 plans_completed = 0
 
 [loop]
-position = "IDLE"
+position = "PLAN"
+plan = "09-01"
+plan_path = "phases/09-chat-dados/09-01-PLAN.md"
 
 [satellite]
 groom = true
@@ -29,4 +31,4 @@ groom = true
 [stats]
 total_plans = 24
 total_phases = 11
-last_activity = "2026-10-23T12:05:00Z"
+last_activity = "2026-10-23T12:30:00Z"

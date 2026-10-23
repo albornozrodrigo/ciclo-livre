@@ -30,7 +30,7 @@ Phases: 7 of 11 complete
 | 6 | Lembretes | 2 | ✅ Complete | 2026-10-22 |
 | 7 | Relatório médico + exportação (Google Drive) | 3 | ✅ Complete | 2026-10-22 |
 | 8 | Conteúdo + busca + resumo IA + importar do Clue | 4 | ✅ Complete | 2026-10-23 |
-| 9 | Chat com seus dados (IA BYOK) | TBD | Not started | - |
+| 9 | Chat com seus dados (IA BYOK) | 2 | Planning | - |
 | 10 | Wearables (Health Connect) | TBD | Not started | - |
 | 11 | Personalização + release | TBD | Not started | - |
 
@@ -114,7 +114,11 @@ Phases: 7 of 11 complete
 ### Phase 9: Chat com seus dados (IA BYOK)
 **Goal:** Conversar com os próprios dados do ciclo. A pessoa vê e consente com exatamente o que será enviado ao provedor antes de enviar.
 **Depends on:** Phases 5 and 8
-**Research:** Likely
+**Research:** Feita (estudo REA nota 04: chat do Clue sem streaming, 3000 caracteres, perguntas sugeridas, apagar conversa)
+
+**Plans:**
+- [ ] 09-01: Contexto exato, histórico cifrado, consentimento próprio e envio (TDD)
+- [ ] 09-02: Telas (entrada na Análise, consentimento com o texto exato, conversa) + aparelho
 
 ### Phase 10: Wearables (Health Connect)
 **Goal:** Importar sono, temperatura, FC e peso do Health Connect e mostrá-los na Análise.
