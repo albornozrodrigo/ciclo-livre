@@ -1,7 +1,7 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useCallback, useRef, useState } from 'react';
-import { Linking, Text, View } from 'react-native';
+import { Alert, Linking, Text, View } from 'react-native';
 
 import { FormScreen } from '@/components/form-screen';
 import { SwitchRow } from '@/components/reminders/switch-row';
@@ -10,7 +10,7 @@ import { Bullets } from '@/components/ui/bullets';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { ListRow } from '@/components/ui/list-row';
 import { useSnackbar } from '@/components/ui/snackbar';
-import type { HealthImportResult } from '@/db/health-import-repo';
+import { countHealthImported, type HealthImportResult, removeHealthImported } from '@/db/health-import-repo';
 import {
   getHealthSettings,
   HEALTH_TYPES,
@@ -30,8 +30,24 @@ import {
 import { importFromHealthConnect } from '@/health/import-health';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
+import { isAppLocked } from '@/security/lock-policy';
 
 const h = ptBR.health;
+
+/** Diálogo nativo com a ação destrutiva marcada; com o app bloqueado por cima, não apaga. */
+function confirmRemove(): Promise<boolean> {
+  return new Promise((resolve) => {
+    Alert.alert(
+      h.removeTitle,
+      h.removeBody,
+      [
+        { text: h.removeCancel, style: 'cancel', onPress: () => resolve(false) },
+        { text: h.removeConfirm, style: 'destructive', onPress: () => resolve(!isAppLocked()) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) },
+    );
+  });
+}
 const STORE_URL = 'market://details?id=com.google.android.apps.healthdata';
 
 const when = (iso: string) => new Date(iso).toLocaleString('pt-BR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -82,6 +98,7 @@ export default function HealthScreen() {
   const [settings, setSettings] = useState<HealthSettings | null>(null);
   // Tipos escolhidos que o Health Connect ainda libera (a pessoa pode tirar a permissão lá).
   const [granted, setGranted] = useState<HealthType[]>([]);
+  const [imported, setImported] = useState(0);
   const [chosen, setChosen] = useState<HealthType[]>([...HEALTH_TYPES]);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ResultView | null>(null);
@@ -95,6 +112,7 @@ export default function HealthScreen() {
     const allowed = current.connected ? await grantedHealthTypes() : [];
     setSettings(current);
     setGranted(current.types.filter((t) => allowed.includes(t)));
+    setImported(await countHealthImported(db));
     return current;
   }, [db]);
 
@@ -158,6 +176,19 @@ export default function HealthScreen() {
       setResult(r ? resultView(r) : null);
     });
 
+  async function remove() {
+    if (!(await confirmRemove())) return;
+    try {
+      const n = await removeHealthImported(db);
+      await refresh();
+      setResult(null);
+      show(h.removed(n));
+    } catch (e) {
+      log.error('health_remove_failed', e);
+      show(ptBR.ai.saveFailed);
+    }
+  }
+
   async function disconnect() {
     try {
       await setHealthConnected(db, false);
@@ -211,9 +242,12 @@ export default function HealthScreen() {
   );
 
   const settingsRow = (
-    <View>
-      <ListRow label={h.openSettings} detail={h.openSettingsHint} onPress={openHealthSettings} />
-      <ListRow label={ptBR.policy.link} detail={ptBR.policy.linkHint} onPress={() => router.push('/privacidade')} />
+    <View className="gap-3">
+      <View>
+        <ListRow label={h.openSettings} detail={h.openSettingsHint} onPress={openHealthSettings} />
+        <ListRow label={ptBR.policy.link} detail={ptBR.policy.linkHint} onPress={() => router.push('/privacidade')} />
+      </View>
+      {imported > 0 ? <CapsuleButton label={h.remove} variant="outline" onPress={remove} disabled={busy} /> : null}
     </View>
   );
 

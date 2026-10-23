@@ -8,6 +8,7 @@ import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
+import { applyHealthImport } from '@/db/health-import-repo';
 
 const a = ptBR.analysis;
 
@@ -117,6 +118,30 @@ describe('Análise', () => {
     await renderAnalise();
 
     expect(await screen.findByText(a.measures.last('61,2', 'kg'))).toBeOnTheScreen();
+  });
+
+  it('temperaturas do ciclo atual vindas do Health Connect: avisa que entram na estimativa da ovulação', async () => {
+    const today = todayIso();
+    for (const start of [-60, -32, -4])
+      for (const d of [0, 1, 2]) await setSelection(mockDb, addDays(today, start + d), 'period', ['medium']);
+    await applyHealthImport(mockDb, {
+      measures: [-3, -2, -1].map((d) => ({ date: addDays(today, d), category: 'temperature', value: 36.4 })),
+      selections: [],
+      dropped: 0,
+    });
+    await setMeasure(mockDb, today, 'temperature', 36.5);
+    await renderAnalise();
+    expect(await screen.findByText(a.bbt.imported)).toBeOnTheScreen();
+  });
+
+  it('temperaturas só registradas à mão: sem aviso de Health Connect', async () => {
+    const today = todayIso();
+    for (const start of [-60, -32, -4])
+      for (const d of [0, 1, 2]) await setSelection(mockDb, addDays(today, start + d), 'period', ['medium']);
+    for (const d of [-3, -2, -1]) await setMeasure(mockDb, addDays(today, d), 'temperature', 36.4);
+    await renderAnalise();
+    await screen.findByText(a.bbt.title);
+    expect(screen.queryByText(a.bbt.imported)).toBeNull();
   });
 
   it('sem dados suficientes explica o que registrar', async () => {

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { Linking } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import HealthScreen from '@/app/health';
@@ -125,5 +125,25 @@ describe('Health Connect', () => {
     await fireEvent.press(await screen.findByRole('button', { name: h.importNow }));
     expect(await screen.findByText(`Erro: ${h.failed}`)).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: h.retry })).toBeOnTheScreen();
+  });
+
+  it('apagar o que veio do Health Connect: confirma, apaga e avisa quantos', async () => {
+    jest.spyOn(Alert, 'alert').mockImplementation((_t, _m, buttons) => {
+      (buttons as { text?: string; onPress?: () => void }[]).find((b) => b.text === h.removeConfirm)?.onPress?.();
+    });
+    await setHealthConnected(mockDb, true);
+    await render(wrap(<HealthScreen />));
+    await fireEvent.press(await screen.findByRole('button', { name: h.importNow }));
+    await screen.findByLabelText(`${h.types.weight}: ${h.days(1)}`);
+    await fireEvent.press(screen.getByRole('button', { name: h.remove }));
+    await waitFor(() => expect(mockShow).toHaveBeenCalledWith(h.removed(2)));
+    expect(screen.queryByRole('button', { name: h.remove })).toBeNull();
+  });
+
+  it('sem nada importado, não oferece apagar', async () => {
+    await setHealthConnected(mockDb, true);
+    await render(wrap(<HealthScreen />));
+    await screen.findByRole('button', { name: h.importNow });
+    expect(screen.queryByRole('button', { name: h.remove })).toBeNull();
   });
 });

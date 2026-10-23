@@ -1,5 +1,5 @@
 import { exportAll, importAll } from '@/db/export-repo';
-import { applyHealthImport } from '@/db/health-import-repo';
+import { applyHealthImport, removeHealthImported } from '@/db/health-import-repo';
 import { getHealthSettings, HEALTH_TYPES, markHealthImported, setHealthConnected, setHealthTypes } from '@/db/health-settings-repo';
 import { clearMeasure, setMeasure, setSelection } from '@/db/log-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
@@ -152,5 +152,23 @@ describe('health-settings-repo', () => {
     await expect(setHealthTypes(db, ['weight', 'steps' as never])).rejects.toThrow();
     await importAll(db, JSON.parse(JSON.stringify(await exportAll(db, NOW))));
     expect((await getHealthSettings(db)).connected).toBe(false);
+  });
+});
+
+describe('removeHealthImported', () => {
+  it('apaga só o que ainda é do Health Connect; o que a pessoa editou ou registrou fica', async () => {
+    const db = await migratedDb();
+    await setMeasure(db, '2026-10-19', 'weight', 66);
+    await applyHealthImport(db, data);
+    await setMeasure(db, '2026-10-20', 'weight', 63.5);
+    expect(await removeHealthImported(db)).toBe(4);
+    const out = await exportAll(db, NOW);
+    expect(out.measures).toEqual([
+      { date: '2026-10-19', category: 'weight', value: 66 },
+      { date: '2026-10-20', category: 'weight', value: 63.5 },
+    ]);
+    expect(out.selections).toEqual([]);
+    // Depois de apagar, um novo import pode trazer de novo.
+    expect((await applyHealthImport(db, data))?.added).toEqual({ resting_heart_rate: 1, sleep: 2, weight: 1 });
   });
 });

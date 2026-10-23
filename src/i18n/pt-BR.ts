@@ -72,6 +72,8 @@ export const ptBR = {
       noLogs: 'Nenhum sintoma registrado nos seus ciclos completos. Registre dor, humor ou energia em Hoje para ver padrões aqui.',
     },
     bbt: {
+      imported:
+        'Parte destas temperaturas veio do Health Connect e entra na estimativa da ovulação. Confira se o aparelho mede a temperatura basal (ao acordar, antes de levantar).',
       title: 'Temperatura basal do ciclo atual',
       confirmed: (day: number) => `Subida confirmada: ovulação estimada no dia ${day} do ciclo.`,
       notYet: 'Ainda sem subida confirmada neste ciclo.',
@@ -192,6 +194,13 @@ export const ptBR = {
     openSettings: 'Abrir o Health Connect',
     openSettingsHint: 'Ver ou tirar as permissões do Ciclo Livre',
     disconnect: 'Desconectar',
+    remove: 'Apagar o que veio do Health Connect',
+    removeTitle: 'Apagar o que veio do Health Connect?',
+    removeBody:
+      'Saem os valores que o Ciclo Livre leu do Health Connect. O que você registrou ou editou fica. Não dá para desfazer, mas uma nova leitura traz os dados de novo.',
+    removeConfirm: 'Apagar',
+    removeCancel: 'Cancelar',
+    removed: (n: number) => (n === 1 ? '1 registro apagado.' : `${n} registros apagados.`),
     disconnected: 'Desconectado. O que já entrou continua aqui.',
     noneGranted: 'Você não liberou nenhum dado, então nada foi conectado.',
     unavailable: 'O Health Connect não funciona neste aparelho, então não dá para conectar.',

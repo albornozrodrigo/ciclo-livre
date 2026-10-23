@@ -21,6 +21,7 @@ import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { log } from '@/lib/logger';
 import { signalsFromAnalysis } from '@/domain/cycle/signals';
+import { hasImportedTemperature } from '@/db/health-import-repo';
 
 export { MEASURES, type MeasureKey } from '@/domain/analysis/analysis';
 
@@ -31,6 +32,8 @@ export type AnalysisView = {
     history: CycleRow[];
     symptoms: SymptomRow[];
     bbt: BbtChart;
+    /** Temperaturas do ciclo atual vindas do Health Connect entram na estimativa: a tela avisa. */
+    importedTemperature: boolean;
   } | null;
   measures: Record<MeasureKey, MeasureSeries>;
 };
@@ -46,11 +49,14 @@ export function useAnalysis(profile: Profile | null): AnalysisView | null {
       let active = true;
       // Uma leitura só: os sinais da previsão saem dos mesmos dados da Análise.
       getAnalysisData(db)
-        .then((data) => {
-          if (!active) return;
+        .then(async (data) => {
           const signals = signalsFromAnalysis(data);
           const today = todayIso();
           const model = cycleModelFor(profile, signals, today);
+          const importedTemperature = model
+            ? await hasImportedTemperature(db, model.current.start, addDays(model.current.nextStart, -1))
+            : false;
+          if (!active) return;
           const measures = measureSeriesAll(data.measures, data.selections, today);
           // null só quando o modo não tem ciclo; modo com ciclo e sem dados mostra o convite a registrar.
           const cycles = !modeHasCycle(profile)
@@ -61,12 +67,14 @@ export function useAnalysis(profile: Profile | null): AnalysisView | null {
                   history: cycleHistory(model),
                   symptoms: symptomFrequency(model, data.selections, today),
                   bbt: bbtChart(data.measures.temperature ?? {}, model.current.start, addDays(model.current.nextStart, -1)),
+                  importedTemperature,
                 }
               : {
                   summary: null,
                   history: [],
                   symptoms: [],
                   bbt: { points: [], ovulationDay: null, coverLine: null },
+                  importedTemperature: false,
                 };
           setView({ cycles, measures });
         })

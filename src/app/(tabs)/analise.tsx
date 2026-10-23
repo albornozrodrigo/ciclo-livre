@@ -41,6 +41,9 @@ export default function AnaliseScreen() {
               <View className="gap-4">
                 <SectionTitle>{a.bbt.title}</SectionTitle>
                 <Temperature chart={view.cycles.bbt} />
+                {view.cycles.importedTemperature ? (
+                  <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{a.bbt.imported}</Text>
+                ) : null}
               </View>
             </>
           ) : (
