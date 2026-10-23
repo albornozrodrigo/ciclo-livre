@@ -2,7 +2,9 @@
 
 Passo a passo para uma conta pessoal nova, no Brasil. Requisitos conferidos nas páginas oficiais do Google em 23/10/2026; as fontes estão no fim.
 
-**Quanto tempo leva:** de 3 a 5 semanas. O gargalo é o teste fechado obrigatório: 12 pessoas testando por 14 dias seguidos, mais até 7 dias para o Google liberar a produção.
+**Quanto tempo leva:** de 3 a 5 semanas numa conta pessoal criada depois de 13/11/2023. O gargalo é o teste fechado obrigatório: 12 pessoas testando por 14 dias seguidos, mais até 7 dias para o Google liberar a produção.
+
+**Conta criada antes de 13/11/2023 (o caso do Ciclo Livre):** pule o passo 1, o 8.2 e o 9. O caminho é teste interno → produção, e o tempo cai para a análise do Google (normalmente de 1 a 7 dias). Um teste fechado com algumas pessoas continua sendo uma boa ideia, mas não bloqueia nada.
 
 **O que já está pronto no repositório:**
 
@@ -270,7 +272,7 @@ _Testar e lançar → Testes → Teste interno → Criar versão_. Envie o AAB, 
 - a política abre pelo diálogo do Health Connect;
 - a troca de ícone funciona (o app instalado pela Play é assinado pelo Google, não pela sua chave).
 
-### 8.2 Teste fechado (14 dias, obrigatório)
+### 8.2 Teste fechado (14 dias, obrigatório só para contas novas)
 
 Contas pessoais criadas depois de 13/11/2023 só liberam a produção depois disto: **pelo menos 12 testadores que aceitaram o convite e ficaram inscritos nos últimos 14 dias seguidos**. Quem sai antes perde a contagem; quem sai e volta recomeça do zero.
 
