@@ -102,6 +102,14 @@ describe('Mais › apagar todos os dados', () => {
   });
 });
 
+describe('Mais › Health Connect', () => {
+  it('leva à tela do Health Connect', async () => {
+    await renderMais();
+    await fireEvent.press(screen.getByRole('button', { name: new RegExp(ptBR.health.maisHint) }));
+    expect(mockPush).toHaveBeenCalledWith('/health');
+  });
+});
+
 describe('Me pague um café', () => {
   const c = ptBR.coffee;
 

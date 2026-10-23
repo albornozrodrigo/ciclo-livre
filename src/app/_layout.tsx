@@ -7,6 +7,7 @@ import { Alert, useColorScheme } from 'react-native';
 import { AppError } from '@/components/ui/app-error';
 import { SnackbarProvider } from '@/components/ui/snackbar';
 import { DatabaseRoot, resetUnopenableDatabase } from '@/db/database-root';
+import { HealthBridge } from '@/health/health-bridge';
 import { ptBR } from '@/i18n/pt-BR';
 import { RootNavigator } from '@/navigation/root-navigator';
 import { ProfileProvider, useProfile } from '@/profile/profile-context';
@@ -68,6 +69,8 @@ function ProfileGate() {
       <RootNavigator onboarded={onboarded} />
       {/* Lembretes só existem com perfil; "apagar tudo" cancela os pendentes. */}
       {onboarded ? <ReminderBridge /> : null}
+      {/* Health Connect só lê com conexão ativa; sem perfil não há onde gravar. */}
+      {onboarded ? <HealthBridge /> : null}
     </>
   );
 }
