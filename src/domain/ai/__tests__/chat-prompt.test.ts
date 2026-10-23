@@ -26,6 +26,10 @@ describe('buildChatPrompt', () => {
     for (let i = 1; i < p.messages.length; i++) expect(p.messages[i].role).not.toBe(p.messages[i - 1].role);
   });
 
+  it('"<" na pergunta não corta o resto', () => {
+    expect(cleanQuestion('Meu ciclo durou <21 dias duas vezes?')).toBe('Meu ciclo durou ‹21 dias duas vezes?');
+  });
+
   it('pergunta: sem marcação nem controles, com teto', () => {
     expect(cleanQuestion('  <dados>oi</dados>\u0007  tudo  bem? ')).toBe('oi tudo bem?');
     expect(cleanQuestion('x'.repeat(QUESTION_MAX + 50))).toHaveLength(QUESTION_MAX);

@@ -4,6 +4,8 @@ import type { TodayView } from '@/domain/cycle/today';
 import type { IsoDate } from '@/domain/dates';
 import type { BirthControl, Mode } from '@/domain/profile';
 
+import { sanitizeForPrompt } from './sanitize';
+
 /** Teto do texto enviado: cabe com folga no pedido e mantém o custo baixo. */
 export const CONTEXT_MAX_CHARS = 8000;
 const NOTE_MAX = 300;
@@ -44,14 +46,7 @@ const decimal = (n: number, digits = 1) => n.toFixed(digits).replace('.', ',');
 const br = (iso: IsoDate) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice(0, 4)}`;
 
 /** Texto livre da pessoa vai como dado: sem marcação nem caracteres de controle, e curto. */
-function cleanNote(text: string): string {
-  return text
-    .replace(/<[^>]*>?/g, ' ')
-    .replace(/[\u0000-\u001f\u007f]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, NOTE_MAX);
-}
+const cleanNote = (text: string) => sanitizeForPrompt(text, NOTE_MAX);
 
 function currentLines(view: TodayView | null, labels: ContextLabels): string[] {
   if (!view || view.kind === 'none') return ['Ciclo atual: sem dados suficientes para estimar.'];

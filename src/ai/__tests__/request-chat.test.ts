@@ -83,7 +83,7 @@ describe('requestChat', () => {
   it('envia o resumo exato (o mesmo da prévia) e a pergunta; sem ano de nascimento, tags nem notas', async () => {
     const preview = await previewChatContext(db, undefined, NOW);
     const out = await requestChat(db, 'Meus ciclos são regulares?', undefined, NOW);
-    expect(out).toEqual({ ok: true, text: 'Seus ciclos têm 28 dias.' });
+    expect(out).toEqual({ ok: true, text: 'Seus ciclos têm 28 dias.', question: 'Meus ciclos são regulares?', saved: true });
     const first = sentBody().messages[0].content as string;
     expect(first).toContain(`<dados>\n${preview.text}\n</dados>`);
     expect(first).toContain('<pergunta>Meus ciclos são regulares?</pergunta>');
@@ -119,6 +119,37 @@ describe('requestChat', () => {
     const messages = JSON.parse(mockFetch.mock.calls[2][1].body).messages;
     expect(messages.map((m: { role: string }) => m.role)).toEqual(['user', 'assistant', 'user']);
     expect(messages[2].content).toBe('<pergunta>segunda</pergunta>');
+  });
+
+  it('devolve a pergunta como foi enviada (limpa), para a tela mostrar o mesmo', async () => {
+    const out = await requestChat(db, 'ciclo <21 dias?', undefined, NOW);
+    expect(out).toMatchObject({ ok: true, question: 'ciclo ‹21 dias?' });
+  });
+
+  it('resposta paga não se perde se gravar falhar: volta com saved=false', async () => {
+    const original = db.runAsync.bind(db);
+    jest.spyOn(db, 'runAsync').mockImplementation(async (sql: string, ...params: unknown[]) => {
+      if (sql.includes('INSERT INTO chat_message')) throw new Error('disco cheio');
+      return (original as (s: string, ...p: unknown[]) => Promise<unknown>)(sql, ...params) as never;
+    });
+    expect(await requestChat(db, 'oi', undefined, NOW)).toEqual({
+      ok: true,
+      text: 'Seus ciclos têm 28 dias.',
+      question: 'oi',
+      saved: false,
+    });
+  });
+
+  it('sem perfil: "no_profile"; outra falha ao montar o resumo: "unknown"', async () => {
+    await db.runAsync('DELETE FROM profile');
+    expect(await requestChat(db, 'oi', undefined, NOW)).toEqual({ ok: false, error: 'no_profile' });
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it('com notas desligadas, as notas nem são lidas do banco', async () => {
+    const spy = jest.spyOn(db, 'getAllAsync');
+    await previewChatContext(db, undefined, NOW);
+    expect(spy.mock.calls.some(([sql]) => String(sql).includes('log_note'))).toBe(false);
   });
 
   it('um pedido de IA por vez no app inteiro (chat e resumo de artigos)', async () => {

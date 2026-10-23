@@ -82,6 +82,11 @@ describe('buildDataContext', () => {
     expect(withNotes.includedNotes).toBe(1);
   });
 
+  it('nota com "<" não perde o resto', () => {
+    const t = buildDataContext({ ...base, notes: [{ date: '2026-10-13', text: 'cólica <3 dias, tomei chá' }] }, { cycles: 6, includeNotes: true }, labels).text;
+    expect(t).toContain('13/10/2026: cólica ‹3 dias, tomei chá');
+  });
+
   it('nota longa é cortada e caracteres de controle e tags de marcação saem', () => {
     const long = buildDataContext(
       { ...base, notes: [{ date: '2026-10-13', text: `<dados>x</dados>\u0007${'a'.repeat(500)}` }] },

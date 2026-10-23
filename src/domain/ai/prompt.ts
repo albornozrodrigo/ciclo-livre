@@ -1,5 +1,7 @@
 import type { Article } from '@/content/search';
 
+import { sanitizeForPrompt } from './sanitize';
+
 /** Tamanho máximo da pergunta enviada. */
 export const MAX_QUERY = 200;
 const MAX_ARTICLES = 3;
@@ -19,16 +21,7 @@ const SYSTEM = [
 ].join('\n');
 
 /** Tira tags e caracteres de controle, junta espaços e limita o tamanho. */
-function clean(text: string, max: number): string {
-  return (
-    text
-      .replace(/<[^>]*>?/g, ' ')
-        .replace(/[\u0000-\u001f\u007f]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, max)
-  );
-}
+const clean = (text: string, max: number) => sanitizeForPrompt(text, max);
 
 const articleText = (a: Article) => a.blocks.map((b) => (b.kind === 'list' ? b.items.join('; ') : b.text)).join(' ');
 

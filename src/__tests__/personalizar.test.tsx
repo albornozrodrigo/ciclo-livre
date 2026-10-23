@@ -14,8 +14,15 @@ const c = ptBR.tracking.customizeScreen;
 let mockDb: ReturnType<typeof openMemoryDatabase>;
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDb }));
 const profile: Profile = {
-  birthYear: 1995, mode: 'period', lastPeriodStart: null, periodLength: 5, cycleLength: 28,
-  regularity: 'unknown', dueDate: null, tryingSince: null, birthControl: null,
+  birthYear: 1995,
+  mode: 'period',
+  lastPeriodStart: null,
+  periodLength: 5,
+  cycleLength: 28,
+  regularity: 'unknown',
+  dueDate: null,
+  tryingSince: null,
+  birthControl: null,
 };
 jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile } }) }));
 const mockShow = jest.fn();
@@ -45,9 +52,7 @@ describe('Personalizar categorias', () => {
     await fireEvent.press(screen.getByRole('button', { name: c.save }));
 
     await waitFor(async () =>
-      expect((await getCategoryPrefs(mockDb)).find((p) => p.category === 'pain')).toEqual(
-        expect.objectContaining({ hidden: true }),
-      ),
+      expect((await getCategoryPrefs(mockDb)).find((p) => p.category === 'pain')).toEqual(expect.objectContaining({ hidden: true })),
     );
   });
 

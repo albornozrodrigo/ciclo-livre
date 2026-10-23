@@ -60,3 +60,39 @@ export async function setChatScope(db: SqlExecutor, scope: { cycles: 6 | 12; inc
   await upsert(db, CHAT_CYCLES_KEY, String(scope.cycles));
   await upsert(db, CHAT_NOTES_KEY, scope.includeNotes ? '1' : '0');
 }
+
+/**
+ * Revoga o consentimento do chat e apaga a conversa numa transação: respostas antigas podem citar dados
+ * (até notas) e não podem voltar a sair sob um consentimento novo.
+ */
+export async function revokeChatConsent(db: SqlExecutor): Promise<void> {
+  await enqueueWrite(db, () =>
+    db.withTransactionAsync(async () => {
+      await db.runAsync(
+        'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
+        CHAT_CONSENT_KEY,
+        '0',
+      );
+      await db.runAsync('DELETE FROM chat_message');
+    }),
+  );
+}
+
+/**
+ * Concorda com o envio no escopo escolhido. Se o escopo mudou (ex.: notas desligadas), a conversa antiga
+ * é apagada: ela foi feita com outros dados e iria junto nas próximas perguntas.
+ */
+export async function acceptChatConsent(db: SqlExecutor, scope: { cycles: 6 | 12; includeNotes: boolean }): Promise<void> {
+  if (scope.cycles !== 6 && scope.cycles !== 12) throw new Error('Escopo inválido.');
+  const before = await getChatSettings(db);
+  const changed = before.cycles !== scope.cycles || before.includeNotes !== scope.includeNotes;
+  const upsertSql = 'INSERT INTO app_meta (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value';
+  await enqueueWrite(db, () =>
+    db.withTransactionAsync(async () => {
+      if (changed) await db.runAsync('DELETE FROM chat_message');
+      await db.runAsync(upsertSql, CHAT_CYCLES_KEY, String(scope.cycles));
+      await db.runAsync(upsertSql, CHAT_NOTES_KEY, scope.includeNotes ? '1' : '0');
+      await db.runAsync(upsertSql, CHAT_CONSENT_KEY, '1');
+    }),
+  );
+}

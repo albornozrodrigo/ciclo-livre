@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { AI_MODELS, testKey } from '@/ai/claude';
@@ -12,7 +12,7 @@ import { ChoiceList } from '@/components/ui/choice-list';
 import { ListRow } from '@/components/ui/list-row';
 import { PasswordField } from '@/components/ui/password-field';
 import { useSnackbar } from '@/components/ui/snackbar';
-import { getChatSettings, setAiConsent, setAiModel, setChatConsent } from '@/db/ai-settings-repo';
+import { getChatSettings, revokeChatConsent, setAiConsent, setAiModel } from '@/db/ai-settings-repo';
 import { clearChat, listChat } from '@/db/chat-repo';
 import type { SqlExecutor } from '@/db/types';
 import { validApiKeyFormat } from '@/domain/ai/prompt';
@@ -28,19 +28,28 @@ const c = ptBR.chat;
 function ChatSection({ db, show }: { db: SqlExecutor; show: (text: string) => void }) {
   const [consent, setConsent] = useState<boolean | null>(null);
   const [hasConversation, setHasConversation] = useState(false);
-  useEffect(() => {
-    Promise.all([getChatSettings(db), listChat(db)])
-      .then(([s, turns]) => {
-        setConsent(s.consent);
-        setHasConversation(turns.length > 0);
-      })
-      .catch((e: unknown) => log.error('chat_settings_failed', e));
-  }, [db]);
+  // Relido ao voltar para a tela (ex.: depois de concordar e conversar no chat).
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      Promise.all([getChatSettings(db), listChat(db)])
+        .then(([s, turns]) => {
+          if (!active) return;
+          setConsent(s.consent);
+          setHasConversation(turns.length > 0);
+        })
+        .catch((e: unknown) => log.error('chat_settings_failed', e));
+      return () => {
+        active = false;
+      };
+    }, [db]),
+  );
 
   async function revoke() {
     try {
-      await setChatConsent(db, false);
+      await revokeChatConsent(db);
       setConsent(false);
+      setHasConversation(false);
       show(c.revoked);
     } catch (e) {
       log.error('chat_consent_failed', e);
@@ -107,7 +116,7 @@ export default function IaScreen() {
       await reload();
       show(t.keyOk);
       // Veio do chat sem chave: segue para o consentimento das perguntas.
-      if (next === 'chat') router.replace('/chat/consentimento');
+      if (next === 'chat') router.replace((await getChatSettings(db)).consent ? '/chat' : '/chat/consentimento');
     } catch (e) {
       log.error('ai_key_save_failed', e);
       setError(t.errors.unknown);

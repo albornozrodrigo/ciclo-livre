@@ -7,8 +7,15 @@ import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 
 const profile: Profile = {
-  birthYear: 1995, mode: 'period', lastPeriodStart: '2026-10-10', periodLength: 5, cycleLength: 28,
-  regularity: 'regular', dueDate: null, tryingSince: null, birthControl: 'pill',
+  birthYear: 1995,
+  mode: 'period',
+  lastPeriodStart: '2026-10-10',
+  periodLength: 5,
+  cycleLength: 28,
+  regularity: 'regular',
+  dueDate: null,
+  tryingSince: null,
+  birthControl: 'pill',
 };
 
 const mockSave = jest.fn();
@@ -78,7 +85,9 @@ describe('Dados do ciclo', () => {
   it('ajusta a duração do ciclo e salva', async () => {
     await wrap(<CycleDataScreen />);
 
-    await fireEvent.press(screen.getByRole('button', { name: new RegExp(`${ptBR.onboarding.lengths.increase}: ${ptBR.onboarding.lengths.cycle}`) }));
+    await fireEvent.press(
+      screen.getByRole('button', { name: new RegExp(`${ptBR.onboarding.lengths.increase}: ${ptBR.onboarding.lengths.cycle}`) }),
+    );
     await save();
 
     await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, cycleLength: 29 }));

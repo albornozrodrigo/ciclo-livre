@@ -1,4 +1,14 @@
-import { getAiSettings, getChatSettings, setAiConsent, setAiModel, setChatConsent, setChatScope } from '@/db/ai-settings-repo';
+import {
+  acceptChatConsent,
+  getAiSettings,
+  getChatSettings,
+  revokeChatConsent,
+  setAiConsent,
+  setAiModel,
+  setChatConsent,
+  setChatScope,
+} from '@/db/ai-settings-repo';
+import { addChatPair, listChat } from '@/db/chat-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 
 import { openMemoryDatabase } from './node-sqlite-adapter';
@@ -35,5 +45,25 @@ describe('ai-settings-repo', () => {
     await setChatConsent(db, false);
     expect((await getAiSettings(db)).consent).toBe(true);
     await expect(setChatScope(db, { cycles: 7 as never, includeNotes: false })).rejects.toThrow();
+  });
+
+  it('revogar o consentimento do chat apaga a conversa (respostas antigas não voltam a sair sob outro consentimento)', async () => {
+    const db = await migratedDb();
+    await acceptChatConsent(db, { cycles: 6, includeNotes: true });
+    await addChatPair(db, 'o que dizem minhas notas?', 'Suas notas citam cólica.');
+    await revokeChatConsent(db);
+    expect((await getChatSettings(db)).consent).toBe(false);
+    expect(await listChat(db)).toEqual([]);
+  });
+
+  it('concordar com escopo diferente do anterior apaga a conversa; com o mesmo escopo, mantém', async () => {
+    const db = await migratedDb();
+    await acceptChatConsent(db, { cycles: 6, includeNotes: true });
+    await addChatPair(db, 'p', 'r');
+    await acceptChatConsent(db, { cycles: 6, includeNotes: true });
+    expect(await listChat(db)).toHaveLength(2);
+    await acceptChatConsent(db, { cycles: 6, includeNotes: false });
+    expect(await listChat(db)).toEqual([]);
+    expect(await getChatSettings(db)).toEqual({ consent: true, cycles: 6, includeNotes: false });
   });
 });

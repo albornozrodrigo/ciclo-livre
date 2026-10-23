@@ -10,13 +10,18 @@ import { cycleModelFor } from '@/domain/cycle/for-profile';
 import { todayCycleView } from '@/domain/cycle/today';
 import { isoFromDate } from '@/domain/dates';
 import { chatContextLabels } from '@/i18n/pt-BR-chat';
+import { log } from '@/lib/logger';
 
 import { withAiLock } from './ai-lock';
 import { type AiError, chat } from './claude';
 import { getApiKey } from './key-store';
 
+/** `question` é a pergunta como foi enviada e gravada (limpa); `saved` false se a gravação falhou. */
 export type ChatOutcome =
-  { ok: true; text: string } | { ok: false; error: AiError | 'no_key' | 'no_consent' | 'busy' | 'empty' | 'too_long' | 'no_profile' };
+  | { ok: true; text: string; question: string; saved: boolean }
+  | { ok: false; error: AiError | 'no_key' | 'no_consent' | 'busy' | 'empty' | 'too_long' | 'no_profile' };
+
+class NoProfileError extends Error {}
 
 type Scope = Pick<ChatSettings, 'cycles' | 'includeNotes'>;
 
@@ -25,14 +30,17 @@ type Scope = Pick<ChatSettings, 'cycles' | 'includeNotes'>;
  * `scope` permite mostrar um escopo ainda não salvo (tela de consentimento).
  */
 export async function previewChatContext(db: SqlExecutor, scope?: Scope, now: Date = new Date()): Promise<DataContext> {
-  const [profile, settings, signals, data, notes] = await Promise.all([
+  const chosen = scope ?? (await getChatSettings(db));
+  const [profile, signals, data, notes] = await Promise.all([
     getProfile(db),
-    getChatSettings(db),
     getCycleSignals(db),
     getAnalysisData(db),
-    db.getAllAsync<{ date: string; text: string }>('SELECT date, text FROM log_note ORDER BY date'),
+    // Notas são íntimas: só saem do banco quando a pessoa escolheu incluí-las.
+    chosen.includeNotes
+      ? db.getAllAsync<{ date: string; text: string }>('SELECT date, text FROM log_note ORDER BY date')
+      : Promise.resolve([]),
   ]);
-  if (!profile) throw new Error('Sem perfil.');
+  if (!profile) throw new NoProfileError('Sem perfil.');
   const today = isoFromDate(now);
   const model = cycleModelFor(profile, signals, today);
   return buildDataContext(
@@ -46,7 +54,7 @@ export async function previewChatContext(db: SqlExecutor, scope?: Scope, now: Da
       measures: measureSeriesAll(data.measures, data.selections, today),
       notes,
     },
-    scope ?? { cycles: settings.cycles, includeNotes: settings.includeNotes },
+    { cycles: chosen.cycles, includeNotes: chosen.includeNotes },
     chatContextLabels,
   );
 }
@@ -68,14 +76,22 @@ export async function requestChat(db: SqlExecutor, question: string, signal?: Ab
     if (!chatSettings.consent) return { ok: false, error: 'no_consent' };
     let context: DataContext;
     try {
-      context = await previewChatContext(db, undefined, now);
-    } catch {
-      return { ok: false, error: 'no_profile' };
+      context = await previewChatContext(db, chatSettings, now);
+    } catch (e) {
+      if (e instanceof NoProfileError) return { ok: false, error: 'no_profile' };
+      log.error('chat_context_failed', e);
+      return { ok: false, error: 'unknown' };
     }
     const prompt = buildChatPrompt(context.text, await listChat(db), clean);
     const result = await chat({ apiKey, model: aiSettings.model, system: prompt.system, messages: prompt.messages, signal });
     if (!result.ok) return result;
-    await addChatPair(db, clean, result.text, now);
-    return result;
+    // A resposta já foi paga: mesmo se gravar falhar, ela aparece (e a tela avisa que não ficou salva).
+    try {
+      await addChatPair(db, clean, result.text, now);
+      return { ok: true, text: result.text, question: clean, saved: true };
+    } catch (e) {
+      log.error('chat_save_failed', e);
+      return { ok: true, text: result.text, question: clean, saved: false };
+    }
   });
 }

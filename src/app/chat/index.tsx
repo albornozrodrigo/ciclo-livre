@@ -61,6 +61,8 @@ export default function ChatScreen() {
   const [error, setError] = useState<string | null>(null);
   const scroll = useRef<React.ComponentRef<typeof ScrollView>>(null);
   const abort = useRef<AbortController | null>(null);
+  // Trava síncrona: dois toques seguidos não disparam dois envios (o estado só muda depois do render).
+  const sending = useRef(false);
   useEffect(() => () => abort.current?.abort(), []);
 
   // Portas: sem chave → configurar (e voltar para cá); sem consentimento do chat → consentimento. Relido ao voltar.
@@ -74,7 +76,8 @@ export default function ChatScreen() {
           router.replace({ pathname: '/ia', params: { next: 'chat' } });
         } else if (!settings.consent) router.replace('/chat/consentimento');
         else {
-          setTurns(history);
+          // Envio em curso: a resposta ainda vai entrar na lista; não sobrescrever com o histórico antigo.
+          if (!sending.current) setTurns(history);
           setLoad('ready');
         }
       })
@@ -90,7 +93,8 @@ export default function ChatScreen() {
 
   async function send(text: string) {
     const question = text.trim();
-    if (!question || pending) return;
+    if (!question || sending.current) return;
+    sending.current = true;
     setError(null);
     setPending(question);
     setDraft('');
@@ -100,7 +104,9 @@ export default function ChatScreen() {
       const outcome = await requestChat(db, question, controller.signal);
       if (controller.signal.aborted) return;
       if (outcome.ok) {
-        setTurns((prev) => [...prev, { role: 'user', text: question }, { role: 'assistant', text: outcome.text }]);
+        // Mostra a pergunta como foi enviada e gravada (limpa), não o rascunho.
+        setTurns((prev) => [...prev, { role: 'user', text: outcome.question }, { role: 'assistant', text: outcome.text }]);
+        if (!outcome.saved) show(c.notSaved);
         // O "Pensando…" some; quem usa leitor de tela precisa ouvir que a resposta chegou.
         AccessibilityInfo.announceForAccessibility(`${c.claude}: ${outcome.text}`);
       } else if (outcome.error === 'no_key') {
@@ -117,7 +123,11 @@ export default function ChatScreen() {
       setDraft(question);
       setError(ptBR.ai.errors.unknown);
     } finally {
-      if (!controller.signal.aborted) setPending(null);
+      // Só quem ainda é o envio atual limpa o estado (um envio cancelado não mexe no seguinte).
+      if (abort.current === controller) {
+        sending.current = false;
+        if (!controller.signal.aborted) setPending(null);
+      }
     }
   }
 

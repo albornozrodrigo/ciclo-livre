@@ -64,12 +64,14 @@ describe('IA com sua chave › perguntas sobre seus dados', () => {
   it('mostra o estado; revogar desliga o envio do chat sem mexer no dos artigos', async () => {
     await setAiConsent(mockDb, true);
     await setChatConsent(mockDb, true);
+    await addChatPair(mockDb, 'p', 'r');
     await render(wrap(<IaScreen />));
     expect(await screen.findByText(c.consentOn)).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: c.revoke }));
     await waitFor(() => expect(mockShow).toHaveBeenCalledWith(c.revoked));
     expect((await getChatSettings(mockDb)).consent).toBe(false);
     expect((await getAiSettings(mockDb)).consent).toBe(true);
+    expect(await listChat(mockDb)).toEqual([]);
     expect(screen.getByText(c.consentOff)).toBeOnTheScreen();
   });
 
@@ -123,6 +125,15 @@ describe('IA com sua chave', () => {
     await fireEvent.changeText(await screen.findByLabelText(t.keyLabel), KEY);
     await fireEvent.press(screen.getByRole('button', { name: t.saveKey }));
     await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/chat/consentimento'));
+  });
+
+  it('vindo do chat com consentimento já dado, salvar a chave volta direto para a conversa', async () => {
+    mockParams = { next: 'chat' };
+    await setChatConsent(mockDb, true);
+    await render(wrap(<IaScreen />));
+    await fireEvent.changeText(await screen.findByLabelText(t.keyLabel), KEY);
+    await fireEvent.press(screen.getByRole('button', { name: t.saveKey }));
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/chat'));
   });
 
   it('chave recusada pela API: não salva e explica', async () => {

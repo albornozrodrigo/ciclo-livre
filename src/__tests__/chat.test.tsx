@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { AccessibilityInfo, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -118,6 +118,13 @@ describe('Consentimento', () => {
     expect(screen.getByRole('button', { name: c.accept })).toBeDisabled();
   });
 
+  it('configuração que não carrega: aviso com "Tentar de novo"', async () => {
+    await mockDb.execAsync('DROP TABLE app_meta');
+    await render(wrap(<ChatConsentScreen />));
+    expect(await screen.findByText(`Erro: ${c.previewFailed}`)).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: c.retry })).toBeOnTheScreen();
+  });
+
   it('"Agora não" não grava nada', async () => {
     await render(wrap(<ChatConsentScreen />));
     await fireEvent.press(await screen.findByRole('button', { name: c.decline }));
@@ -157,6 +164,29 @@ describe('Conversa', () => {
     // "Tentar de novo" reenvia a mesma pergunta.
     await fireEvent.press(screen.getByRole('button', { name: c.retry }));
     expect(await screen.findByText('Seus ciclos variam pouco.')).toBeOnTheScreen();
+  });
+
+  it('mostra a pergunta como foi enviada; toque duplo envia uma vez só', async () => {
+    await render(wrap(<ChatScreen />));
+    await fireEvent.changeText(await screen.findByLabelText(c.input), 'ciclo <21 dias?');
+    const send = screen.getByRole('button', { name: c.send });
+    // Dois toques no mesmo instante, antes de qualquer re-render.
+    await act(async () => {
+      void fireEvent.press(send);
+      void fireEvent.press(send);
+    });
+    expect(await screen.findByText('Seus ciclos variam pouco.')).toBeOnTheScreen();
+    expect(screen.getByText('ciclo ‹21 dias?')).toBeOnTheScreen();
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText(`Erro: ${c.errors.busy}`)).toBeNull();
+  });
+
+  it('recusa do Claude: mensagem própria do chat (não fala de artigos)', async () => {
+    mockFetch.mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ stop_reason: 'refusal', content: [] }) });
+    await render(wrap(<ChatScreen />));
+    await fireEvent.changeText(await screen.findByLabelText(c.input), 'pergunta');
+    await fireEvent.press(screen.getByRole('button', { name: c.send }));
+    expect(await screen.findByText(`Erro: ${c.errors.refusal}`)).toBeOnTheScreen();
   });
 
   it('enviar fica desligado com campo vazio; contador mostra o limite', async () => {

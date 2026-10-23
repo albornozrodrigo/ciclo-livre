@@ -30,6 +30,10 @@ describe('buildSummaryPrompt', () => {
     expect(p.user).not.toContain('<artigo id="x">');
   });
 
+  it('busca com "<" não perde o resto', () => {
+    expect(buildSummaryPrompt('ciclo <21 dias', [art('a', 't')]).user).toContain('<pergunta>ciclo ‹21 dias</pergunta>');
+  });
+
   it('cada artigo vai cortado (texto longo não estoura o pedido)', () => {
     const p = buildSummaryPrompt('pergunta', [art('a', 'z'.repeat(10_000))]);
     expect(p.user.length).toBeLessThan(3_000);

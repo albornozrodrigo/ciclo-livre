@@ -12,8 +12,15 @@ jest.mock('expo-router', () => ({
 }));
 
 const profile: Profile = {
-  birthYear: 1995, mode: 'period', lastPeriodStart: '2026-10-10', periodLength: 5, cycleLength: 28,
-  regularity: 'unknown', dueDate: null, tryingSince: null, birthControl: null,
+  birthYear: 1995,
+  mode: 'period',
+  lastPeriodStart: '2026-10-10',
+  periodLength: 5,
+  cycleLength: 28,
+  regularity: 'unknown',
+  dueDate: null,
+  tryingSince: null,
+  birthControl: null,
 };
 
 beforeEach(async () => {
