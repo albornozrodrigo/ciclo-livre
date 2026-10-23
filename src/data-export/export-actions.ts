@@ -13,6 +13,7 @@ import { csvLabels } from '@/i18n/pt-BR-export';
 import { log } from '@/lib/logger';
 import { createReportPdf } from '@/report/report-pdf';
 import { withLockSuppressed } from '@/security/lock-policy';
+import { nativeScrypt } from '@/crypto/native-scrypt';
 
 export type ExportKind = 'relatorio' | 'planilha' | 'completo' | 'backup';
 export const EXPORT_KINDS: readonly ExportKind[] = ['relatorio', 'planilha', 'completo', 'backup'];
@@ -78,7 +79,7 @@ export async function prepareExport(kind: ExportKind, { db, profile, today, incl
     const name = `ciclo-livre-${today}.json`;
     return { file: await writeTemp(dir, name, JSON.stringify(data, null, 2)), name, mimeType: 'application/json' };
   }
-  const encrypted = await encryptBackup(JSON.stringify(data), password ?? '', { random: getRandomBytes, kdf });
+  const encrypted = await encryptBackup(JSON.stringify(data), password ?? '', { random: getRandomBytes, kdf, scrypt: nativeScrypt });
   const name = `ciclo-livre-backup-${today}.ciclolivre`;
   return { file: await writeTemp(dir, name, encrypted), name, mimeType: 'application/octet-stream' };
 }
@@ -127,7 +128,7 @@ export async function readRestore(text: string, password?: string): Promise<Rest
   const isBackup = typeof parsed === 'object' && parsed !== null && (parsed as { format?: unknown }).format === 'ciclo-livre-backup';
   if (isBackup) {
     if (!password) return { kind: 'needs_password' };
-    const plain = await decryptBackup(text, password);
+    const plain = await decryptBackup(text, password, { scrypt: nativeScrypt });
     return { kind: 'ready', data: parseExport(JSON.parse(plain)) };
   }
   return { kind: 'ready', data: parseExport(parsed) };

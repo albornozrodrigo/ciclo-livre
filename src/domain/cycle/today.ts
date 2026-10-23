@@ -59,6 +59,6 @@ export function todayCycleView(profile: Profile, signals: CycleSignals, today: I
     fertile,
     confidence: model.confidence,
     painDays: predictPainDays(model.periods, signals.painDates, model.next.start),
-    nextPhase: findNextPhase(model, info.phase, today),
+    nextPhase: model.late ? null : findNextPhase(model, info.phase, today),
   };
 }

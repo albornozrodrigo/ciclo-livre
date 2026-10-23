@@ -71,6 +71,9 @@ jest.mock('expo-file-system', () => {
 const mockShare = jest.fn(async (..._args: unknown[]) => undefined);
 jest.mock('expo-sharing', () => ({ shareAsync: (...args: unknown[]) => mockShare(...args) }));
 jest.mock('expo-crypto', () => ({ getRandomBytes: (n: number) => new Uint8Array(n).fill(3) }));
+// O scrypt nativo não existe no Jest: o do JS dá o mesmo resultado (RFC 7914). Espionado para provar o uso.
+const mockNativeScrypt = jest.fn((...a: unknown[]) => jest.requireActual('@/domain/export/backup').defaultScrypt(...a));
+jest.mock('@/crypto/native-scrypt', () => ({ nativeScrypt: (...a: unknown[]) => mockNativeScrypt(...a) }));
 jest.mock('expo-print', () => ({
   printToFileAsync: async () => {
     mockFiles.set('cache/Print/x.pdf', '%PDF');
@@ -122,6 +125,7 @@ describe('prepareExport', () => {
     const item = await prepareExport('backup', { db, profile, today: TODAY, includeNotes: false, password: 'senha-forte!', kdf: FAST });
     expect(item.name).toBe('ciclo-livre-backup-2026-10-22.ciclolivre');
     expect(String(mockFiles.get(item.file.uri))).not.toContain('heavy');
+    expect(mockNativeScrypt).toHaveBeenCalled();
   });
 });
 
@@ -177,7 +181,9 @@ describe('restauração em duas etapas: ler e conferir, depois substituir', () =
     const file = await encryptBackup(plain, 'senha-forte!', { random: (n) => new Uint8Array(n).fill(1), kdf: FAST });
     expect(await readRestore(file)).toEqual({ kind: 'needs_password' });
     await expect(readRestore(file, 'errada-123')).rejects.toThrow(BACKUP_ERROR);
+    mockNativeScrypt.mockClear();
     expect((await readRestore(file, 'senha-forte!')).kind).toBe('ready');
+    expect(mockNativeScrypt).toHaveBeenCalledTimes(1);
   });
 
   it('arquivo qualquer ou exportação sem perfil: IMPORT_ERROR', async () => {

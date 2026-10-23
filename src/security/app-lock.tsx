@@ -99,7 +99,11 @@ function LockScreen({ onUnlock, failed }: { onUnlock: () => void; failed: boolea
       <StaticLobe territory="sun" shape={2} />
       <View>
         <View style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }} className="px-5">
-          <Text accessibilityRole="header" className="text-[44px] font-bold leading-[42px] tracking-[-1.76px] text-ink">
+          <Text
+            accessibilityRole="header"
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            className="text-[44px] font-bold leading-[42px] tracking-[-1.76px] text-ink">
             {s.locked}
           </Text>
         </View>

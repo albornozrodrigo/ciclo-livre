@@ -9,12 +9,12 @@ export const BACKUP_ERROR = 'Senha incorreta ou arquivo danificado.';
 
 export type KdfParams = { N: number; r: number; p: number };
 /**
- * Padrão do app. No S21 FE, 2^14 levou ~15 s em JS (Hermes); 2^13 fica perto da metade. Os parâmetros vão no
- * arquivo, então backups antigos continuam abrindo e dá para subir quando houver KDF nativo.
+ * Padrão do app: 2^15 com scrypt nativo (OpenSSL), que no S21 FE leva menos de 1 s. Os parâmetros vão no
+ * arquivo: backups antigos (2^13, feitos com scrypt em JS) continuam abrindo.
  */
-export const DEFAULT_KDF: KdfParams = { N: 2 ** 13, r: 8, p: 1 };
-// Limites ao abrir: um arquivo forjado com N enorme deixaria o app minutos calculando (2^15 ≈ 30 s em JS).
-const N_RANGE = { min: 2 ** 10, max: 2 ** 15 } as const;
+export const DEFAULT_KDF: KdfParams = { N: 2 ** 15, r: 8, p: 1 };
+// Limites ao abrir: um arquivo forjado com N enorme deixaria o app calculando por muito tempo.
+const N_RANGE = { min: 2 ** 10, max: 2 ** 16 } as const;
 const SALT_BYTES = 16;
 const NONCE_BYTES = 12;
 const KEY_BYTES = 32;
@@ -27,7 +27,11 @@ type Envelope = {
   data: string;
 };
 
-type Options = { random: (bytes: number) => Uint8Array; kdf?: KdfParams };
+/** Implementação do scrypt (RFC 7914): a do JS por padrão; o app injeta a nativa, que dá o mesmo resultado. */
+export type Scrypt = (password: Uint8Array, salt: Uint8Array, params: KdfParams & { dkLen: number }) => Promise<Uint8Array>;
+export const defaultScrypt: Scrypt = (password, salt, params) => scryptAsync(password, salt, params);
+
+type Options = { random: (bytes: number) => Uint8Array; kdf?: KdfParams; scrypt?: Scrypt };
 
 const toBase64 = (bytes: Uint8Array) => {
   let binary = '';
@@ -36,15 +40,19 @@ const toBase64 = (bytes: Uint8Array) => {
 };
 const fromBase64 = (text: string) => Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
 
-const deriveKey = (password: string, salt: Uint8Array, { N, r, p }: KdfParams) =>
-  scryptAsync(utf8ToBytes(password), salt, { N, r, p, dkLen: KEY_BYTES });
+const deriveKey = (password: string, salt: Uint8Array, { N, r, p }: KdfParams, scrypt: Scrypt) =>
+  scrypt(utf8ToBytes(password), salt, { N, r, p, dkLen: KEY_BYTES });
 
 /** Criptografa o JSON exportado com uma chave derivada da senha (scrypt + AES-256-GCM). */
-export async function encryptBackup(plain: string, password: string, { random, kdf = DEFAULT_KDF }: Options): Promise<string> {
+export async function encryptBackup(
+  plain: string,
+  password: string,
+  { random, kdf = DEFAULT_KDF, scrypt = defaultScrypt }: Options,
+): Promise<string> {
   if (password.length < MIN_PASSWORD) throw new Error('Senha curta.');
   const salt = random(SALT_BYTES);
   const nonce = random(NONCE_BYTES);
-  const key = await deriveKey(password, salt, kdf);
+  const key = await deriveKey(password, salt, kdf, scrypt);
   const data = gcm(key, nonce).encrypt(utf8ToBytes(plain));
   const envelope: Envelope = {
     format: 'ciclo-livre-backup',
@@ -80,13 +88,13 @@ function readEnvelope(file: string): Envelope {
 }
 
 /** Abre o backup. Qualquer falha (senha, adulteração, formato) vira o mesmo erro genérico. */
-export async function decryptBackup(file: string, password: string): Promise<string> {
+export async function decryptBackup(file: string, password: string, { scrypt = defaultScrypt }: { scrypt?: Scrypt } = {}): Promise<string> {
   try {
     const e = readEnvelope(file);
     const salt = fromBase64(e.kdf.salt);
     const nonce = fromBase64(e.cipher.nonce);
     if (salt.length !== SALT_BYTES || nonce.length !== NONCE_BYTES) throw new Error('envelope');
-    const key = await deriveKey(password, salt, e.kdf);
+    const key = await deriveKey(password, salt, e.kdf, scrypt);
     return bytesToUtf8(gcm(key, nonce).decrypt(fromBase64(e.data)));
   } catch {
     // Detalhe do erro omitido de propósito (ver BACKUP_ERROR).

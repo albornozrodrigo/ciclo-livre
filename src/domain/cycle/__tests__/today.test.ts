@@ -52,6 +52,8 @@ describe('todayCycleView', () => {
   it('atrasada: conta os dias de atraso', () => {
     const view = todayCycleView(profile, signals, '2026-10-27');
     expect(view).toEqual(expect.objectContaining({ kind: 'cycle', late: true, lateDays: 3 }));
+    // Atrasada: não há "próxima fase" honesta para anunciar (a menstruação já devia ter vindo).
+    expect(view.kind === 'cycle' && view.nextPhase).toBeNull();
   });
 
   it('sem nenhuma menstruação conhecida pede o primeiro registro', () => {

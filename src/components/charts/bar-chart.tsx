@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { type LayoutChangeEvent, Pressable, Text, View } from 'react-native';
+import { type LayoutChangeEvent, PixelRatio, Pressable, Text, View } from 'react-native';
 import Svg, { G, Line, Rect } from 'react-native-svg';
 
 import { useChartColors } from './use-chart-colors';
@@ -14,6 +14,8 @@ const RADIUS = 4;
 /** Calha à direita para a etiqueta da linha de referência: nenhuma barra fica embaixo dela. */
 const GUTTER = 52;
 const TAG_HEIGHT = 20;
+/** A calha cresce com a fonte do sistema: "média 29" nunca vira "média…". */
+const gutter = () => GUTTER * Math.max(1, PixelRatio.getFontScale());
 
 type Props = {
   bars: Bar[];
@@ -36,7 +38,9 @@ export function BarChart({ bars, reference, referenceTag, referenceLabel, summar
   const [width, setWidth] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const max = Math.max(reference, ...bars.map((b) => b.value)) * 1.1;
-  const plotWidth = Math.max(width - GUTTER, 0);
+  const tagWidth = gutter();
+  const tagHeight = TAG_HEIGHT * Math.max(1, PixelRatio.getFontScale());
+  const plotWidth = Math.max(width - tagWidth, 0);
   const slot = plotWidth / Math.max(bars.length, 1);
   const barWidth = Math.min(MAX_BAR, slot - GAP);
   const y = (v: number) => PLOT_HEIGHT - (v / max) * PLOT_HEIGHT;
@@ -79,7 +83,7 @@ export function BarChart({ bars, reference, referenceTag, referenceLabel, summar
                   </G>
                 );
               })}
-              <Line x1={0} x2={width - GUTTER + 2} y1={y(reference)} y2={y(reference)} stroke={colors.ink} strokeWidth={1} />
+              <Line x1={0} x2={width - tagWidth + 2} y1={y(reference)} y2={y(reference)} stroke={colors.ink} strokeWidth={1} />
             </Svg>
           ) : null}
         </View>
@@ -92,15 +96,14 @@ export function BarChart({ bars, reference, referenceTag, referenceLabel, summar
           style={{
             position: 'absolute',
             right: 0,
-            top: Math.min(Math.max(y(reference) - TAG_HEIGHT / 2, 0), PLOT_HEIGHT - TAG_HEIGHT),
-            width: GUTTER - 6,
-            height: TAG_HEIGHT,
+            top: Math.min(Math.max(y(reference) - tagHeight / 2, 0), PLOT_HEIGHT - tagHeight),
+            width: tagWidth - 6,
           }}
           className="text-right text-xs font-bold leading-5 text-ink [font-variant:tabular-nums] dark:text-ink-night">
           {referenceTag}
         </Text>
         {/* Alvos de toque por barra (a coluna inteira, maior que a barra), irmãos do gráfico acessível. */}
-        <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: GUTTER, flexDirection: 'row' }}>
+        <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: tagWidth, flexDirection: 'row' }}>
           {bars.map((b) => (
             <Pressable
               key={b.key}

@@ -49,14 +49,6 @@ export function Screen({ screen, territory, shape = 0, secondary, children }: Pr
         contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
         {secondary ? <SideLobe territory={secondary.territory} top={sideTop} /> : null}
         <Lobe territory={territory} shape={shape} />
-        {secondary ? (
-          // Nome escrito sobre a parte visível do lobo secundário (cor de fase sempre com rótulo).
-          <Text
-            style={{ position: 'absolute', top: sideTop + sideSize * 0.5, right: 20, width: sideSize * (1 - SIDE_BLEED_RIGHT) - 36 }}
-            className="text-right text-sm font-bold leading-5 text-ink">
-            {secondary.label}
-          </Text>
-        ) : null}
 
         <View style={{ paddingTop: insets.top + 56, minHeight: lobeHeight }} className="px-5">
           <Text
@@ -67,6 +59,18 @@ export function Screen({ screen, territory, shape = 0, secondary, children }: Pr
             {copy.title}
           </Text>
         </View>
+
+        {secondary ? (
+          // Nome escrito sobre a parte visível do lobo secundário (cor de fase sempre com rótulo). Depois do título na árvore:
+          // o TalkBack lê "Hoje" antes. Sempre `ink`: o lobo é cor de fase também no escuro.
+          <Text
+            numberOfLines={2}
+            adjustsFontSizeToFit
+            style={{ position: 'absolute', top: sideTop + sideSize * 0.46, right: 20, width: sideSize * (1 - SIDE_BLEED_RIGHT) - 36 }}
+            className="text-right text-sm font-bold leading-5 text-ink">
+            {secondary.label}
+          </Text>
+        ) : null}
 
         <View className="gap-3 px-5 pt-8">
           {'lead' in copy ? <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{copy.lead}</Text> : null}
