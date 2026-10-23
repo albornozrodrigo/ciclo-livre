@@ -16,20 +16,20 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 11 of 11 (Personalização + release) — Planning
-Plan: 11-01..11-04 completos; 11-05 (release) em andamento
-Status: 11-04 UNIFY feito; APPLY 11-05
-Last activity: 2026-10-23 — 11-02 (ícone, ícones alternativos, tema) fechado com revisões
+Phase: 11 of 11 (Personalização + release) — Complete
+Plan: 11-01..11-05 completos
+Status: Milestone v0.1 completo; AAB 0.1.0 (versionCode 1) pronto para a Play
+Last activity: 2026-10-23 — 11-05 fechado: release assinado, site na Vercel, guia da Play
 
 Progress:
-- Milestone: [█████████░] 91%
-- Phase 11: [████████░░] 80%
+- Milestone: [██████████] 100%
+- Phase 11: [██████████] 100%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [11-04 fechado; APPLY 11-05]
+  ✓        ✓        ✓     [11-05 fechado; milestone v0.1 completo]
 ```
 
 ## Accumulated Context
@@ -71,11 +71,13 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Ícones: plugin + módulo app-icon; troca ao sair do app; Discreto com abertura neutra (Android 13+) e notificação sempre com o caderno | 11-02 | Ao trocar, o Android tira o app dos recentes |
 | Código aberto GPL-3.0 em github.com/albornozrodrigo/ciclo-livre (contato da política); README/CONTRIBUTING para a comunidade | 2026-10-23 | Decisão da pessoa usuária |
 | Chave de upload em `credentials/` + `credentials.json` (gitignored) neste Mac; EAS com credenciais locais | 2026-10-23 | Decisão da pessoa usuária; fazer cópia de segurança fora do repo |
+| Site em site/ na Vercel (raiz do projeto = site/, deploy a cada push na main); política do site gerada do app | 11-05 | Mudou a política → `node scripts/build-site.mjs` e push |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
 | Issue | Origin | Effort | Revisit |
 |-------|--------|--------|---------|
+| Botão "denunciar resposta" no chat de IA, se a revisão da Play pedir (política de IA generativa) | 11-05 | S | Na revisão da Play |
 | /cso completo antes do release (runs da fase 8 parciais pelo teto de tempo; OWASP manual feito em 2026-10-23) | 08 | S | Antes do release |
 | KDF nativo (scrypt em JS limita N a 2^13–2^15) | 08-04 | M | Fase 11 |
 | Build de release assinado com a chave de debug; permissões SYSTEM_ALERT_WINDOW/armazenamento | OWASP 08 | S | Fase 11 |
@@ -99,9 +101,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-23
-Stopped at: 11-04 completo; 11-05 em andamento (build EAS)
-Next action: concluir 11-05 (APK de release no S21 FE, AAB)
-Resume file: .paul/phases/11-personalizacao-release/11-05-PLAN.md
+Stopped at: v0.1 completo; AAB em ~/Downloads/ciclo-livre-0.1.0-1.aab
+Next action: publicar na Play (docs/PUBLICAR-PLAY-STORE.md); depois /paul:complete-milestone
+Resume file: .paul/phases/11-personalizacao-release/11-05-SUMMARY.md
 
 ---
 *STATE.md — Updated after every significant action*

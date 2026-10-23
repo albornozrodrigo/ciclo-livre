@@ -16,7 +16,7 @@ App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clu
 ## Current Milestone
 **v0.1 Initial Release** (v0.1.0)
 Status: In progress
-Phases: 10 of 11 complete
+Phases: 11 of 11 complete
 
 ## Phases
 
@@ -32,7 +32,7 @@ Phases: 10 of 11 complete
 | 8 | Conteúdo + busca + resumo IA + importar do Clue | 4 | ✅ Complete | 2026-10-23 |
 | 9 | Chat com seus dados (IA BYOK) | 2 | ✅ Complete | 2026-10-23 |
 | 10 | Wearables (Health Connect) | 2 | ✅ Complete | 2026-10-23 |
-| 11 | Personalização + release | 5 | In progress | - |
+| 11 | Personalização + release | 5 | ✅ Complete | 2026-10-23 |
 
 ## Phase Details
 
@@ -143,7 +143,7 @@ Phases: 10 of 11 complete
 - [x] 11-02: Ícone próprio, ícones alternativos e tema
 - [x] 11-03: Polimento funcional (pendências S)
 - [x] 11-04: Polimento visual (teto de design adiado)
-- [ ] 11-05: Release (KDF nativo, permissões, assinatura, /cso completo)
+- [x] 11-05: Release (KDF nativo, permissões, assinatura, /cso completo)
 
 ---
 *Roadmap created: 2026-10-22*
