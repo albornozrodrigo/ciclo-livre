@@ -22,8 +22,8 @@ plans_completed = 1
 
 [loop]
 position = "PLAN"
-plan = "11-01"
-plan_path = "phases/11-personalizacao-release/11-01-PLAN.md"
+plan = "11-02"
+plan_path = "phases/11-personalizacao-release/11-02-PLAN.md"
 
 [satellite]
 groom = true

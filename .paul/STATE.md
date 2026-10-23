@@ -17,19 +17,19 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 
 Milestone: v0.1 Initial Release
 Phase: 11 of 11 (Personalização + release) — Planning
-Plan: 11-01..11-05 criados; 11-01 a executar
-Status: PLAN criado, pronto para APPLY 11-01
-Last activity: 2026-10-23 — planos da fase 11 criados
+Plan: 11-01 completo; 11-02 a seguir
+Status: 11-01 UNIFY feito; próximo APPLY 11-02
+Last activity: 2026-10-23 — 11-01 (política, trava, Recentes) fechado com revisões
 
 Progress:
 - Milestone: [█████████░] 91%
-- Phase 11: [░░░░░░░░░░] 0%
+- Phase 11: [██░░░░░░░░] 20%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ○        ○     [planos 11-01..05 criados; próximo: APPLY 11-01]
+  ✓        ✓        ✓     [11-01 fechado; próximo: APPLY 11-02]
 ```
 
 ## Accumulated Context
@@ -65,6 +65,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Desconectar o Health Connect também revoga a permissão (vale após reiniciar; o app para de ler na hora) | 10 review | Recomendação da biblioteca + privacidade |
 | Ícones alternativos por plugin + módulo local, MainActivity sempre habilitada | 11 plan | Libs prontas quebram deep link/notificação |
 | Release local assinado com chave própria (EAS só se a pessoa fizer login) | 11 plan | Checkpoint para guardar a chave |
+| Trava: credencial do aparelho, decisão por tempo (1 min; 5 min com teto se saiu por tela do sistema); sem PIN no aparelho desliga em vez de trancar | 11-01 review | Nunca tranca a pessoa fora dos próprios dados |
+| Política de privacidade: só fatos verificados no código, com teste; módulo local launch-intent para o link do Health Connect | 11-01 | Mudou o app → revisar a política e a data |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -89,7 +91,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
 | Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
-| Tela de política de privacidade para o rationale do Health Connect (exigência da Play) | 10 /cso | S | Fase 11 |
+| Seção "Contato" da política de privacidade (canal a definir pela pessoa usuária) | 11-01 | S | Antes do release |
+| Ciclo completo da trava no aparelho (precisa da digital/padrão da pessoa) | 11-01 | S | Verificação da pessoa usuária |
+| Helper único para gravar em `app_meta` (SQL repetido em 5 repositórios) | 11-01 code-review | S | 11-03 |
 | "Remover o que veio do Health Connect" + aviso de ovulação por temperatura importada | 10 segurança | S | Polimento |
 | /cso da fase 10 ficou parcial (finish encadeado após submit recusado); coberto por revisão manual | 10 | S | /cso completo antes do release |
 | `reminders_sync_failed`/`today_*_failed` ("Access to closed resource") quando a tela de erro raiz desmonta o banco com leituras em curso: efeito de um erro anterior, sem perda (reagenda ao abrir) | 08 investigação | S | Opcional: tratar conexão fechada como cancelamento no polimento |
@@ -105,9 +109,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-23
-Stopped at: planos da fase 11 criados
-Next action: /paul:apply .paul/phases/11-personalizacao-release/11-01-PLAN.md
-Resume file: .paul/phases/11-personalizacao-release/11-01-PLAN.md
+Stopped at: 11-01 completo
+Next action: /paul:apply .paul/phases/11-personalizacao-release/11-02-PLAN.md
+Resume file: .paul/phases/11-personalizacao-release/11-02-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
