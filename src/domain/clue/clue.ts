@@ -424,7 +424,7 @@ export function mapClue(records: readonly ClueRecord[]): ClueImport {
       if (target === SKIP) continue;
       select(r.date, target[0], target[1]);
       const level = SEVERITY.indexOf(severity as (typeof SEVERITY)[number]);
-      if (type === 'pain' && level >= 0) intensity.set(r.date, Math.max(level, intensity.get(r.date) ?? -1));
+      if (target[0] === 'pain' && level >= 0) intensity.set(r.date, Math.max(level, intensity.get(r.date) ?? -1));
     }
   }
 

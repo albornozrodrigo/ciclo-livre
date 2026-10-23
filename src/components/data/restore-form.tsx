@@ -1,5 +1,3 @@
-import { getDocumentAsync } from 'expo-document-picker';
-import { File } from 'expo-file-system';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useRef, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
@@ -8,6 +6,7 @@ import { FormScreen } from '@/components/form-screen';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { PasswordField } from '@/components/ui/password-field';
 import { useSnackbar } from '@/components/ui/snackbar';
+import { pickDocument } from '@/data-export/pick-document';
 import { applyRestore, readRestore } from '@/data-export/export-actions';
 import { BACKUP_ERROR } from '@/domain/export/backup';
 import { ptBR } from '@/i18n/pt-BR';
@@ -51,21 +50,17 @@ export function RestoreForm({ onDone, replacing = true }: Props) {
   const running = useRef(false);
 
   async function pick() {
-    let copy: File | null = null;
     try {
-      const result = await getDocumentAsync({ copyToCacheDirectory: true, multiple: false });
-      if (result.canceled) return;
-      const asset = result.assets[0];
-      // A cópia no cache tem dado de saúde: sai em qualquer caminho (lida, grande demais ou com erro).
-      copy = new File(asset.uri);
+      const picked = await pickDocument(MAX_BYTES, (f) => f.text());
+      if (picked.status === 'cancelled') return;
       setPassword('');
       setError(null);
-      if (asset.size !== undefined && asset.size > MAX_BYTES) {
+      if (picked.status === 'too_large') {
         setFile(null);
         setError({ field: 'file', text: d.tooBig });
         return;
       }
-      const text = await copy.text();
+      const text = picked.content;
       // Decide pelo formato do arquivo (não por texto solto, que pode estar numa nota).
       const read = await readRestore(text).catch(() => null);
       if (!read) {
@@ -73,12 +68,10 @@ export function RestoreForm({ onDone, replacing = true }: Props) {
         setError({ field: 'file', text: d.notAppFile });
         return;
       }
-      setFile({ name: asset.name, text, encrypted: read.kind === 'needs_password' });
+      setFile({ name: picked.name, text, encrypted: read.kind === 'needs_password' });
     } catch (e) {
       log.error('restore_pick_failed', e);
       show(d.restoreFailed);
-    } finally {
-      if (copy?.exists) copy.delete();
     }
   }
 

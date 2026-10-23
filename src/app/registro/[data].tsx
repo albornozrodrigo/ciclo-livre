@@ -54,7 +54,12 @@ export default function RegistroScreen() {
         <Text className="mt-3 text-base leading-6 text-ink-muted dark:text-ink-muted-night">{t.autosave}</Text>
         <View className="mt-5 flex-row gap-3">
           <View className="flex-1">
-            <CapsuleButton variant="outline" label={t.previousDay} onPress={() => router.setParams({ data: addDays(date, -1) })} />
+            <CapsuleButton
+              variant="outline"
+              label={t.previousDay}
+              disabled={!isValidDate(addDays(date, -1))}
+              onPress={() => router.setParams({ data: addDays(date, -1) })}
+            />
           </View>
           <View className="flex-1">
             <CapsuleButton

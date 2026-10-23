@@ -51,6 +51,12 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | IA BYOK: Claude primeiro, chave no secure-store, consentimento explícito | 08 plan | Decisão do usuário |
 | Importar do Clue (ZIP com senha + measurements.json), juntando sem apagar | 08 plan | Requisito do usuário |
 | Leitor de ZIP próprio (JS puro, AES/ZipCrypto); zip.js só nos testes | 08-03 | zip.js depende de Workers/crypto.subtle no Hermes |
+| CSV com `;` entre colunas e vírgula decimal | 07 | Excel pt-BR abre direto; mudar quebra quem importa |
+| Temporários de exportação ficam em `cache/exportar` até a próxima exportação ou "apagar tudo" | 07 | Drive/Gmail leem depois do menu; pasta privada e fora do backup |
+| Restaurar na primeira abertura sem confirmação (não há dados para substituir) | 07 | Ver também a importação do Clue no onboarding |
+| scrypt N=2^13 no backup (JS); senha mínima 12 + gerador de 100 bits | 07 / 08-04 | Troca de segurança registrada; KDF nativo na fase 11 |
+| Datas de fora: entrada 1900–2100, contas 1800–2299 | 08-04 | Arquivo/link com ano 9999 não quebra o app |
+| App fora do backup do Android (plugin with-no-backup); lembretes com id opaco | 08-04 | Agenda de notificações fica em texto puro no Android |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -70,7 +76,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | `lastInsertRowId` na restauração de tags | 07 code-review | S | Polimento |
 | Visibilidade SECRET por notificação (patch/plugin nativo) para quem desliga o modo discreto | 06 | M | Fase 11 |
 | Interruptor em cápsula própria do mundo (teto do finish review) | 06 review | S | Fase 11 |
-| Análise lê o banco duas vezes por foco e sem limite de data | 05 code-review | S | Unificar leitura (fase 7 ou polimento) |
+| Análise e relatório PDF leem o banco duas vezes (getCycleSignals + getAnalysisData) e sem limite de data | 05 code-review | S | Polimento (fase 11) |
 | "média 29" na ponta da linha de referência; número principal em Display | 05 review | S | Polimento |
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |

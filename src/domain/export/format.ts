@@ -4,15 +4,13 @@ import { type Reminder, REMINDER_KINDS, validOptions, validTime } from '@/domain
 import { validateMessage } from '@/domain/reminders/message';
 import { categoryById } from '@/domain/tracking/catalog';
 import { type CategoryPref, validateMeasure, validateNote } from '@/domain/tracking/rules';
-import { normalizeTagKey, validateTagName } from '@/domain/tracking/tags';
+import { normalizeTagKey, TAG_LIMIT, validateTagName } from '@/domain/tracking/tags';
 
 /** Mensagem única para qualquer arquivo recusado (sem detalhes internos). */
 export const IMPORT_ERROR = 'Arquivo de exportação inválido ou de uma versão mais nova do app.';
 
 /** Limite por lista: cobre décadas de registros diários e impede arquivo forjado gigante. */
-const MAX_ITEMS = 200_000;
-/** Tags são nomes escolhidos à mão: mil é muito mais do que alguém cria, e mantém a validação barata. */
-export const MAX_TAGS = 1000;
+export const MAX_ITEMS = 200_000;
 
 export type Selection = { date: IsoDate; category: string; option: string };
 export type Measure = { date: IsoDate; category: string; value: number };
@@ -114,7 +112,7 @@ function notesOf(v: unknown): Note[] {
 
 function tagsOf(v: unknown): string[] {
   const raws = list(v);
-  check(raws.length <= MAX_TAGS);
+  check(raws.length <= TAG_LIMIT);
   const names: string[] = [];
   // Duplicata pela chave num conjunto: validar contra a lista inteira a cada tag era O(n²).
   const keys = new Set<string>();

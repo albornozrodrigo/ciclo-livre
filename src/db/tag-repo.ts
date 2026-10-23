@@ -1,5 +1,5 @@
 import { type IsoDate, isValidDate } from '@/domain/dates';
-import { normalizeTagKey, validateTagName } from '@/domain/tracking/tags';
+import { normalizeTagKey, TAG_LIMIT, validateTagName } from '@/domain/tracking/tags';
 
 import type { SqlExecutor } from './types';
 import { enqueueWrite } from './write-queue';
@@ -22,6 +22,8 @@ async function validName(db: SqlExecutor, raw: string, exceptId?: number): Promi
 export async function createTag(db: SqlExecutor, raw: string): Promise<Tag> {
   return enqueueWrite(db, async () => {
     const name = await validName(db, raw);
+    const count = await db.getFirstAsync<{ n: number }>('SELECT COUNT(*) AS n FROM tag');
+    if ((count?.n ?? 0) >= TAG_LIMIT) throw new Error('Nome de tag inválido: too_many.');
     await db.runAsync('INSERT INTO tag (name, key) VALUES (?, ?)', name, normalizeTagKey(name));
     const row = await db.getFirstAsync<Tag>('SELECT id, name FROM tag WHERE key = ?', normalizeTagKey(name));
     if (!row) throw new Error('Tag não foi criada.');

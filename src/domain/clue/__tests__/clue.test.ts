@@ -196,3 +196,10 @@ describe('limites contra arquivo forjado', () => {
     ).toThrow(ClueFormatError);
   });
 });
+
+describe('intensidade da dor', () => {
+  it('só vem de opção que vira dor (enxaqueca vai para doenças e não deixa intensidade sozinha)', () => {
+    const o = mapClue([rec('pain', '2024-01-01', [{ option: 'migraine', extent: { severity: 'severe' } }])]);
+    expect(o.selections).toEqual([{ date: '2024-01-01', category: 'ailments', option: 'migraine' }]);
+  });
+});

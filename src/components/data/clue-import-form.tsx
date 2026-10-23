@@ -1,5 +1,3 @@
-import { getDocumentAsync } from 'expo-document-picker';
-import { File } from 'expo-file-system';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useRef, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -8,7 +6,8 @@ import { FormScreen } from '@/components/form-screen';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { PasswordField } from '@/components/ui/password-field';
 import { useSnackbar } from '@/components/ui/snackbar';
-import { applyClueImport, type CluePreview, previewClueImport } from '@/db/clue-import-repo';
+import { pickDocument } from '@/data-export/pick-document';
+import { applyClueImport, ClueLimitError, type CluePreview, previewClueImport } from '@/db/clue-import-repo';
 import { CLUE_LIMITS, type ClueImport } from '@/domain/clue/clue';
 import { ClueReadError, type ClueReadReason, readClueBytes } from '@/domain/clue/read';
 import { ptBR } from '@/i18n/pt-BR';
@@ -63,27 +62,20 @@ export function ClueImportForm({ onDone }: Props) {
 
   const pick = () =>
     guarded('reading', async () => {
-      let copy: File | null = null;
       try {
-        const result = await getDocumentAsync({ copyToCacheDirectory: true, multiple: false });
-        if (result.canceled) return;
-        const asset = result.assets[0];
-        // A cópia no cache tem dado de saúde: sai em qualquer caminho (lida, grande demais ou com erro).
-        copy = new File(asset.uri);
+        const picked = await pickDocument(CLUE_LIMITS.bytes, (f) => f.bytes());
+        if (picked.status === 'cancelled') return;
         setFile(null);
         setReady(null);
         setPassword('');
         setError(null);
-        if (asset.size !== undefined && asset.size > CLUE_LIMITS.bytes) return fail('too_large');
-        const bytes = await copy.bytes();
-        const opened = await loadPreview(bytes);
-        setFile({ name: asset.name, bytes, encrypted: !opened });
+        if (picked.status === 'too_large') return fail('too_large');
+        const opened = await loadPreview(picked.content);
+        setFile({ name: picked.name, bytes: picked.content, encrypted: !opened });
       } catch (e) {
         if (e instanceof ClueReadError) return fail(e.reason);
         log.error('clue_pick_failed', e);
         show(c.failed);
-      } finally {
-        if (copy?.exists) copy.delete();
       }
     });
 
@@ -114,6 +106,7 @@ export function ClueImportForm({ onDone }: Props) {
         show(c.done);
         onDone();
       } catch (e) {
+        if (e instanceof ClueLimitError) return show(c.limitReached);
         log.error('clue_import_failed', e);
         show(c.failed);
       }
@@ -180,9 +173,15 @@ export function ClueImportForm({ onDone }: Props) {
           ) : (
             <View>
               {p.byCategory.map((row) => (
-                <View key={row.category} className="flex-row justify-between border-b border-ink/10 py-2 dark:border-ink-night/20">
+                <View
+                  key={row.category}
+                  accessible
+                  accessibilityLabel={`${labelOf(row.category)}: ${row.count}`}
+                  className="min-h-14 flex-row items-center justify-between border-b border-line dark:border-line-night">
                   <Text className="flex-1 text-base text-ink dark:text-ink-night">{labelOf(row.category)}</Text>
-                  <Text className="text-base font-bold text-ink dark:text-ink-night">{row.count}</Text>
+                  <Text style={{ fontVariant: ['tabular-nums'] }} className="text-base font-bold text-ink dark:text-ink-night">
+                    {row.count}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -198,12 +197,14 @@ export function ClueImportForm({ onDone }: Props) {
 
           {p.unknown.length > 0 ? (
             <View className="gap-1">
-              <Text className="text-base font-bold text-ink dark:text-ink-night">{c.unknownTitle}</Text>
+              <Text accessibilityRole="header" className="text-base font-bold text-ink dark:text-ink-night">
+                {c.unknownTitle}
+              </Text>
               <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{c.unknownHint}</Text>
               {p.unknown.map((u) => (
-                <Text
-                  key={u.key}
-                  className="text-sm text-ink-muted dark:text-ink-muted-night">{`${u.key.replace(/_/g, ' ').replace(':', ': ')} (${u.count})`}</Text>
+                <Text key={u.key} className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">
+                  {c.unknownItem(u.key.replace(/_/g, ' ').replace(':', ': '), u.count)}
+                </Text>
               ))}
             </View>
           ) : null}

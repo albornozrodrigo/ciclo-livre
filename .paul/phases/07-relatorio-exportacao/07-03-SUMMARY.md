@@ -60,3 +60,16 @@ about: "ciclo-livre"
 - KDF nativo (backup em menos de 3 s).
 - Backup automático no Drive (exige OAuth/Drive API).
 - `lastInsertRowId` na restauração.
+
+## Correção (2026-10-23, revisão da fase 8)
+- AC-4 é **PASS (com desvio)**:
+  - o plano pedia que os temporários fossem apagados após cada ação;
+  - eles ficam em `cache/exportar` até a próxima exportação ou o "apagar tudo", porque o Drive e o Gmail leem o arquivo depois que o menu de compartilhar fecha;
+  - a pasta é privada e, desde a 08-04, fica fora de qualquer backup;
+  - os logs de falha registram só o nome do evento e `error.name`.
+- AC-5 é **PASS (parcial)**:
+  - salvar o PDF no Drive pelo compartilhar foi provado só até o menu com o Drive (o envio em si não);
+  - CSV via SAF e claro/escuro não foram registrados com evidência.
+- O PDF é gerado com `width: 595, height: 842` (A4 é 595,28 × 841,89 pt); o "595×841" acima veio arredondado da leitura no aparelho.
+- O número de casos em `dados.test` era 11, não 12.
+- KDF 2^13 é uma troca de segurança, não só de desempenho. Na 08-04 ela foi compensada com senha mínima de 12 e gerador de senha de 100 bits.

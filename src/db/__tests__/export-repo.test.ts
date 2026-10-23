@@ -1,4 +1,5 @@
 import { exportAll, IMPORT_ERROR, importAll } from '@/db/export-repo';
+import { TAG_LIMIT } from '@/domain/tracking/tags';
 import { setMeasure, setNote, setSelection, saveCategoryPrefs } from '@/db/log-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import { saveProfile } from '@/db/profile-repo';
@@ -122,7 +123,10 @@ describe('importAll', () => {
       (d: Record<string, unknown>) => ({ ...d, reminders: [{ ...defaultReminder('daily_log'), time: '99:99' }] }),
     ],
     ['não é objeto', () => 'texto'],
-    ['mais de 1000 tags', (d: Record<string, unknown>) => ({ ...d, tags: Array.from({ length: 1001 }, (_, i) => `t${i}`), dayTags: [] })],
+    [
+      'mais tags do que o app permite criar',
+      (d: Record<string, unknown>) => ({ ...d, tags: Array.from({ length: TAG_LIMIT + 1 }, (_, i) => `t${i}`), dayTags: [] }),
+    ],
     ['tags repetidas (mesma chave sem acento)', (d: Record<string, unknown>) => ({ ...d, tags: ['Plantão', 'plantao'], dayTags: [] })],
   ])('recusa %s sem mudar nada', async (_name, mutate) => {
     const target = await seeded();
@@ -142,14 +146,14 @@ describe('importAll', () => {
     expect(Date.now() - t0).toBeLessThan(1000);
   });
 
-  it('1000 tags ainda restauram em tempo curto', async () => {
+  it('backup com 1500 tags (o app permite criar) restaura: todo backup gerado pelo app volta', async () => {
     const target = await migratedDb();
     const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
-    data.tags = [...data.tags, ...Array.from({ length: 999 }, (_, i) => `t${i}`)];
+    data.tags = [...data.tags, ...Array.from({ length: 1499 }, (_, i) => `t${i}`)];
     const t0 = Date.now();
     await importAll(target, data);
-    expect(Date.now() - t0).toBeLessThan(3000);
-    expect((await exportAll(target, NOW)).tags).toHaveLength(1000);
+    expect(Date.now() - t0).toBeLessThan(5000);
+    expect((await exportAll(target, NOW)).tags).toHaveLength(1500);
   });
 
   it('falha no meio da gravação desfaz tudo', async () => {

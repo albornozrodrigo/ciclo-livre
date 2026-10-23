@@ -1,5 +1,6 @@
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import { createTag, deleteTag, getDayTags, listTags, renameTag, setDayTags } from '@/db/tag-repo';
+import { TAG_LIMIT } from '@/domain/tracking/tags';
 
 import { openMemoryDatabase } from './node-sqlite-adapter';
 
@@ -26,6 +27,14 @@ describe('tag-repo', () => {
 
     await expect(createTag(db, 'cafe')).rejects.toThrow();
     await expect(createTag(db, '  ')).rejects.toThrow();
+  });
+
+  it(`no máximo ${TAG_LIMIT} tags: acima disso o backup não voltaria`, async () => {
+    const db = await migratedDb();
+    await db.execAsync(
+      `WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i + 1 FROM n WHERE i < ${TAG_LIMIT}) INSERT INTO tag (name, key) SELECT 't' || i, 't' || i FROM n`,
+    );
+    await expect(createTag(db, 'Uma a mais')).rejects.toThrow('too_many');
   });
 
   it('renomeia mantendo as marcações dos dias', async () => {

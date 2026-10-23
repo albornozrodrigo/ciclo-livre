@@ -62,12 +62,16 @@ export default function IaScreen() {
       show(t.keyRemoved);
     } catch (e) {
       log.error('ai_key_delete_failed', e);
+      show(t.saveFailed);
     }
   }
 
   return (
     <FormScreen title={t.title} hint={t.hint}>
       <View className="gap-3">
+        <Text accessibilityRole="header" className="text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
+          {t.keySection}
+        </Text>
         {state.key ? (
           <>
             <Text className="text-base font-bold text-ink dark:text-ink-night">{t.keySaved(maskKey(state.key))}</Text>
@@ -88,7 +92,9 @@ export default function IaScreen() {
       </View>
 
       <View className="gap-2">
-        <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{t.model}</Text>
+        <Text accessibilityRole="header" className="text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
+          {t.model}
+        </Text>
         <ChoiceList
           label={t.model}
           options={modelOptions}
@@ -96,12 +102,18 @@ export default function IaScreen() {
           onChange={(model) =>
             setAiModel(db, model)
               .then(reload)
-              .catch((e: unknown) => log.error('ai_model_save_failed', e))
+              .catch((e: unknown) => {
+                log.error('ai_model_save_failed', e);
+                show(t.saveFailed);
+              })
           }
         />
       </View>
 
       <View className="gap-3">
+        <Text accessibilityRole="header" className="text-[22px] font-bold leading-[26px] text-ink dark:text-ink-night">
+          {t.consentSection}
+        </Text>
         <Text className="text-base text-ink dark:text-ink-night">{state.settings.consent ? t.consentOn : t.consentOff}</Text>
         <ListRow label={t.consentReview} onPress={() => router.push('/ia/consentimento')} />
         {state.settings.consent ? (
@@ -112,7 +124,10 @@ export default function IaScreen() {
               setAiConsent(db, false)
                 .then(reload)
                 .then(() => show(t.revoked))
-                .catch((e: unknown) => log.error('ai_consent_failed', e))
+                .catch((e: unknown) => {
+                  log.error('ai_consent_failed', e);
+                  show(t.saveFailed);
+                })
             }
           />
         ) : null}

@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 
 import { FormScreen } from '@/components/form-screen';
 import { CapsuleButton } from '@/components/ui/capsule-button';
+import { useSnackbar } from '@/components/ui/snackbar';
 import { setAiConsent } from '@/db/ai-settings-repo';
 import { ptBR } from '@/i18n/pt-BR';
 import { log } from '@/lib/logger';
@@ -26,6 +27,7 @@ function Bullets({ items }: { items: readonly string[] }) {
 /** Consentimento explícito antes do primeiro resumo: o que vai, o que nunca vai, para onde e quem paga. */
 export default function ConsentimentoScreen() {
   const db = useSQLiteContext();
+  const { show } = useSnackbar();
   const back = () => router.canGoBack() && router.back();
 
   async function accept() {
@@ -34,6 +36,7 @@ export default function ConsentimentoScreen() {
       back();
     } catch (e) {
       log.error('ai_consent_failed', e);
+      show(t.saveFailed);
     }
   }
 

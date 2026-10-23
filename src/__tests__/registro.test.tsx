@@ -17,8 +17,15 @@ let mockDb: ReturnType<typeof openMemoryDatabase>;
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDb }));
 
 const profile: Profile = {
-  birthYear: 1995, mode: 'period', lastPeriodStart: null, periodLength: 5, cycleLength: 28,
-  regularity: 'unknown', dueDate: null, tryingSince: null, birthControl: 'pill',
+  birthYear: 1995,
+  mode: 'period',
+  lastPeriodStart: null,
+  periodLength: 5,
+  cycleLength: 28,
+  regularity: 'unknown',
+  dueDate: null,
+  tryingSince: null,
+  birthControl: 'pill',
 };
 jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile } }) }));
 
@@ -241,6 +248,13 @@ describe('Registrar o dia › outros dias', () => {
     await fireEvent.press(screen.getByRole('button', { name: ptBR.tracking.previousDay }));
 
     expect(mockSetParams).toHaveBeenCalledWith({ data: '2026-10-19' });
+  });
+
+  it('não deixa ir antes do primeiro dia aceito (1900-01-01)', async () => {
+    mockDate = '1900-01-01';
+    await renderRegistro();
+
+    expect(screen.getByRole('button', { name: ptBR.tracking.previousDay })).toBeDisabled();
   });
 
   it('não deixa ir além de hoje', async () => {

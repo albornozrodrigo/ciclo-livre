@@ -50,9 +50,9 @@ export default function ExplorarScreen() {
               <Text className="text-base leading-6 text-ink dark:text-ink-night">{c.noResultsHint}</Text>
             ) : (
               <>
-                {/* Nova busca, novo resumo: a chave reinicia o estado do cartão. */}
+                {/* O cartão fica montado durante a digitação (a chave não é relida a cada letra); ele se zera ao mudar a busca. */}
                 <View className="mb-4 mt-2">
-                  <AiSummary key={query.trim()} query={query} articles={results} />
+                  <AiSummary query={query} articles={results} />
                 </View>
                 {results.map((a) => (
                   <ArticleRow key={a.id} article={a} />

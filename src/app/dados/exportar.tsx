@@ -17,6 +17,12 @@ import { log } from '@/lib/logger';
 import { useProfile } from '@/profile/profile-context';
 
 const d = ptBR.data;
+/** Leitor de tela lê a senha caractere por caractere ("J, 8, Q…, traço, …") para dar para anotar. */
+const spell = (password: string) =>
+  password
+    .split('-')
+    .map((group) => group.split('').join(', '))
+    .join(', traço, ');
 const isKind = (v: unknown): v is ExportKind => typeof v === 'string' && (EXPORT_KINDS as readonly string[]).includes(v);
 
 /** Gera um arquivo e manda para onde a pessoa escolher: Compartilhar (inclui o Google Drive) ou uma pasta do aparelho. */
@@ -99,8 +105,12 @@ export default function ExportarScreen() {
             disabled={busy}
           />
           {generated ? (
-            <View className="gap-1">
-              <Text selectable className="font-mono text-xl font-bold tracking-[1px] text-ink dark:text-ink-night">
+            <View accessibilityLiveRegion="polite" className="gap-1">
+              <Text
+                selectable
+                accessibilityLabel={d.generatedLabel(spell(generated))}
+                style={{ fontVariant: ['tabular-nums'] }}
+                className="text-xl font-bold tracking-[1px] text-ink dark:text-ink-night">
                 {generated}
               </Text>
               <Text className="text-sm leading-5 text-ink dark:text-ink-night">{d.generatedHint}</Text>

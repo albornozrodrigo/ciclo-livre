@@ -43,11 +43,15 @@ export default function ArtigoScreen() {
     );
   }
   return (
-    <FormScreen title={article.title} hint={article.summary}>
-      <Text className="-mt-4 text-sm text-ink-muted dark:text-ink-muted-night">{c.minutes(article.minutes)}</Text>
-      {article.blocks.map((block, i) => (
-        <BlockView key={`${block.kind}-${i}`} block={block} />
-      ))}
+    <FormScreen title={article.title} hint={`${article.summary} ${c.minutes(article.minutes)}`}>
+      {/* Texto corrido: 16dp entre blocos; título com mais espaço acima (32) do que abaixo (16). */}
+      <View className="gap-4">
+        {article.blocks.map((block, i) => (
+          <View key={`${block.kind}-${i}`} className={block.kind === 'h' && i > 0 ? 'mt-4' : undefined}>
+            <BlockView block={block} />
+          </View>
+        ))}
+      </View>
       <View className="gap-2 border-t border-line pt-6 dark:border-line-night">
         <Text accessibilityRole="header" className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">
           {c.sources}
@@ -58,9 +62,9 @@ export default function ArtigoScreen() {
           </Text>
         ))}
       </View>
-      <Text className="rounded-[20px] border-[1.5px] border-ink p-4 text-sm leading-5 text-ink dark:border-ink-night dark:text-ink-night">
-        {c.disclaimer}
-      </Text>
+      <View className="rounded-[28px] border-[1.5px] border-ink p-5 dark:border-ink-night">
+        <Text className="text-sm leading-5 text-ink dark:text-ink-night">{c.disclaimer}</Text>
+      </View>
     </FormScreen>
   );
 }

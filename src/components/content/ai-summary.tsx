@@ -17,17 +17,27 @@ const t = ptBR.ai;
 export function AiSummary({ query, articles }: { query: string; articles: Article[] }) {
   const db = useSQLiteContext();
   const { state } = useAi();
-  const [result, setResult] = useState<Exclude<SummaryOutcome, { error: 'no_key' | 'no_consent' }> | null>(null);
-  const [busy, setBusy] = useState(false);
+  type Shown = Exclude<SummaryOutcome, { error: 'no_key' | 'no_consent' }>;
+  // Resultado e "gerando" valem para a busca em que nasceram: mudou a busca, somem sozinhos (sem efeito que zera estado).
+  const [saved, setSaved] = useState<{ query: string; outcome: Shown } | null>(null);
+  const [busyFor, setBusyFor] = useState<string | null>(null);
   const running = useRef(false);
-  // Sair da tela (ou trocar a busca, que remonta este bloco) cancela o pedido em curso.
+  const normalized = query.trim();
+  const result = saved?.query === normalized ? saved.outcome : null;
+  const busy = busyFor === normalized;
+  // Sair da tela ou mudar a busca cancela o pedido em curso.
   const abort = useRef<AbortController | null>(null);
   useEffect(() => () => abort.current?.abort(), []);
+  useEffect(() => {
+    abort.current?.abort();
+    running.current = false;
+  }, [normalized]);
 
   async function run() {
     if (!state || running.current) return;
     running.current = true;
-    setBusy(true);
+    const forQuery = normalized;
+    setBusyFor(forQuery);
     const controller = new AbortController();
     abort.current = controller;
     try {
@@ -36,20 +46,21 @@ export function AiSummary({ query, articles }: { query: string; articles: Articl
       if (controller.signal.aborted) return;
       if (!outcome.ok && outcome.error === 'no_key') router.push('/ia');
       else if (!outcome.ok && outcome.error === 'no_consent') router.push('/ia/consentimento');
-      else setResult(outcome);
+      else setSaved({ query: forQuery, outcome });
     } catch (e) {
       log.error('ai_summary_failed', e);
-      if (!controller.signal.aborted) setResult({ ok: false, error: 'unknown' });
+      if (!controller.signal.aborted) setSaved({ query: forQuery, outcome: { ok: false, error: 'unknown' } });
     } finally {
-      running.current = false;
-      if (!controller.signal.aborted) setBusy(false);
+      if (abort.current === controller) running.current = false;
+      setBusyFor((current) => (current === forQuery ? null : current));
     }
   }
 
   return (
     <View className="gap-3">
       {!result?.ok ? (
-        <CapsuleButton label={t.summarize} onPress={run} disabled={busy || !state} accessibilityHint={t.summarizeHint} />
+        // Contorno: a ação principal do Explorar é ler; a IA é opcional e não compete com os resultados.
+        <CapsuleButton label={t.summarize} variant="outline" onPress={run} disabled={busy || !state} accessibilityHint={t.summarizeHint} />
       ) : null}
       {state && !state.key ? <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{t.setupFirst}</Text> : null}
       {busy ? (

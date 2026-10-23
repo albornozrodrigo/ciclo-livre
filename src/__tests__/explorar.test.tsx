@@ -68,6 +68,10 @@ describe('Resumir com IA', () => {
     await fireEvent.press(screen.getByRole('button', { name: ptBR.ai.summarize }));
     expect(await screen.findByText('Calor alivia.')).toBeOnTheScreen();
     expect(mockFetch).toHaveBeenCalledTimes(1);
+    // Mudou a busca: o resumo antigo some e o botão volta, sem recarregar a chave a cada letra.
+    await fireEvent.changeText(screen.getByLabelText(c.search), 'colica forte');
+    expect(screen.queryByText('Calor alivia.')).toBeNull();
+    expect(screen.getByRole('button', { name: ptBR.ai.summarize })).toBeEnabled();
   });
 });
 
@@ -98,7 +102,7 @@ describe('Artigo', () => {
   it('título, tempo, subtítulos, fontes e aviso', async () => {
     await render(wrap(<ArtigoScreen />));
     expect(screen.getByRole('header', { name: 'Cólica menstrual: o que ajuda' })).toBeOnTheScreen();
-    expect(screen.getByText(c.minutes(4))).toBeOnTheScreen();
+    expect(screen.getByText(new RegExp(c.minutes(4)))).toBeOnTheScreen();
     expect(screen.getByRole('header', { name: 'O que costuma aliviar' })).toBeOnTheScreen();
     expect(screen.getByText(/ACOG, Dysmenorrhea/)).toBeOnTheScreen();
     expect(screen.getByText(c.disclaimer)).toBeOnTheScreen();

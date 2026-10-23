@@ -32,12 +32,13 @@ async function withDeadline<T>(
   run: (signal: AbortSignal, race: <U>(p: Promise<U>) => Promise<U>) => Promise<T>,
 ): Promise<T> {
   const controller = new AbortController();
+  // O ouvinte vem antes de qualquer abort: com o sinal de fora já cancelado, a corrida também precisa rejeitar.
+  const aborted = new Promise<never>((_, reject) => controller.signal.addEventListener('abort', () => reject(new Error('aborted'))));
+  aborted.catch(() => undefined);
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   const onOuterAbort = () => controller.abort();
   outer?.addEventListener('abort', onOuterAbort);
   if (outer?.aborted) controller.abort();
-  const aborted = new Promise<never>((_, reject) => controller.signal.addEventListener('abort', () => reject(new Error('aborted'))));
-  aborted.catch(() => undefined);
   const race = <U>(p: Promise<U>) => Promise.race([p, aborted]);
   try {
     return await run(controller.signal, race);
@@ -61,6 +62,17 @@ function call(path: string, apiKey: string, signal: AbortSignal, init: { method:
   });
 }
 
+/** O 400 é sobre o fallback/beta? Lê só a mensagem de erro, que não é mostrada a ninguém. */
+async function aboutFallback(response: Response, race: <U>(p: Promise<U>) => Promise<U>): Promise<boolean> {
+  try {
+    const body = (await race(response.json())) as { error?: { message?: unknown } };
+    const message = typeof body?.error?.message === 'string' ? body.error.message.toLowerCase() : '';
+    return message.includes('fallback') || message.includes('anthropic-beta');
+  } catch {
+    return false;
+  }
+}
+
 type SummaryInput = { apiKey: string; model: AiModel; query: string; articles: readonly Article[]; signal?: AbortSignal };
 export type SummaryResult = { ok: true; text: string; cited: Article[] } | { ok: false; error: AiError };
 type MessageResponse = { stop_reason?: string; content?: { type: string; text?: string }[] };
@@ -75,7 +87,8 @@ export async function summarize({ apiKey, model, query, articles, signal: outer 
         beta: withFallback ? 'server-side-fallback-2026-07-01' : undefined,
         body: {
           model,
-          max_tokens: 1024,
+          // O raciocínio adaptativo (ligado por padrão nesses modelos) conta neste limite: folga para a resposta curta.
+          max_tokens: 8000,
           output_config: { effort: 'low' },
           system: prompt.system,
           messages: [{ role: 'user', content: prompt.user }],
@@ -88,8 +101,8 @@ export async function summarize({ apiKey, model, query, articles, signal: outer 
     let response: Response;
     try {
       response = await race(request(wantsFallback));
-      // Conta que não aceita o cabeçalho beta do fallback responde 400: uma tentativa sem ele.
-      if (wantsFallback && response.status === 400) response = await race(request(false));
+      // Conta que não aceita o fallback responde 400 falando dele: só aí uma tentativa sem. Outro 400 não se repete.
+      if (wantsFallback && response.status === 400 && (await aboutFallback(response, race))) response = await race(request(false));
     } catch {
       // Sem rede, tempo esgotado ou cancelado por quem chamou.
       return failed();
@@ -102,6 +115,8 @@ export async function summarize({ apiKey, model, query, articles, signal: outer 
       return signal.aborted ? failed() : { ok: false, error: 'unknown' };
     }
     if (data.stop_reason === 'refusal') return { ok: false, error: 'refusal' };
+    // Cortada no limite: texto pela metade e sem as citações; melhor dizer que não deu.
+    if (data.stop_reason === 'max_tokens') return { ok: false, error: 'unknown' };
     const raw = (data.content ?? [])
       .flatMap((b) => (b.type === 'text' && typeof b.text === 'string' ? [b.text] : []))
       .join('\n')

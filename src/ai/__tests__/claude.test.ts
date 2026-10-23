@@ -64,14 +64,32 @@ describe('summarize', () => {
     expect(init.headers['anthropic-beta']).toBeUndefined();
   });
 
-  it('conta que não aceita o fallback (400): tenta uma vez sem ele', async () => {
+  it('conta que não aceita o fallback (400 que fala do fallback): tenta uma vez sem ele', async () => {
     mockFetch
-      .mockResolvedValueOnce(reply(400))
+      .mockResolvedValueOnce(reply(400, { error: { type: 'invalid_request_error', message: 'fallbacks: not available for this account' } }))
       .mockResolvedValueOnce(reply(200, { stop_reason: 'end_turn', content: [{ type: 'text', text: 'ok' }] }));
     expect(await summarize({ apiKey: KEY, model: 'claude-opus-5-5', query: 'x', articles: [art('a')] })).toMatchObject({ ok: true });
     const second = mockFetch.mock.calls[1][1];
     expect(JSON.parse(second.body).fallbacks).toBeUndefined();
     expect(second.headers['anthropic-beta']).toBeUndefined();
+  });
+
+  it('outro 400 (não é o fallback): não repete o pedido', async () => {
+    mockFetch.mockResolvedValue(reply(400, { error: { type: 'invalid_request_error', message: 'messages: invalid' } }));
+    expect(await summarize({ apiKey: KEY, model: 'claude-opus-5-5', query: 'x', articles: [art('a')] })).toEqual({
+      ok: false,
+      error: 'unknown',
+    });
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('o raciocínio conta no limite de saída: pede folga e trata resposta cortada como erro', async () => {
+    mockFetch.mockResolvedValue(reply(200, { stop_reason: 'max_tokens', content: [{ type: 'text', text: 'Calor aj' }] }));
+    expect(await summarize({ apiKey: KEY, model: 'claude-opus-5-5', query: 'x', articles: [art('a')] })).toEqual({
+      ok: false,
+      error: 'unknown',
+    });
+    expect(JSON.parse(mockFetch.mock.calls[0][1].body).max_tokens).toBeGreaterThanOrEqual(8000);
   });
 
   it('recusa vira erro "refusal"', async () => {
@@ -117,6 +135,19 @@ describe('testKey', () => {
 
   it('modelos oferecidos: Opus 5.5 primeiro (padrão)', () => {
     expect(AI_MODELS[0]).toBe('claude-opus-5-5');
+  });
+});
+
+describe('cancelamento', () => {
+  it('sinal já cancelado antes de começar: volta na hora como "cancelled"', async () => {
+    jest.useFakeTimers();
+    mockFetch.mockResolvedValue({ ok: true, status: 200, json: () => new Promise(() => undefined) });
+    const controller = new AbortController();
+    controller.abort();
+    const pending = summarize({ apiKey: KEY, model: 'claude-haiku-5-5', query: 'x', articles: [art('a')], signal: controller.signal });
+    await jest.advanceTimersByTimeAsync(10);
+    expect(await pending).toEqual({ ok: false, error: 'cancelled' });
+    jest.useRealTimers();
   });
 });
 

@@ -38,6 +38,7 @@ jest.mock('@/domain/clue/read', () => {
 let mockPreview: Record<string, unknown> = {};
 const mockApply = jest.fn(async (..._a: unknown[]) => undefined);
 jest.mock('@/db/clue-import-repo', () => ({
+  ClueLimitError: class ClueLimitError extends Error {},
   previewClueImport: async () => mockPreview,
   applyClueImport: (...a: unknown[]) => mockApply(...a),
 }));
@@ -113,7 +114,7 @@ describe('Importar do Clue', () => {
     expect(screen.getByText(c.invalid(2))).toBeTruthy();
     expect(screen.getByText('Menstruação')).toBeTruthy();
     expect(screen.getByText(c.notesLabel)).toBeTruthy();
-    expect(screen.getByText('pregnancy superpowers (1)')).toBeTruthy();
+    expect(screen.getByText(c.unknownItem('pregnancy superpowers', 1))).toBeTruthy();
 
     fireEvent.press(screen.getByRole('button', { name: c.importButton }));
     await screen.findByRole('button', { name: c.pick });
@@ -147,6 +148,16 @@ describe('Importar do Clue', () => {
     await screen.findByRole('button', { name: c.importButton });
     expect(mockShow).toHaveBeenCalledWith(c.failed);
     expect(mockBack).not.toHaveBeenCalled();
+  });
+
+  it('importação que passaria do limite do app: explica e nada muda', async () => {
+    const { ClueLimitError } = jest.requireMock('@/db/clue-import-repo');
+    mockApply.mockRejectedValueOnce(new ClueLimitError());
+    await render(wrap(<ClueScreen />));
+    await openWithPassword('certa');
+    fireEvent.press(await screen.findByRole('button', { name: c.importButton }));
+    await screen.findByRole('button', { name: c.importButton });
+    expect(mockShow).toHaveBeenCalledWith(c.limitReached);
   });
 
   it('na primeira abertura, depois de importar segue para o perfil', async () => {

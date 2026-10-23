@@ -1,4 +1,6 @@
-import { applyClueImport, previewClueImport } from '@/db/clue-import-repo';
+import { applyClueImport, ClueLimitError, exceedsRestoreLimits, previewClueImport } from '@/db/clue-import-repo';
+import { MAX_ITEMS } from '@/domain/export/format';
+import { TAG_LIMIT } from '@/domain/tracking/tags';
 import { exportAll } from '@/db/export-repo';
 import { setMeasure, setNote, setSelection } from '@/db/log-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
@@ -86,6 +88,12 @@ describe('applyClueImport', () => {
     ]);
   });
 
+  it('depois de importar, a prévia do mesmo arquivo diz que não há nada novo (tags incluídas)', async () => {
+    const db = await seeded();
+    await applyClueImport(db, clue);
+    expect((await previewClueImport(db, clue)).byCategory).toEqual([]);
+  });
+
   it('importar duas vezes não duplica nada', async () => {
     const db = await seeded();
     await applyClueImport(db, clue);
@@ -100,5 +108,20 @@ describe('applyClueImport', () => {
     const broken: ClueImport = { ...clue, notes: [...clue.notes, { date: 'xx', text: 'quebra o CHECK' }] };
     await expect(applyClueImport(db, broken)).rejects.toThrow();
     expect(await exportAll(db, NOW)).toEqual(before);
+  });
+
+  it('não deixa passar do limite de tags que a restauração aceita (todo backup tem que voltar)', async () => {
+    const db = await seeded();
+    await db.execAsync(
+      `WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i + 1 FROM n WHERE i < ${TAG_LIMIT - 1}) INSERT INTO tag (name, key) SELECT 'x' || i, 'x' || i FROM n`,
+    );
+    const before = await exportAll(db, NOW);
+    await expect(applyClueImport(db, clue)).rejects.toThrow(ClueLimitError);
+    expect(await exportAll(db, NOW)).toEqual(before);
+  });
+
+  it('não deixa passar do limite de itens da restauração', () => {
+    expect(exceedsRestoreLimits({ selections: MAX_ITEMS + 1, measures: 0, notes: 0, dayTags: 0, tags: 0 })).toBe(true);
+    expect(exceedsRestoreLimits({ selections: MAX_ITEMS, measures: MAX_ITEMS, notes: 10, dayTags: 10, tags: TAG_LIMIT })).toBe(false);
   });
 });
