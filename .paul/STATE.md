@@ -11,25 +11,25 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.1 — Fase 10 (Health Connect)
+**Current focus:** v0.1 — Fase 11 (Personalização + release)
 
 ## Current Position
 
 Milestone: v0.1 Initial Release
-Phase: 10 of 11 (Wearables / Health Connect) — In progress
-Plan: 10-01 completo; 10-02 (nativo + tela) a seguir
-Status: 10-01 UNIFY feito; próximo APPLY 10-02
-Last activity: 2026-10-23 — fase 9 fechada; "Me pague um café" em Mais
+Phase: 11 of 11 (Personalização + release) — Not started
+Plan: nenhum ainda
+Status: fase 10 fechada; próximo PLAN da fase 11
+Last activity: 2026-10-23 — fase 10 (Health Connect) fechada com revisões
 
 Progress:
-- Milestone: [████████░░] 82%
-- Phase 10: [█████░░░░░] 50%
+- Milestone: [█████████░] 91%
+- Phase 11: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [10-01 fechado; próximo: APPLY 10-02]
+  ○        ○        ○     [fase 10 fechada; próximo: PLAN da fase 11]
 ```
 
 ## Accumulated Context
@@ -61,6 +61,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Revogar consentimento do chat ou mudar o escopo apaga a conversa | 09 review | Respostas antigas não voltam a sair sob outro consentimento |
 | "Me pague um café" (Pix) como último item de Mais; app grátis e sem anúncios | 09 | Pedido da pessoa usuária |
 | Health Connect: só leitura, 30 dias, app vence no mesmo dia; react-native-health-connect 4.1.3 (plugin próprio); minSdk 26 | 10 plan | Phones abaixo do Android 8 deixam de ser suportados |
+| Origem do Health Connect por dia/categoria (`health_origin`, v7): reimport atualiza só o que ainda é dele | 10 review | Edição ou exclusão da pessoa sempre vence |
+| Desconectar o Health Connect também revoga a permissão (vale após reiniciar; o app para de ler na hora) | 10 review | Recomendação da biblioteca + privacidade |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -85,6 +87,9 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
 | Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
+| Tela de política de privacidade para o rationale do Health Connect (exigência da Play) | 10 /cso | S | Fase 11 |
+| "Remover o que veio do Health Connect" + aviso de ovulação por temperatura importada | 10 segurança | S | Polimento |
+| /cso da fase 10 ficou parcial (finish encadeado após submit recusado); coberto por revisão manual | 10 | S | /cso completo antes do release |
 | `reminders_sync_failed`/`today_*_failed` ("Access to closed resource") quando a tela de erro raiz desmonta o banco com leituras em curso: efeito de um erro anterior, sem perda (reagenda ao abrir) | 08 investigação | S | Opcional: tratar conexão fechada como cancelamento no polimento |
 
 ### Blockers/Concerns
@@ -97,10 +102,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-22
-Stopped at: 10-01 completo
-Next action: /paul:apply .paul/phases/10-health-connect/10-02-PLAN.md
-Resume file: .paul/phases/10-health-connect/10-02-PLAN.md
+Last session: 2026-10-23
+Stopped at: fase 10 completa
+Next action: /paul:plan (fase 11 — personalização + release)
+Resume file: .paul/ROADMAP.md
 
 ---
 *STATE.md — Updated after every significant action*

@@ -16,7 +16,7 @@ App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clu
 ## Current Milestone
 **v0.1 Initial Release** (v0.1.0)
 Status: In progress
-Phases: 7 of 11 complete
+Phases: 10 of 11 complete
 
 ## Phases
 
@@ -31,7 +31,7 @@ Phases: 7 of 11 complete
 | 7 | Relatório médico + exportação (Google Drive) | 3 | ✅ Complete | 2026-10-22 |
 | 8 | Conteúdo + busca + resumo IA + importar do Clue | 4 | ✅ Complete | 2026-10-23 |
 | 9 | Chat com seus dados (IA BYOK) | 2 | ✅ Complete | 2026-10-23 |
-| 10 | Wearables (Health Connect) | 2 | In progress | - |
+| 10 | Wearables (Health Connect) | 2 | ✅ Complete | 2026-10-23 |
 | 11 | Personalização + release | TBD | Not started | - |
 
 ## Phase Details
@@ -127,7 +127,7 @@ Phases: 7 of 11 complete
 
 **Plans:**
 - [x] 10-01: Conversão e gravação (TDD)
-- [ ] 10-02: Nativo, tela e aparelho
+- [x] 10-02: Nativo, tela e aparelho
 
 ### Phase 11: Personalização + release
 **Goal:**
@@ -138,4 +138,4 @@ Phases: 7 of 11 complete
 
 ---
 *Roadmap created: 2026-10-22*
-*Last updated: 2026-10-22*
+*Last updated: 2026-10-23*
