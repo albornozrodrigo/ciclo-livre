@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ciclo Livre",
     "slug": "ciclo-livre",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icons/padrao-full.png",
     "scheme": "ciclolivre",
@@ -34,7 +34,8 @@
         "com.google.android.c2dm.permission.RECEIVE",
         "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
         "android.permission.DETECT_SCREEN_CAPTURE"
-      ]
+      ],
+      "versionCode": 1
     },
     "web": {
       "output": "server",
@@ -86,11 +87,23 @@
           }
         }
       ],
-      "./plugins/with-alternate-icons"
+      "./plugins/with-alternate-icons",
+      "react-native-quick-crypto"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "501d87b7-31a2-40a3-9db3-3b5243d4d46a"
+      }
+    },
+    "owner": "rodrigoalbornoz"
   }
 }
