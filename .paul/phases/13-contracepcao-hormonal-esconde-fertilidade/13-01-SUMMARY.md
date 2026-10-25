@@ -54,4 +54,4 @@ Depois das correções: 107 suítes, 880 testes, `tsc` e `lint` sem erros.
 |---------|--------|
 | DIU hormonal entra na lista, mesmo que muita gente com ele ainda ovule | Mesmo comportamento do Flo; estimar fertilidade com DIU hormonal induz erro. Quem quiser fertilidade troca o método no perfil |
 | No modo Engravidar a fertilidade sempre aparece, mesmo com método hormonal salvo | O modo não pergunta o método; um método antigo apagaria a função central do modo (achado da revisão) |
-| Legenda do calendário mantida | Explica os símbolos; não afirma fertilidade |
+| Legenda do calendário sem "Janela fértil" e "Anel" com método hormonal | Nenhum dia usa essas marcas (achado da revisão) |
