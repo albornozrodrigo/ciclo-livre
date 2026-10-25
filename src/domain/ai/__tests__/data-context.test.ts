@@ -50,6 +50,7 @@ const base: ContextInput = {
     fertilityHidden: false,
     confidence: 'medium',
     painDays: [],
+    likelyToday: [],
     nextPhase: null,
   },
   summary,

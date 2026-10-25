@@ -3,6 +3,7 @@ import type { Profile } from '@/domain/profile';
 
 import { type ConceiveStatus, conceiveStatus } from './conceive';
 import { cycleModelFor } from './for-profile';
+import { type LikelySymptom, predictLikelyToday } from './likely-today';
 import { type Confidence, dayInfo, fertileWindow, type Phase, pregnancyWeek } from './model';
 import { predictPainDays } from './pain';
 import type { CycleSignals } from './signals';
@@ -24,6 +25,8 @@ export type TodayView =
       fertilityHidden: boolean;
       confidence: Confidence;
       painDays: IsoDate[];
+      /** "Pode aparecer hoje": até 3 sintomas que costumam vir neste ponto do ciclo. */
+      likelyToday: LikelySymptom[];
       /** Fase que vem depois da de hoje e em quantos dias ela começa (lobo secundário de Hoje). */
       nextPhase: { phase: Phase; inDays: number } | null;
       /** Só no modo Tentar engravidar: chance do dia e próximo passo. */
@@ -64,6 +67,7 @@ export function todayCycleView(profile: Profile, signals: CycleSignals, today: I
     fertilityHidden: model.fertilityHidden,
     confidence: model.confidence,
     painDays: predictPainDays(model.periods, signals.painDates, model.next.start),
+    likelyToday: predictLikelyToday(model, signals.symptoms ?? [], today),
     nextPhase: model.late ? null : findNextPhase(model, info.phase, today),
     ...(profile.mode === 'conceive' && !model.fertilityHidden ? { conceive: conceiveStatus(model, today) } : {}),
   };

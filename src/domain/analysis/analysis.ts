@@ -2,6 +2,7 @@ import { bbtOvulation } from '@/domain/cycle/ovulation';
 import { type CycleModel, dayInfo, type Ovulation, type Phase } from '@/domain/cycle/model';
 import { isPlausibleCycle, recentAtypical, recentDiffs } from '@/domain/cycle/stats';
 import { addDays, daysBetween, type IsoDate } from '@/domain/dates';
+import { isSymptom } from '@/domain/tracking/symptoms';
 
 /** `periodLength` null: menstruação só informada no cadastro, sem dias registrados. */
 /** `ovulation` null com contracepção hormonal (sem estimativa). */
@@ -104,47 +105,6 @@ export function completeLengths(model: CycleModel): number[] {
     .map((row) => row.length);
 }
 
-/** Categorias que descrevem como a pessoa se sente (não fluxo, coleta, testes, contracepção ou medições). */
-const SYMPTOM_CATEGORIES = new Set([
-  'pain',
-  'pms',
-  'discharge',
-  'energy',
-  'sleep_quality',
-  'digestion',
-  'cravings',
-  'skin',
-  'hair',
-  'feelings',
-  'mind',
-  'stress',
-  'hot_flashes',
-  'ailments',
-  'clots',
-  'mouth',
-  'breasts',
-  'swelling',
-]);
-/** Estados neutros ou bons: aparecem no registro, mas não são sintomas. */
-const NOT_SYMPTOMS = new Set([
-  'discharge:none',
-  'discharge:sticky',
-  'discharge:creamy',
-  'discharge:egg_white',
-  'discharge:watery',
-  'energy:good',
-  'energy:high',
-  'sleep_quality:ok',
-  'sleep_quality:restful',
-  'skin:good',
-  'hair:good',
-  'feelings:happy',
-  'feelings:calm',
-  'mind:focused',
-  'mind:motivated',
-  'mind:creative',
-  'stress:low',
-]);
 const MIN_COMPLETE_CYCLES = 2;
 
 export type Selection = { date: IsoDate; category: string; option: string };
@@ -160,7 +120,7 @@ export function symptomFrequency(model: CycleModel, selections: readonly Selecti
 
   for (const s of selections) {
     const key = `${s.category}:${s.option}`;
-    if (!SYMPTOM_CATEGORIES.has(s.category) || NOT_SYMPTOMS.has(key) || s.date < first || s.date >= end) continue;
+    if (!isSymptom(s.category, s.option) || s.date < first || s.date >= end) continue;
     const info = dayInfo(model, s.date, today);
     if (!info) continue;
     const entry = stats.get(key) ?? { category: s.category, option: s.option, cycles: new Set(), days: 0, phases: new Map() };

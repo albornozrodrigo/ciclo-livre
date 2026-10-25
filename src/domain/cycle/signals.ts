@@ -1,4 +1,5 @@
 import type { IsoDate } from '@/domain/dates';
+import { isSymptom } from '@/domain/tracking/symptoms';
 
 /** Sinais registrados que alimentam o motor de previsão. */
 export type CycleSignals = {
@@ -7,6 +8,8 @@ export type CycleSignals = {
   eggWhiteDates: IsoDate[];
   positiveOvulationTests: IsoDate[];
   painDates: IsoDate[];
+  /** Registros que contam como sintoma ("Pode aparecer hoje"). */
+  symptoms?: { date: IsoDate; category: string; option: string }[];
 };
 
 type LogRows = {
@@ -28,5 +31,6 @@ export function signalsFromAnalysis(data: LogRows): CycleSignals {
     eggWhiteDates: where('discharge', 'egg_white'),
     positiveOvulationTests: where('tests', 'ovulation_positive'),
     painDates: where('pain'),
+    symptoms: data.selections.filter((s) => isSymptom(s.category, s.option)).map((s) => ({ ...s })),
   };
 }

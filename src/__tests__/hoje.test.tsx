@@ -154,3 +154,19 @@ describe('Hoje › Tentar engravidar', () => {
     expect(screen.queryByText(/Chance de engravidar/)).toBeNull();
   });
 });
+
+describe('Hoje › Pode aparecer hoje', () => {
+  it('mostra o sintoma que costuma vir neste ponto do ciclo, com o motivo', async () => {
+    const today = todayIso();
+    // Ciclos de 28 dias; hoje é o dia 1 de um ciclo. Cólica no dia 1 de 3 dos 3 ciclos anteriores.
+    for (const start of [-84, -56, -28, 0]) {
+      await setSelection(mockDb, addDays(today, start), 'period', ['medium']);
+      await setSelection(mockDb, addDays(today, start + 1), 'period', ['medium']);
+      if (start < 0) await setSelection(mockDb, addDays(today, start), 'pain', ['cramps']);
+    }
+    await renderHoje();
+
+    expect(await screen.findByText(ptBR.cycle.likelyToday.title)).toBeOnTheScreen();
+    expect(screen.getByText(ptBR.cycle.likelyToday.row('Cólica', 3, 3))).toBeOnTheScreen();
+  });
+});

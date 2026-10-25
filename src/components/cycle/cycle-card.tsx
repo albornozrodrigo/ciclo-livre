@@ -6,6 +6,8 @@ import type { Phase } from '@/domain/cycle/model';
 import type { TodayView } from '@/domain/cycle/today';
 import { ptBR } from '@/i18n/pt-BR';
 
+import { LikelyToday } from './likely-today';
+
 const c = ptBR.cycle;
 
 /** Cor do território de cada fase (DESIGN.md): coral, lago, terra, lilás. */
@@ -103,6 +105,7 @@ export function CycleDetails({ view }: { view: TodayView }) {
   return (
     <View className="gap-4">
       <Line>{view.fertile ? c.fertile(shortDate(view.fertile.start), shortDate(view.fertile.end)) : c.fertilityHidden}</Line>
+      <LikelyToday items={view.likelyToday} />
       {view.painDays.length > 0 ? <Line>{c.pain(view.painDays.map(shortDate).join(', '))}</Line> : null}
       <View className="gap-1">
         <Muted>{c.confidence[view.confidence]}</Muted>

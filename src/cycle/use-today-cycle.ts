@@ -9,7 +9,8 @@ import type { Profile } from '@/domain/profile';
 import { logUnlessClosed } from '@/db/closed';
 
 /** Visão do ciclo de hoje; recalcula ao voltar para a aba (ex.: depois de registrar). */
-export function useTodayCycle(profile: Profile | null): TodayView | null {
+/** `refreshKey`: muda quando a pessoa registra algo na tela, para recalcular sem sair dela. */
+export function useTodayCycle(profile: Profile | null, refreshKey?: unknown): TodayView | null {
   const db = useSQLiteContext();
   const [view, setView] = useState<TodayView | null>(null);
 
@@ -24,7 +25,9 @@ export function useTodayCycle(profile: Profile | null): TodayView | null {
       return () => {
         active = false;
       };
-    }, [db, profile]),
+      // refreshKey só serve para disparar de novo (ex.: registro do dia mudou): dependência intencional.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [db, profile, refreshKey]),
   );
 
   return view;

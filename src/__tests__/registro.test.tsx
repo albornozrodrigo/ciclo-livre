@@ -5,7 +5,7 @@ import RegistroScreen from '@/app/registro/[data]';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
 import { getDay, saveCategoryPrefs, setSelection } from '@/db/log-repo';
 import { createTag, getDayTags } from '@/db/tag-repo';
-import { todayIso } from '@/domain/dates';
+import { addDays, todayIso } from '@/domain/dates';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
@@ -309,5 +309,21 @@ describe('Registrar o dia › personalização', () => {
     await fireEvent.press(screen.getByRole('button', { name: ptBR.tracking.customize }));
 
     expect(mockPush).toHaveBeenCalledWith('/registro/personalizar');
+  });
+});
+
+describe('Registro › Pode aparecer hoje', () => {
+  it('no registro de hoje mostra o que costuma vir; em outro dia, não', async () => {
+    const today = todayIso();
+    for (const start of [-84, -56, -28, 0]) {
+      await setSelection(mockDb, addDays(today, start), 'period', ['medium']);
+      if (start < 0) await setSelection(mockDb, addDays(today, start), 'pain', ['cramps']);
+    }
+    mockDate = today;
+    await renderRegistroWaitingFor(ptBR.cycle.likelyToday.title);
+
+    mockDate = addDays(today, -1);
+    await renderRegistro();
+    expect(screen.queryByText(ptBR.cycle.likelyToday.title)).toBeNull();
   });
 });

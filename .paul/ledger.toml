@@ -560,3 +560,15 @@ action = "phase_complete"
 phase = 16
 plan = "16-01"
 at = "2026-10-25"
+
+[[entry]]
+action = "plan"
+phase = 17
+plan = "17-01"
+at = "2026-10-25"
+
+[[entry]]
+action = "phase_complete"
+phase = 17
+plan = "17-01"
+at = "2026-10-25"

@@ -36,6 +36,7 @@ describe('todayCycleView', () => {
       fertilityHidden: false,
       confidence: 'medium',
       painDays: ['2026-10-24'],
+      likelyToday: [],
       nextPhase: { phase: 'menstruation', inDays: 2 },
     });
   });

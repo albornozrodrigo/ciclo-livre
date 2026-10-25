@@ -3,12 +3,14 @@ import { StatusBar } from 'expo-status-bar';
 import { KeyboardAvoidingView, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LikelyToday } from '@/components/cycle/likely-today';
 import { ChoiceCategoryField } from '@/components/tracking/choice-category';
 import { MeasureField } from '@/components/tracking/measure-field';
 import { NoteField } from '@/components/tracking/note-field';
 import { TagsField } from '@/components/tracking/tags-field';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { formatLongDate } from '@/components/ui/date-field';
+import { useTodayCycle } from '@/cycle/use-today-cycle';
 import { addDays, isValidDate, todayIso } from '@/domain/dates';
 import type { Category, CategoryGroup } from '@/domain/tracking/catalog';
 import { ptBR } from '@/i18n/pt-BR';
@@ -34,6 +36,8 @@ export default function RegistroScreen() {
   const { day, toggle, saveMeasure, saveNote } = useDayLog(date);
   const profile = state.status === 'ready' ? state.profile : null;
   const ordered = useCategoryOrder(profile?.mode ?? 'period', profile?.birthControl ?? null);
+  // Só o registro de hoje mostra "Pode aparecer hoje"; recalcula quando o dia muda.
+  const todayView = useTodayCycle(date === todayIso() ? profile : null, day);
   if (!profile || !day || !ordered) return null;
 
   const today = todayIso();
@@ -70,6 +74,12 @@ export default function RegistroScreen() {
             />
           </View>
         </View>
+
+        {isToday && todayView?.kind === 'cycle' && todayView.likelyToday.length > 0 ? (
+          <View className="mt-8">
+            <LikelyToday items={todayView.likelyToday} />
+          </View>
+        ) : null}
 
         {groups.map(([group, categories]) => (
           <View key={group} className="mt-10 gap-6">

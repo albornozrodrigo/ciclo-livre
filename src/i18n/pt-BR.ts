@@ -543,6 +543,11 @@ export const ptBR = {
     late: (n: number) => (n === 1 ? 'Menstruação atrasada há 1 dia' : `Menstruação atrasada há ${n} dias`),
     lateHint: 'Atrasos acontecem. Se ela não vier ou se você tiver dúvida, um teste de gravidez ou um serviço de saúde podem ajudar.',
     fertile: (from: string, to: string) => `Janela fértil: ${from} a ${to}`,
+    likelyToday: {
+      title: 'Pode aparecer hoje',
+      row: (label: string, cycles: number, total: number) => `${label}: em ${cycles} dos ${total} ciclos com registro`,
+      hint: 'Pelo que você registrou neste mesmo ponto dos ciclos anteriores.',
+    },
     conceive: {
       chance: { low: 'baixa', medium: 'média', high: 'alta' },
       chanceToday: (level: string) => `Chance de engravidar hoje: ${level}`,

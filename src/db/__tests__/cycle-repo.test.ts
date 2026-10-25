@@ -31,6 +31,8 @@ describe('getCycleSignals', () => {
       eggWhiteDates: ['2026-10-09'],
       positiveOvulationTests: ['2026-10-08'],
       painDates: ['2026-09-26'],
+      // Corrimento normal e testes não são sintomas.
+      symptoms: [{ date: '2026-09-26', category: 'pain', option: 'cramps' }],
     });
   });
 
@@ -57,6 +59,7 @@ describe('getCycleSignals', () => {
       eggWhiteDates: [],
       positiveOvulationTests: [],
       painDates: [],
+      symptoms: [],
     });
   });
 });

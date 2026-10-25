@@ -11,19 +11,19 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.2 O que o Flo tem a mais — Fase 16 (Status do modo Engravidar + chance por dia)
+**Current focus:** v0.2 O que o Flo tem a mais — Fase 17 ("Pode aparecer hoje")
 
 ## Current Position
 
 Milestone: v0.2 O que o Flo tem a mais
-Phase: 16 of 19 (Status do modo Engravidar + chance por dia)
-Plan: 16-01 completo
+Phase: 17 of 19 ("Pode aparecer hoje")
+Plan: 17-01 completo
 Status: Fase completa
-Last activity: 2026-10-25 — Fase 16 completa
+Last activity: 2026-10-25 — Fase 17 completa
 
 Progress:
 - v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
-- v0.2 O que o Flo tem a mais: [██████░░░░] 62%
+- v0.2 O que o Flo tem a mais: [███████░░░] 75%
 
 ## Loop Position
 
@@ -104,9 +104,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-25
-Stopped at: 2026-10-25 — Fase 16 completa
-Next action: /paul:plan da fase 17 (Pode aparecer hoje)
-Resume file: .paul/ROADMAP.md
+Stopped at: 2026-10-25 — Fase 17 completa
+Next action: /paul:apply da fase 18 (18-01-PLAN pronto)
+Resume file: .paul/phases/18-lembretes-diu-implante-injecao-remedios/18-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*
