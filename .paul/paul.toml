@@ -15,8 +15,8 @@ status = "in_progress"
 phases = 8
 
 [phase]
-number = 13
-name = "Contracepção hormonal esconde fertilidade"
+number = 14
+name = "Fase lútea informada"
 status = "complete"
 plans_completed = 0
 

@@ -46,6 +46,7 @@ beforeEach(async () => {
       dueDate: null,
       tryingSince: null,
       birthControl: 'pill',
+      lutealLength: null,
     },
     NOW,
   );

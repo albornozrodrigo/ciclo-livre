@@ -1,4 +1,5 @@
 import { exportAll, IMPORT_ERROR, importAll } from '@/db/export-repo';
+import { parseExport } from '@/domain/export/format';
 import { TAG_LIMIT } from '@/domain/tracking/tags';
 import { setMeasure, setNote, setSelection, saveCategoryPrefs } from '@/db/log-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
@@ -21,6 +22,7 @@ const profile: Profile = {
   dueDate: null,
   tryingSince: null,
   birthControl: 'pill',
+  lutealLength: 11,
 };
 
 async function migratedDb() {
@@ -47,7 +49,7 @@ async function seeded() {
 describe('exportAll', () => {
   it('formato aberto e versionado, com tudo da pessoa', async () => {
     const data = await exportAll(await seeded(), NOW);
-    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 7, profile });
+    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 8, profile });
     expect(data.selections).toEqual([
       { date: '2026-10-12', category: 'pain', option: 'back' },
       { date: '2026-10-12', category: 'pain', option: 'cramps' },
@@ -164,5 +166,21 @@ describe('importAll', () => {
     data.notes = [{ date: '2026-10-12', text: 'x'.repeat(1001) }];
     await expect(importAll(target, data)).rejects.toThrow(IMPORT_ERROR);
     expect(await exportAll(target, NOW)).toEqual(before);
+  });
+});
+
+describe('backup de antes da fase lútea', () => {
+  it('perfil sem lutealLength é aceito e fica null', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    delete data.profile.lutealLength;
+
+    expect(parseExport(data).profile?.lutealLength).toBeNull();
+  });
+
+  it('valor fora da faixa recusa o arquivo', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    data.profile.lutealLength = 30;
+
+    expect(() => parseExport(data)).toThrow(IMPORT_ERROR);
   });
 });

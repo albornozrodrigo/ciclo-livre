@@ -14,6 +14,7 @@ const full: Profile = {
   dueDate: '2027-05-08',
   tryingSince: null,
   birthControl: 'prefer_not_to_say',
+  lutealLength: 12,
 };
 
 async function migratedDb() {

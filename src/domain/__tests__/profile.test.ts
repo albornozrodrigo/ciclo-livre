@@ -31,6 +31,7 @@ describe('validateProfile', () => {
           dueDate: null,
           tryingSince: null,
           birthControl: null,
+          lutealLength: null,
         },
       });
     });
@@ -91,6 +92,26 @@ describe('validateProfile', () => {
 
     it('recusa menstruação tão longa quanto o ciclo', () => {
       expect(errorsOf({ ...base, periodLength: 15, cycleLength: 15 })).toEqual([{ field: 'periodLength', code: 'not_shorter_than_cycle' }]);
+    });
+  });
+
+  describe('fase lútea', () => {
+    it('é opcional: sem informar fica null', () => {
+      const result = validateProfile(base, TODAY);
+      expect(result.ok && result.profile.lutealLength).toBeNull();
+    });
+
+    it('aceita de 9 a 18 dias', () => {
+      expect(errorsOf({ ...base, lutealLength: 9 })).toEqual([]);
+      expect(errorsOf({ ...base, lutealLength: 18 })).toEqual([]);
+    });
+
+    it.each([8, 19, 12.5])('recusa %p', (lutealLength) => {
+      expect(errorsOf({ ...base, lutealLength })).toEqual([{ field: 'lutealLength', code: 'out_of_range' }]);
+    });
+
+    it('não trava a edição por causa da duração do ciclo (o motor decide se o valor cabe)', () => {
+      expect(errorsOf({ ...base, cycleLength: 16, periodLength: 3, lutealLength: 16 })).toEqual([]);
     });
   });
 
@@ -162,6 +183,7 @@ describe('validateProfileEdit', () => {
     dueDate: null,
     tryingSince: null,
     birthControl: null,
+    lutealLength: null,
   };
 
   it('não bloqueia por uma data guardada que envelheceu e não foi mexida', () => {

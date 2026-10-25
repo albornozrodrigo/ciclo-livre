@@ -9,7 +9,7 @@ export type PolicyBlock = Block | { kind: 'sub'; text: string };
  */
 export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyBlock[] } = {
   title: 'Política de privacidade do Ciclo Livre',
-  effective: '23 de outubro de 2026',
+  effective: '25 de outubro de 2026',
   blocks: [
     { kind: 'h', text: 'Em resumo' },
     {
@@ -21,7 +21,7 @@ export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyB
       kind: 'list',
       items: [
         'O que você registra: menstruação, sintomas, humor, medições (temperatura, peso, sono, batimentos), notas, tags e testes.',
-        'Seu perfil: ano de nascimento, modo de uso (por exemplo, tentando engravidar ou gravidez), duração média do ciclo e, se quiser contar, o método contraceptivo.',
+        'Seu perfil: ano de nascimento, modo de uso (por exemplo, tentando engravidar ou gravidez), duração média do ciclo, a duração da fase lútea se você informar e, se quiser contar, o método contraceptivo.',
         'Suas configurações: lembretes, ordem das categorias e o que você escolheu na IA e no Health Connect.',
         'A conversa com a IA, se você usar o chat.',
       ],

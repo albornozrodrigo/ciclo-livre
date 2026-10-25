@@ -44,6 +44,7 @@ const profile: Profile = {
   dueDate: null,
   tryingSince: null,
   birthControl: null,
+  lutealLength: null,
 };
 const on = (kind: ReminderKind, patch: Partial<Reminder> = {}, options: Partial<Reminder['options']> = {}): Reminder => {
   const r = defaultReminder(kind);
@@ -203,6 +204,7 @@ describe('planSchedule — regras gerais', () => {
     const fires = plan([on('birth_control', {}, { pack: 'continuous' }), on('daily_log'), on('period_due')], {
       ...profile,
       birthControl: 'pill',
+      lutealLength: null,
     });
     expect(fires).toHaveLength(61 + 61 + 3);
     expect(fires.at(-1)?.date).toBe('2026-12-21');
@@ -210,7 +212,7 @@ describe('planSchedule — regras gerais', () => {
 
   it(`no máximo ${MAX_FIRES} disparos, os mais próximos primeiro, com chaves únicas`, () => {
     const all = (['period_soon', 'period_due', 'period_late', 'fertile_soon', 'phase_change', 'daily_log'] as const).map((k) => on(k));
-    const fires = plan([...all, on('birth_control', {}, { pack: 'continuous' })], { ...profile, birthControl: 'pill' });
+    const fires = plan([...all, on('birth_control', {}, { pack: 'continuous' })], { ...profile, birthControl: 'pill', lutealLength: null });
     expect(fires.length).toBeLessThanOrEqual(MAX_FIRES);
     expect(new Set(fires.map((f) => f.key)).size).toBe(fires.length);
     const order = fires.map((f) => `${f.date} ${f.time}`);

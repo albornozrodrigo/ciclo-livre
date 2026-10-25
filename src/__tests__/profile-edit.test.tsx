@@ -16,6 +16,7 @@ const profile: Profile = {
   dueDate: null,
   tryingSince: null,
   birthControl: 'pill',
+  lutealLength: null,
 };
 
 const mockSave = jest.fn();
@@ -91,6 +92,18 @@ describe('Dados do ciclo', () => {
     await save();
 
     await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, cycleLength: 29 }));
+  });
+
+  it('fase lútea: ligar mostra o contador (14 dias), ajustar e salvar', async () => {
+    await wrap(<CycleDataScreen />);
+
+    await fireEvent(screen.getByRole('switch', { name: ptBR.profile.luteal.toggle }), 'valueChange', true);
+    await fireEvent.press(
+      screen.getByRole('button', { name: new RegExp(`${ptBR.onboarding.lengths.decrease}: ${ptBR.profile.luteal.label}`) }),
+    );
+    await save();
+
+    await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, lutealLength: 13 }));
   });
 
   it('"Não lembro" limpa a última menstruação', async () => {

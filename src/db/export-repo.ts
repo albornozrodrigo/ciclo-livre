@@ -74,8 +74,8 @@ export async function importAll(db: SqlExecutor, raw: unknown, now: Date = new D
       if (p) {
         await db.runAsync(
           `INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length,
-             regularity, due_date, trying_since, birth_control, updated_at)
-           VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+             regularity, due_date, trying_since, birth_control, luteal_length, updated_at)
+           VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           p.birthYear,
           p.mode,
           p.lastPeriodStart,
@@ -85,6 +85,7 @@ export async function importAll(db: SqlExecutor, raw: unknown, now: Date = new D
           p.dueDate,
           p.tryingSince,
           p.birthControl,
+          p.lutealLength,
           now.toISOString(),
         );
       }

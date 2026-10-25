@@ -26,6 +26,7 @@ const profile = {
   dueDate: null,
   tryingSince: null,
   birthControl: null,
+  lutealLength: null,
 };
 
 const html = renderReportHtml(

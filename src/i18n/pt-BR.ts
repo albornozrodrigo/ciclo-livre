@@ -586,6 +586,12 @@ export const ptBR = {
     modeTitle: 'Trocar modo',
     modeHint: 'Todos os modos são livres. Seus registros continuam guardados ao trocar.',
     cycleTitle: 'Dados do ciclo',
+    luteal: {
+      toggle: 'Sei a duração da minha fase lútea',
+      detail: 'Do dia da ovulação até a véspera da menstruação.',
+      label: 'Fase lútea',
+      measuredWins: 'Se você registrar a temperatura e o app confirmar a ovulação, vale a medida.',
+    },
   },
   appearance: {
     section: 'Aparência',

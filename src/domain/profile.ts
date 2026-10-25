@@ -29,6 +29,8 @@ export const LIMITS = {
   maxAge: 100,
   periodLength: { min: 1, max: 15, default: 5 },
   cycleLength: { min: 15, max: 90, default: 28 },
+  /** Fase lútea informada (opcional): do dia da ovulação até a véspera da menstruação (mesma conta do motor). */
+  lutealLength: { min: 9, max: 18, default: 14 },
   lastPeriodMaxDaysAgo: 365,
   dueDateMaxDaysAhead: 300,
 } as const;
@@ -43,6 +45,8 @@ export type Profile = {
   dueDate: IsoDate | null;
   tryingSince: TryingSince | null;
   birthControl: BirthControl | null;
+  /** null = não sei (o motor usa a medida pela temperatura ou 14 dias). */
+  lutealLength: number | null;
 };
 
 export type ProfileInput = Pick<Profile, 'birthYear' | 'mode' | 'lastPeriodStart'> &
@@ -79,6 +83,7 @@ function withDefaults(input: ProfileInput): Profile {
     dueDate: input.mode === 'pregnancy' ? (input.dueDate ?? null) : null,
     tryingSince: input.mode === 'conceive' ? (input.tryingSince ?? null) : null,
     birthControl: input.birthControl ?? null,
+    lutealLength: input.lutealLength ?? null,
   };
 }
 
@@ -111,8 +116,12 @@ function isWholeIn(value: number, range: { min: number; max: number }): boolean 
   return Number.isInteger(value) && value >= range.min && value <= range.max;
 }
 
-function checkLengths({ periodLength, cycleLength }: Profile): ProfileError[] {
+function checkLengths({ periodLength, cycleLength, lutealLength }: Profile): ProfileError[] {
   const errors: ProfileError[] = [];
+  // A relação com o ciclo fica no motor (ciclo medido), não aqui: aqui travaria a edição sem aviso.
+  if (lutealLength !== null && !isWholeIn(lutealLength, LIMITS.lutealLength)) {
+    errors.push({ field: 'lutealLength', code: 'out_of_range' });
+  }
   if (!isWholeIn(periodLength, LIMITS.periodLength)) errors.push({ field: 'periodLength', code: 'out_of_range' });
   if (!isWholeIn(cycleLength, LIMITS.cycleLength)) errors.push({ field: 'cycleLength', code: 'out_of_range' });
   if (errors.length === 0 && periodLength >= cycleLength) {

@@ -26,6 +26,7 @@ const profile: Profile = {
   dueDate: null,
   tryingSince: null,
   birthControl: null,
+  lutealLength: null,
 };
 
 let mockDb: ReturnType<typeof openMemoryDatabase>;

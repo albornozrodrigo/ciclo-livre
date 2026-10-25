@@ -59,6 +59,7 @@ beforeEach(async () => {
     dueDate: null,
     tryingSince: null,
     birthControl: null,
+    lutealLength: null,
   };
 });
 

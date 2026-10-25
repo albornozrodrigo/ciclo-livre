@@ -69,11 +69,14 @@ function profileOf(v: unknown): Profile | null {
     dueDate: v.dueDate,
     tryingSince: v.tryingSince,
     birthControl: v.birthControl,
+    // Backups de antes da v8 não têm o campo.
+    lutealLength: v.lutealLength ?? null,
   };
   check(isInt(p.birthYear, 1900, 2100) && oneOf(MODES, p.mode) && nullOr(p.lastPeriodStart, isDate));
   check(isInt(p.periodLength, 1, 15) && isInt(p.cycleLength, 15, 90) && oneOf(REGULARITIES, p.regularity));
   check(nullOr(p.dueDate, isDate) && nullOr(p.tryingSince, (x): x is string => oneOf(TRYING_SINCE, x)));
   check(nullOr(p.birthControl, (x): x is string => oneOf(BIRTH_CONTROL, x)));
+  check(nullOr(p.lutealLength, (x): x is number => isInt(x, 9, 18)));
   return p as Profile;
 }
 

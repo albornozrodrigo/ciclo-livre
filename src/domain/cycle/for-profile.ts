@@ -28,7 +28,13 @@ export function cycleModelFor(profile: Profile, signals: CycleSignals, today: Is
   if (!modeHasCycle(profile)) return null;
   const seed = profile.lastPeriodStart ? { start: profile.lastPeriodStart, length: profile.periodLength } : null;
   const model = buildCycleModel(
-    { ...signals, seed, profileCycleLength: profile.cycleLength, profilePeriodLength: profile.periodLength },
+    {
+      ...signals,
+      seed,
+      profileCycleLength: profile.cycleLength,
+      profilePeriodLength: profile.periodLength,
+      profileLutealLength: profile.lutealLength,
+    },
     today,
   );
   return model && { ...model, fertilityHidden: hidesFertility(profile) };

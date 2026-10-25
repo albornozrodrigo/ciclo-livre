@@ -113,6 +113,11 @@ export const MIGRATIONS: Migration[] = [
       ) STRICT`,
     ],
   },
+  {
+    // Fase lútea informada pela pessoa (opcional).
+    version: 8,
+    statements: ['ALTER TABLE profile ADD COLUMN luteal_length INTEGER CHECK (luteal_length IS NULL OR luteal_length BETWEEN 9 AND 18)'],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

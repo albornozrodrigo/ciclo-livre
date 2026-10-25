@@ -12,6 +12,8 @@ export type CycleInputs = {
   positiveOvulationTests: IsoDate[];
   profileCycleLength: number;
   profilePeriodLength: number;
+  /** Fase lútea informada no perfil; vale quando não há medida pela temperatura. */
+  profileLutealLength?: number | null;
 };
 
 export type Confidence = 'low' | 'medium' | 'high';
@@ -79,14 +81,19 @@ function ovulationFor(inputs: CycleInputs, start: IsoDate, end: IsoDate, calenda
   });
 }
 
-/** Fase lútea medida nos ciclos passados com ovulação confirmada por temperatura. */
-function measuredLuteal(inputs: CycleInputs, periods: readonly Period[]): number {
+/**
+ * Fase lútea: medida pela temperatura nos ciclos passados; senão a informada no perfil, se couber no ciclo
+ * (a janela fértil não pode começar dentro da menstruação); senão 14 dias.
+ */
+function measuredLuteal(inputs: CycleInputs, periods: readonly Period[], cycleLength: number, periodLength: number): number {
   const confirmed = periods.slice(0, -1).flatMap((p, i) => {
     const nextStart = periods[i + 1].start;
     const ovulation = bbtOvulation(inputs.temperatures, p.start, addDays(nextStart, -1));
     return ovulation ? [{ ovulation, nextStart }] : [];
   });
-  return lutealLength(confirmed) ?? DEFAULT_LUTEAL;
+  const informed = inputs.profileLutealLength ?? null;
+  const fits = informed !== null && informed <= cycleLength - periodLength - FERTILE_BEFORE;
+  return lutealLength(confirmed) ?? (fits ? informed : DEFAULT_LUTEAL);
 }
 
 /** Modelo do ciclo a partir dos registros. Sem nenhuma menstruação conhecida, devolve null. */
@@ -95,7 +102,8 @@ export function buildCycleModel(inputs: CycleInputs, today: IsoDate): CycleModel
   if (periods.length === 0) return null;
   const stats = cycleStats(cycleLengths(periods), inputs.profileCycleLength);
   const cycleLength = Math.round(stats.mean);
-  const luteal = measuredLuteal(inputs, periods);
+  const periodLength = averagePeriodLength(periods, inputs.profilePeriodLength, today);
+  const luteal = measuredLuteal(inputs, periods, cycleLength, periodLength);
 
   const spans: CycleSpan[] = periods.slice(0, -1).map((p, i) => {
     const nextStart = periods[i + 1].start;
@@ -107,7 +115,6 @@ export function buildCycleModel(inputs: CycleInputs, today: IsoDate): CycleModel
     };
   });
 
-  const periodLength = averagePeriodLength(periods, inputs.profilePeriodLength, today);
   const last = periods[periods.length - 1];
   const expected = addDays(last.start, cycleLength);
   const late = expected < today;
