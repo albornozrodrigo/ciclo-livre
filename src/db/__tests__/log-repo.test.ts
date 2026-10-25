@@ -1,4 +1,12 @@
-import { clearMeasure, getCategoryPrefs, getDay, saveCategoryPrefs, setMeasure, setNote, setSelection } from '@/db/log-repo';
+import {
+  clearMeasure,
+  getCategoryPrefs,
+  getDay,
+  saveCategoryPrefs,
+  setMeasure,
+  setNote,
+  setSelection,
+} from '@/db/log-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 
 import { openMemoryDatabase } from './node-sqlite-adapter';

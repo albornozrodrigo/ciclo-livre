@@ -25,15 +25,7 @@ function parse(text: string, category: MeasureCategory): Parsed {
 }
 
 /** Número com unidade: salva enquanto digita (quando válido); erro aparece ao confirmar ou sair. */
-export function MeasureField({
-  category,
-  value,
-  onSave,
-}: {
-  category: MeasureCategory;
-  value: number | undefined;
-  onSave: (value: number | null) => void;
-}) {
+export function MeasureField({ category, value, onSave }: { category: MeasureCategory; value: number | undefined; onSave: (value: number | null) => void }) {
   const label = categoryLabels(category.id).label;
   const [text, setText] = useState(format(value));
   const [error, setError] = useState<string | null>(null);

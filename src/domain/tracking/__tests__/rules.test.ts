@@ -83,12 +83,9 @@ describe('orderCategories', () => {
   });
 
   it('respeita a ordem escolhida entre as personalizadas e encaixa as outras antes da próxima no padrão', () => {
-    expect(
-      orderCategories(ids, [
-        { category: 'sleep', position: 0, hidden: false },
-        { category: 'pain', position: 1, hidden: false },
-      ]),
-    ).toEqual(['period', 'sleep', 'pain', 'feelings']);
+    expect(orderCategories(ids, [{ category: 'sleep', position: 0, hidden: false }, { category: 'pain', position: 1, hidden: false }])).toEqual([
+      'period', 'sleep', 'pain', 'feelings',
+    ]);
   });
 
   it('ignora preferências de categorias que não estão visíveis', () => {
