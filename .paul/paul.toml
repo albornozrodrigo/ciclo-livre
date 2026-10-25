@@ -1,5 +1,5 @@
 name = "ciclo-livre"
-version = "0.0.0"
+version = "0.2.0"
 status = "active"
 path = "ciclo-livre"
 tags = []
@@ -9,26 +9,24 @@ version = "1.4"
 source = "https://chrisai.cv/skool"
 
 [milestone]
-name = "v0.1 Initial Release"
-version = "0.1.0"
+name = "v0.2 O que o Flo tem a mais"
+version = "0.2.0"
 status = "in_progress"
-phases = 11
+phases = 8
 
 [phase]
-number = 10
-name = "Wearables (Health Connect)"
-status = "in_progress"
-plans_completed = 1
+number = 12
+name = "Catálogo de registro completo"
+status = "not_started"
+plans_completed = 0
 
 [loop]
-position = "PLAN"
-plan = "11-05"
-plan_path = "phases/11-personalizacao-release/11-05-PLAN.md"
+position = "IDLE"
 
 [satellite]
 groom = true
 
 [stats]
 total_plans = 28
-total_phases = 11
-last_activity = "2026-10-23T16:00:00Z"
+total_phases = 19
+last_activity = "2026-10-25T00:00:00Z"

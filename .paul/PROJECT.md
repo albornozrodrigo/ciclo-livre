@@ -71,6 +71,17 @@ Rascunho de fases para o milestone v0.1. A versão final é definida em `/paul:p
 10. Wearables via Health Connect (sono, temperatura, FC, peso).
 11. Personalização (ícones alternativos, temas) + build de release (EAS).
 
+### Next Milestone: v0.2 O que o Flo tem a mais
+Fonte: `../estudo-rea-flo/notas/05-o-que-trazer-ao-ciclo-livre.md` (estudo REA do Flo 9.73.1, 2026-10-25). Oito fases (12–19), tudo no aparelho e grátis:
+1. catálogo de registro completo;
+2. contracepção hormonal esconde fertilidade;
+3. fase lútea informada;
+4. ciclos fora do padrão;
+5. status do modo Engravidar e chance por dia;
+6. "Pode aparecer hoje";
+7. lembretes de DIU, implante, injeção e remédios;
+8. Pós-parto e encerrar gravidez.
+
 ### Out of Scope (v0.1)
 - iOS e web: Android primeiro, por decisão do usuário (2026-10-22).
 - Conta, login e sync na nuvem: local-first. Sync com criptografia ponta a ponta é candidato a milestone futuro.
@@ -171,6 +182,7 @@ Rascunho de fases para o milestone v0.1. A versão final é definida em `/paul:p
 |----------|-----|
 | Repository | local: `ciclo-livre/` |
 | Estudo base | `../estudo-rea-clue/` |
+| Estudo do Flo (v0.2) | `../estudo-rea-flo/` |
 
 ---
 *PROJECT.md — Updated when requirements or context change*

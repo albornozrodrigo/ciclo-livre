@@ -14,8 +14,96 @@ App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clu
 - build de release.
 
 ## Current Milestone
+**v0.2 O que o Flo tem a mais** (v0.2.0)
+Status: 🚧 In Progress
+Phases: 0 of 8 complete
+
+Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `notas/05-o-que-trazer-ao-ciclo-livre.md`). São os 8 itens de prioridade 1: tudo roda no aparelho e é grátis. No Flo, parte deles é paga (chance de engravidar) ou depende do servidor (previsões, sintomas do dia).
+
+| Phase | Name | Plans | Status | Completed |
+|-------|------|-------|--------|-----------|
+| 12 | Catálogo de registro completo | TBD | Not started | - |
+| 13 | Contracepção hormonal esconde fertilidade | TBD | Not started | - |
+| 14 | Fase lútea informada | TBD | Not started | - |
+| 15 | Ciclos fora do padrão | TBD | Not started | - |
+| 16 | Status do modo Engravidar + chance por dia | TBD | Not started | - |
+| 17 | "Pode aparecer hoje" | TBD | Not started | - |
+| 18 | Lembretes de DIU, implante, injeção e remédios | TBD | Not started | - |
+| 19 | Pós-parto + encerrar gravidez | TBD | Not started | - |
+
+### Phase 12: Catálogo de registro completo
+**Goal:** Acrescentar ao registro diário as opções que o Flo tem e o Ciclo Livre não:
+- fluxo: coágulos;
+- testes: gravidez com "linha fraca" e "outro método" de ovulação;
+- secreção: cinza, branca grumosa;
+- sexo: orgasmo, oral, anal, toque, brinquedos;
+- sintomas: gengiva sangrando, boca ardendo, manchas na pele, estrias, dor no períneo, secreção no mamilo, inchaço (membros, rosto, nariz);
+- humor: culpa, apatia, confusão, pensamentos obsessivos, autocrítica;
+- outros: viagem, respiração, Kegel, diário, terapia hormonal.
+
+Também revisar o efeito nas análises ("sintomas frequentes", estados neutros), no PDF, no CSV, na importação do Clue e no contexto do chat.
+**Depends on:** v0.1 (catálogo em `src/domain/tracking/catalog.ts`)
+**Research:** Unlikely (nota 02 do estudo do Flo, §2.2)
+Plans: TBD (defined during /paul:plan)
+
+### Phase 13: Contracepção hormonal esconde fertilidade
+**Goal:** Com método hormonal (pílula, adesivo, anel, injeção, implante, DIU hormonal), Hoje, o calendário e os lembretes não mostram janela fértil nem ovulação, e o app explica o porquê. Conferir antes o comportamento atual do motor.
+**Depends on:** Phases 4 e 6 (independe da 12)
+**Research:** Unlikely
+Plans: TBD (defined during /paul:plan)
+
+### Phase 14: Fase lútea informada
+**Goal:** Campo opcional no perfil com a duração da fase lútea, usado pelo motor para estimar a ovulação quando não há BBT nem teste. Validar faixa e documentar.
+**Depends on:** Phase 4
+**Research:** Unlikely
+Plans: TBD (defined during /paul:plan)
+
+### Phase 15: Ciclos fora do padrão
+**Goal:** Marcar ciclos atípicos, tirá-los da média (com opção de incluir) e mostrar a comparação ("N dias mais curto que o normal") no card do ciclo, na Análise e no PDF.
+**Depends on:** Phases 4–5 e 7
+**Research:** Likely (critério de outlier: desvio-padrão × faixa fixa 21–45 dias)
+Plans: TBD (defined during /paul:plan)
+
+### Phase 16: Status do modo Engravidar + chance por dia
+**Goal:** No modo Engravidar:
+- status "melhor chance em N dias", "último dia fértil", "hora do teste de gravidez em N dias" e "se a menstruação não vier em N dias";
+- nível de chance por dia (baixa/média/alta), com a fonte da curva citada;
+- aviso de que não é contraceptivo, e nada disso nos outros modos;
+- lembrete opcional do dia do teste.
+**Depends on:** Phases 13–15
+**Research:** Likely (curva de probabilidade por dia relativo à ovulação, com fonte aberta)
+Plans: TBD (defined during /paul:plan)
+
+### Phase 17: "Pode aparecer hoje"
+**Goal:** Prever os sintomas do dia a partir dos ciclos anteriores, generalizando a previsão de dor (`src/domain/cycle/pain.ts`). Mostrar em Hoje e no registro, com o motivo ("apareceu em 3 dos últimos 4 ciclos").
+**Depends on:** Phases 12 e 15
+**Research:** Unlikely
+Plans: TBD (defined during /paul:plan)
+
+### Phase 18: Lembretes de DIU, implante, injeção e remédios
+**Goal:** Novos lembretes locais:
+- DIU: checar os fios e data de troca pela validade em anos;
+- implante: data de troca;
+- injeção: aviso uma semana antes, além do dia;
+- remédios: várias doses por dia, com data de término, que viram item do registro.
+**Depends on:** Phase 6
+**Research:** Unlikely (desenho da nota 02, §2.3)
+Plans: TBD (defined during /paul:plan)
+
+### Phase 19: Pós-parto + encerrar gravidez
+**Goal:**
+- **Modo Pós-parto:** contador de semanas e meses do bebê e categorias de lóquios e mamas/lactação. Não há previsão até a primeira menstruação, e o app volta ao ciclo quando ela é registrada.
+- **Encerrar gravidez:** fluxo com motivo (nascimento ou perda), em linguagem acolhedora, levando ao Pós-parto ou de volta ao ciclo.
+- **Gravidez:** opção de gêmeos e sugestão gentil do modo gravidez depois de um teste positivo.
+**Depends on:** Phases 12 e 18
+**Research:** Likely (conteúdo e linguagem para perda gestacional; regras de retorno da menstruação no pós-parto)
+Plans: TBD (defined during /paul:plan)
+
+---
+
+## Completed Milestone
 **v0.1 Initial Release** (v0.1.0)
-Status: In progress
+Status: ✅ Phases complete. AAB pronto; falta publicar na Play e rodar `/paul:complete-milestone`.
 Phases: 11 of 11 complete
 
 ## Phases
@@ -147,4 +235,4 @@ Phases: 11 of 11 complete
 
 ---
 *Roadmap created: 2026-10-22*
-*Last updated: 2026-10-23*
+*Last updated: 2026-10-25 (milestone v0.2 criado)*

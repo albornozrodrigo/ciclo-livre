@@ -11,25 +11,26 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.1 — Fase 11 (Personalização + release)
+**Current focus:** v0.2 O que o Flo tem a mais — Fase 12 (Catálogo de registro completo)
 
 ## Current Position
 
-Milestone: v0.1 Initial Release
-Phase: 11 of 11 (Personalização + release) — Complete
-Plan: 11-01..11-05 completos
-Status: Milestone v0.1 completo; AAB 0.1.0 (versionCode 1) pronto para a Play
-Last activity: 2026-10-23 — 11-05 fechado: release assinado, site na Vercel, guia da Play
+Milestone: v0.2 O que o Flo tem a mais
+Phase: 12 of 19 (Catálogo de registro completo); 1ª de 8 fases do milestone
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-10-25 — Milestone v0.2 criado (estudo REA do Flo); calendário rolável em a9a9ae8
 
 Progress:
-- Milestone: [██████████] 100%
-- Phase 11: [██████████] 100%
+- v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
+- v0.2 O que o Flo tem a mais: [░░░░░░░░░░] 0%
 
 ## Loop Position
 
+Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [11-05 fechado; milestone v0.1 completo]
+  ○        ○        ○     [Ready for first PLAN]
 ```
 
 ## Accumulated Context
@@ -72,6 +73,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Código aberto GPL-3.0 em github.com/albornozrodrigo/ciclo-livre (contato da política); README/CONTRIBUTING para a comunidade | 2026-10-23 | Decisão da pessoa usuária |
 | Chave de upload em `credentials/` + `credentials.json` (gitignored) neste Mac; EAS com credenciais locais | 2026-10-23 | Decisão da pessoa usuária; fazer cópia de segurança fora do repo |
 | Site em site/ na Vercel (raiz do projeto = site/, deploy a cada push na main); política do site gerada do app | 11-05 | Mudou a política → `node scripts/build-site.mjs` e push |
+| Milestone v0.2 = 8 itens de prioridade 1 do estudo do Flo (`../estudo-rea-flo/notas/05`), tudo local e grátis | v0.2 | Comparação de gating do Flo vem de um APK modificado (isPremium forçado); usar só o inventário |
+| Calendário: lista vertical de meses (passado acima, futuro sem limite, abre no mês atual) no lugar das setas | 2026-10-25 | getItemLayout com alturas fixas por mês |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -100,10 +103,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-23
-Stopped at: v0.1 completo; AAB em ~/Downloads/ciclo-livre-0.1.0-1.aab
-Next action: publicar na Play (docs/PUBLICAR-PLAY-STORE.md); depois /paul:complete-milestone
-Resume file: .paul/phases/11-personalizacao-release/11-05-SUMMARY.md
+Last session: 2026-10-25
+Stopped at: Milestone v0.2 criado, pronto para planejar
+Next action: /paul:plan para a Phase 12 (Catálogo de registro completo)
+Resume file: .paul/ROADMAP.md
 
 ---
 *STATE.md — Updated after every significant action*
