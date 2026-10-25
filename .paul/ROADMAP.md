@@ -29,7 +29,7 @@ Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `n
 | 16 | Status do modo Engravidar + chance por dia | 1 | ✅ Complete | 2026-10-25 |
 | 17 | "Pode aparecer hoje" | 1 | ✅ Complete | 2026-10-25 |
 | 18 | Lembretes de DIU, implante, injeção e remédios | 2 | ✅ Complete | 2026-10-25 |
-| 19 | Pós-parto + encerrar gravidez | TBD | Not started | - |
+| 19 | Pós-parto + encerrar gravidez | 2 | In progress | - |
 
 ### Phase 12: Catálogo de registro completo
 **Goal:** Acrescentar ao registro diário as opções que o Flo tem e o Ciclo Livre não:

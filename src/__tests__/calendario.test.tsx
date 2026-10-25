@@ -59,6 +59,7 @@ beforeEach(async () => {
     birthControl: null,
     lutealLength: null,
     includeAtypical: false,
+    babyBirth: null,
   };
 });
 

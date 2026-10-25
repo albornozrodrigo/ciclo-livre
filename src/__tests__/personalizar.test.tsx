@@ -25,6 +25,7 @@ const profile: Profile = {
   birthControl: null,
   lutealLength: null,
   includeAtypical: false,
+  babyBirth: null,
 };
 jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile } }) }));
 const mockShow = jest.fn();

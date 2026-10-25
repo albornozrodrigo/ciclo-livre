@@ -53,6 +53,12 @@ const CHANCE = { low: 'baixa', medium: 'média', high: 'alta' } as const;
 function currentLines(view: TodayView | null, labels: ContextLabels): string[] {
   if (!view || view.kind === 'none') return ['Ciclo atual: sem dados suficientes para estimar.'];
   if (view.kind === 'no_bleeding') return ['Ciclo atual: modo sem menstruação (sem previsão de ciclo).'];
+  if (view.kind === 'postpartum') {
+    const time = view.weeks < 12 ? `${view.weeks} semanas e ${view.days} dias` : `${view.months} meses`;
+    return [
+      `Pós-parto: ${time} desde o parto (sem previsão de ciclo).${view.periodBack ? ' Já houve menstruação registrada depois do parto.' : ''}`,
+    ];
+  }
   if (view.kind === 'pregnancy') {
     return [`Gravidez: semana ${view.week}, dia ${view.day}; ${view.daysToDue} dias até a data prevista do parto.`];
   }

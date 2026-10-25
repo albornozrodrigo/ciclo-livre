@@ -11,6 +11,7 @@ const draft: OnboardingDraft = {
   dueDate: '2027-05-01',
   tryingSince: '4_6m',
   birthControl: 'pill',
+  babyBirth: '2026-09-15',
 };
 
 describe('toProfileInput', () => {
@@ -25,6 +26,7 @@ describe('toProfileInput', () => {
       dueDate: '2027-05-01',
       tryingSince: null,
       birthControl: null,
+      babyBirth: null,
     });
   });
 
@@ -39,6 +41,19 @@ describe('toProfileInput', () => {
       dueDate: null,
       tryingSince: null,
       birthControl: 'pill',
+      babyBirth: null,
+    });
+  });
+});
+
+describe('toProfileInput › pós-parto', () => {
+  it('leva a data do parto e a contracepção; descarta o resto', () => {
+    expect(toProfileInput({ ...draft, mode: 'postpartum' })).toMatchObject({
+      mode: 'postpartum',
+      babyBirth: '2026-09-15',
+      birthControl: 'pill',
+      dueDate: null,
+      lastPeriodStart: null,
     });
   });
 });

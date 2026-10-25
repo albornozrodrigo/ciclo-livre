@@ -32,3 +32,9 @@ describe('nextStep / previousStep', () => {
     expect(nextStep('mode', null)).toBeNull();
   });
 });
+
+describe('onboarding › pós-parto', () => {
+  it('data do parto e contracepção, sem última menstruação nem durações', () => {
+    expect(stepsFor('postpartum')).toEqual(['welcome', 'birth_year', 'mode', 'baby_birth', 'birth_control', 'done']);
+  });
+});

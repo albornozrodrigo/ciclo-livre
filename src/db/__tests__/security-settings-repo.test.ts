@@ -34,6 +34,7 @@ describe('security-settings-repo', () => {
         birthControl: null,
         lutealLength: null,
         includeAtypical: false,
+        babyBirth: null,
       },
       NOW,
     );

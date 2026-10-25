@@ -5,7 +5,8 @@ import { buildCycleModel, type CycleModel } from './model';
 import type { CycleSignals } from './signals';
 
 /** Modos que acompanham ciclo menstrual (gravidez e sem sangramento não têm previsão de ciclo). */
-export const modeHasCycle = (profile: Profile) => profile.mode !== 'pregnancy' && profile.mode !== 'no_bleeding';
+export const modeHasCycle = (profile: Profile) =>
+  profile.mode !== 'pregnancy' && profile.mode !== 'no_bleeding' && profile.mode !== 'postpartum';
 
 /** Métodos que mudam ou suprimem a ovulação: o app não estima fertilidade com eles. */
 export const HORMONAL_METHODS = [

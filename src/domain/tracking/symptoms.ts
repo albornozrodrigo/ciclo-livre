@@ -18,6 +18,8 @@ const SYMPTOM_CATEGORIES = new Set([
   'mouth',
   'breasts',
   'swelling',
+  'lochia',
+  'lactation',
 ]);
 /** Estados neutros ou bons: aparecem no registro, mas não são sintomas. */
 const NOT_SYMPTOMS = new Set([
@@ -38,6 +40,7 @@ const NOT_SYMPTOMS = new Set([
   'mind:motivated',
   'mind:creative',
   'stress:low',
+  'lochia:none',
 ]);
 
 /** O que conta como sintoma (Análise e "Pode aparecer hoje"): estados neutros e o que não é sintoma ficam de fora. */

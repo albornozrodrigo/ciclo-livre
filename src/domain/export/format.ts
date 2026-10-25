@@ -73,13 +73,17 @@ function profileOf(v: unknown): Profile | null {
     lutealLength: v.lutealLength ?? null,
     // Backups de antes da v9 não têm o campo.
     includeAtypical: v.includeAtypical ?? false,
+    // Backups de antes da v10 não têm o campo.
+    babyBirth: v.babyBirth ?? null,
   };
   check(isInt(p.birthYear, 1900, 2100) && oneOf(MODES, p.mode) && nullOr(p.lastPeriodStart, isDate));
   check(isInt(p.periodLength, 1, 15) && isInt(p.cycleLength, 15, 90) && oneOf(REGULARITIES, p.regularity));
   check(nullOr(p.dueDate, isDate) && nullOr(p.tryingSince, (x): x is string => oneOf(TRYING_SINCE, x)));
   check(nullOr(p.birthControl, (x): x is string => oneOf(BIRTH_CONTROL, x)));
   check(nullOr(p.lutealLength, (x): x is number => isInt(x, 9, 18)));
-  check(typeof p.includeAtypical === 'boolean');
+  check(typeof p.includeAtypical === 'boolean' && nullOr(p.babyBirth, isDate));
+  // Pós-parto sem data do parto deixaria Hoje vazio e o perfil travado: arquivo assim é recusado.
+  check(p.mode !== 'postpartum' || p.babyBirth !== null);
   return p as Profile;
 }
 

@@ -17,6 +17,7 @@ const STEP_OF_FIELD: Record<ProfileField, Step> = {
   // Não é perguntado no onboarding (só na edição do perfil); erros dele cairiam na tela de durações.
   lutealLength: 'lengths',
   includeAtypical: 'lengths',
+  babyBirth: 'baby_birth',
 };
 
 /**
@@ -37,6 +38,7 @@ export function toProfileInput(draft: OnboardingDraft): ProfileInput {
     dueDate: keep('due_date', draft.dueDate, null),
     tryingSince: keep('trying_since', draft.tryingSince, null),
     birthControl: keep('birth_control', draft.birthControl, null),
+    babyBirth: keep('baby_birth', draft.babyBirth, null),
   };
 }
 

@@ -33,6 +33,7 @@ const profile: Profile = {
   birthControl: 'iud_copper',
   lutealLength: null,
   includeAtypical: false,
+  babyBirth: null,
 };
 const notes = [
   { date: '2026-10-16', text: 'Cólica forte' },

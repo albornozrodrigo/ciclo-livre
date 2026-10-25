@@ -109,6 +109,10 @@ export const trackingPtBR = {
     },
     hot_flashes: { label: 'Calores', options: { hot_flash: 'Onda de calor', night_sweats: 'Suor noturno', chills: 'Calafrios' } },
     clots: { label: 'Coágulos', options: { present: 'Saíram coágulos' } },
+    lochia: {
+      label: 'Lóquios',
+      options: { none: 'Nenhum', bright_red: 'Vermelho vivo', brown_pink: 'Marrom ou rosado', yellow_white: 'Amarelado ou esbranquiçado' },
+    },
     energy: { label: 'Energia', options: { exhausted: 'Muito baixa', low: 'Baixa', good: 'Boa', high: 'Alta' } },
     sleep: { label: 'Sono', options: { under_3h: 'Menos de 3 h', '3_6h': '3 a 6 h', '6_9h': '6 a 9 h', over_9h: 'Mais de 9 h' } },
     sleep_quality: { label: 'Qualidade do sono', options: { restless: 'Agitado', ok: 'Normal', restful: 'Reparador' } },
@@ -138,6 +142,17 @@ export const trackingPtBR = {
     mouth: { label: 'Boca', options: { bleeding_gums: 'Gengiva sangrando', burning_mouth: 'Ardência' } },
     breasts: { label: 'Mamas', options: { nipple_discharge: 'Secreção no mamilo' } },
     swelling: { label: 'Inchaço no corpo', options: { limbs: 'Pernas e pés', face: 'Rosto', nasal: 'Nariz entupido' } },
+    lactation: {
+      label: 'Amamentação',
+      options: {
+        engorgement: 'Mamas cheias e duras',
+        lump: 'Nódulo',
+        pain: 'Dor',
+        redness: 'Vermelhidão',
+        cracked_nipples: 'Fissura no mamilo',
+        leaking: 'Vazamento',
+      },
+    },
     feelings: {
       label: 'Sentimentos',
       options: {

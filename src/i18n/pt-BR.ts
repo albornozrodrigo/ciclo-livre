@@ -577,6 +577,17 @@ export const ptBR = {
     late: (n: number) => (n === 1 ? 'Menstruação atrasada há 1 dia' : `Menstruação atrasada há ${n} dias`),
     lateHint: 'Atrasos acontecem. Se ela não vier ou se você tiver dúvida, um teste de gravidez ou um serviço de saúde podem ajudar.',
     fertile: (from: string, to: string) => `Janela fértil: ${from} a ${to}`,
+    postpartum: {
+      weeks: (weeks: number, days: number) => {
+        const w = `${weeks} ${weeks === 1 ? 'semana' : 'semanas'}`;
+        const d = `${days} ${days === 1 ? 'dia' : 'dias'}`;
+        return weeks === 0 ? `Pós-parto: ${d}` : days === 0 ? `Pós-parto: ${w}` : `Pós-parto: ${w} e ${d}`;
+      },
+      months: (months: number) => `Pós-parto: ${months} ${months === 1 ? 'mês' : 'meses'}`,
+      hint: 'A menstruação pode voltar a qualquer momento, mesmo amamentando. Quando voltar, registre: o app volta a prever o ciclo se você trocar de modo.',
+      periodBack: 'Você registrou menstruação depois do parto.',
+      switch: 'Voltar para Menstruação e ciclo',
+    },
     likelyToday: {
       title: 'Pode aparecer hoje',
       row: (label: string, cycles: number, total: number) => `${label}: em ${cycles} dos ${total} ciclos com registro`,
@@ -739,7 +750,14 @@ export const ptBR = {
         conceive: { label: 'Tentar engravidar', detail: 'Janela fértil, ovulação e testes.' },
         pregnancy: { label: 'Gravidez', detail: 'Semana a semana até a data prevista.' },
         perimenopause: { label: 'Perimenopausa', detail: 'Ciclos que mudam, ondas de calor, sono.' },
+        postpartum: { label: 'Pós-parto', detail: 'Semanas desde o parto, lóquios e amamentação.' },
       },
+    },
+    babyBirth: {
+      title: 'Quando foi o parto?',
+      why: 'Usamos para contar as semanas desde o nascimento. Dá para mudar depois.',
+      label: 'Data do parto',
+      pick: 'Escolher data',
     },
     dueDate: {
       title: 'Qual é a data prevista do parto?',

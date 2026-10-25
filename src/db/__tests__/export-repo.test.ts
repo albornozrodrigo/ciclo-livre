@@ -24,6 +24,7 @@ const profile: Profile = {
   birthControl: 'pill',
   lutealLength: 11,
   includeAtypical: false,
+  babyBirth: null,
 };
 
 async function migratedDb() {
@@ -50,7 +51,7 @@ async function seeded() {
 describe('exportAll', () => {
   it('formato aberto e versionado, com tudo da pessoa', async () => {
     const data = await exportAll(await seeded(), NOW);
-    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 9, profile });
+    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 10, profile });
     expect(data.selections).toEqual([
       { date: '2026-10-12', category: 'pain', option: 'back' },
       { date: '2026-10-12', category: 'pain', option: 'cramps' },
@@ -186,6 +187,20 @@ describe('backup de antes da fase lútea', () => {
     }
 
     expect(parseExport(data).reminders[0].options).toMatchObject({ years: null, threads: 'after_period' });
+  });
+
+  it('perfil sem babyBirth (antes do pós-parto) é aceito e fica null', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    delete data.profile.babyBirth;
+
+    expect(parseExport(data).profile?.babyBirth).toBeNull();
+  });
+
+  it('pós-parto sem data do parto recusa o arquivo', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    data.profile = { ...data.profile, mode: 'postpartum', babyBirth: null };
+
+    expect(() => parseExport(data)).toThrow(IMPORT_ERROR);
   });
 
   it('perfil sem includeAtypical é aceito e fica false', async () => {

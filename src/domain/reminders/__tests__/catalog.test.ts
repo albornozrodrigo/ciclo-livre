@@ -21,6 +21,7 @@ const base: Profile = {
   birthControl: null,
   lutealLength: null,
   includeAtypical: false,
+  babyBirth: null,
 };
 
 describe('availableKinds', () => {
@@ -34,8 +35,12 @@ describe('availableKinds', () => {
       'medication',
       'daily_log',
     ]);
-    expect(availableKinds({ ...base, birthControl: 'pill', lutealLength: null, includeAtypical: false })).toContain('birth_control');
-    expect(availableKinds({ ...base, birthControl: 'condom', lutealLength: null, includeAtypical: false })).not.toContain('birth_control');
+    expect(availableKinds({ ...base, birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null })).toContain(
+      'birth_control',
+    );
+    expect(availableKinds({ ...base, birthControl: 'condom', lutealLength: null, includeAtypical: false, babyBirth: null })).not.toContain(
+      'birth_control',
+    );
   });
 
   it('gravidez: remédios e registro', () => {
@@ -43,18 +48,19 @@ describe('availableKinds', () => {
   });
 
   it('sem sangramento: sem menstruação nem fase', () => {
-    expect(availableKinds({ ...base, mode: 'no_bleeding', birthControl: 'ring', lutealLength: null, includeAtypical: false })).toEqual([
-      'birth_control',
-      'medication',
-      'daily_log',
-    ]);
+    expect(
+      availableKinds({ ...base, mode: 'no_bleeding', birthControl: 'ring', lutealLength: null, includeAtypical: false, babyBirth: null }),
+    ).toEqual(['birth_control', 'medication', 'daily_log']);
   });
 });
 
 describe('reminderNotice', () => {
   it('tentando engravidar com contraceptivo: sugere desligar, sem desligar sozinho', () => {
     expect(
-      reminderNotice({ ...base, mode: 'conceive', birthControl: 'pill', lutealLength: null, includeAtypical: false }, 'birth_control'),
+      reminderNotice(
+        { ...base, mode: 'conceive', birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null },
+        'birth_control',
+      ),
     ).toBe('conceive_birth_control');
     expect(reminderNotice(base, 'birth_control')).toBeNull();
   });
@@ -144,10 +150,12 @@ describe('needsAnchor', () => {
 describe('customMessageAllowed', () => {
   it('só quando todos os avisos do lembrete dizem a mesma coisa', () => {
     expect(customMessageAllowed('period_soon', base)).toBe(true);
-    expect(customMessageAllowed('birth_control', { ...base, birthControl: 'pill', lutealLength: null, includeAtypical: false })).toBe(true);
+    expect(
+      customMessageAllowed('birth_control', { ...base, birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null }),
+    ).toBe(true);
     expect(customMessageAllowed('phase_change', base)).toBe(false);
-    expect(customMessageAllowed('birth_control', { ...base, birthControl: 'ring', lutealLength: null, includeAtypical: false })).toBe(
-      false,
-    );
+    expect(
+      customMessageAllowed('birth_control', { ...base, birthControl: 'ring', lutealLength: null, includeAtypical: false, babyBirth: null }),
+    ).toBe(false);
   });
 });

@@ -11,15 +11,15 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.2 O que o Flo tem a mais — Fase 18 (Lembretes de DIU, implante, injeção e remédios)
+**Current focus:** v0.2 O que o Flo tem a mais — Fase 19 (Pós-parto + encerrar gravidez)
 
 ## Current Position
 
 Milestone: v0.2 O que o Flo tem a mais
-Phase: 18 of 19 (Lembretes de DIU, implante, injeção e remédios)
-Plan: 18-01 e 18-02 completos
-Status: Fase completa
-Last activity: 2026-10-25 — Fase 18 completa
+Phase: 19 of 19 (Pós-parto + encerrar gravidez)
+Plan: 19-01 completo; 19-02 em seguida
+Status: APPLY concluído; UNIFY em seguida
+Last activity: 2026-10-25 — 19-01 fechado (modo Pós-parto)
 
 Progress:
 - v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
@@ -30,7 +30,7 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [Fase completa]
+  ✓        ✓        ○     [APPLY concluído; UNIFY em seguida]
 ```
 
 ## Accumulated Context
@@ -104,9 +104,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-25
-Stopped at: 2026-10-25 — Fase 18 completa
-Next action: /paul:plan da fase 19 (Pós-parto + encerrar gravidez)
-Resume file: .paul/ROADMAP.md
+Stopped at: 2026-10-25 — 19-01 fechado (modo Pós-parto)
+Next action: /paul:apply .paul/phases/19-pos-parto-encerrar-gravidez/19-02-PLAN.md
+Resume file: .paul/phases/19-pos-parto-encerrar-gravidez/19-02-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

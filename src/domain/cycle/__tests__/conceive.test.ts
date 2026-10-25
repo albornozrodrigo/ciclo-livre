@@ -20,6 +20,7 @@ const profile: Profile = {
   birthControl: null,
   lutealLength: null,
   includeAtypical: false,
+  babyBirth: null,
 };
 // Ciclos de 28 dias; o atual começa em 2026-10-01 → ovulação estimada 2026-10-15 (28 − 14).
 const flowDates = ['2026-08-06', '2026-08-07', '2026-09-03', '2026-09-04', '2026-10-01', '2026-10-02'];

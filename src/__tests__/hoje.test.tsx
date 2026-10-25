@@ -50,6 +50,7 @@ beforeEach(async () => {
     birthControl: null,
     lutealLength: null,
     includeAtypical: false,
+    babyBirth: null,
   };
 });
 
@@ -168,5 +169,17 @@ describe('Hoje › Pode aparecer hoje', () => {
 
     expect(await screen.findByText(ptBR.cycle.likelyToday.title)).toBeOnTheScreen();
     expect(screen.getByText(ptBR.cycle.likelyToday.row('Cólica', 3, 3))).toBeOnTheScreen();
+  });
+});
+
+describe('Hoje › Pós-parto', () => {
+  it('conta o tempo desde o parto e, se a menstruação voltou, sugere trocar de modo', async () => {
+    mockProfile = { ...mockProfile, mode: 'postpartum', babyBirth: addDays(todayIso(), -62) };
+    await setSelection(mockDb, addDays(todayIso(), -2), 'period', ['light']);
+    await renderHoje();
+
+    expect(await screen.findByText(ptBR.cycle.postpartum.weeks(8, 6))).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.cycle.postpartum.switch }));
+    expect(mockPush).toHaveBeenCalledWith('/perfil/modo');
   });
 });

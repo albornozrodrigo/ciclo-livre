@@ -1,9 +1,11 @@
+import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
 import type { Territory } from '@/constants/theme';
 import { dateFromIso, type IsoDate } from '@/domain/dates';
 import type { Phase } from '@/domain/cycle/model';
 import type { TodayView } from '@/domain/cycle/today';
+import { CapsuleButton } from '@/components/ui/capsule-button';
 import { ptBR } from '@/i18n/pt-BR';
 
 import { LikelyToday } from './likely-today';
@@ -39,6 +41,22 @@ const Line = ({ children }: { children: string }) => <Text className="text-base 
 export function CycleCard({ view }: { view: TodayView }) {
   if (view.kind === 'none') return <Line>{c.none}</Line>;
   if (view.kind === 'no_bleeding') return <Muted>{c.noBleeding}</Muted>;
+  if (view.kind === 'postpartum') {
+    return (
+      <View className="gap-3">
+        <Text accessibilityRole="header" className="text-[32px] font-bold leading-[34px] tracking-[-0.96px] text-ink dark:text-ink-night">
+          {view.weeks < 12 ? c.postpartum.weeks(view.weeks, view.days) : c.postpartum.months(view.months)}
+        </Text>
+        <Muted>{c.postpartum.hint}</Muted>
+        {view.periodBack ? (
+          <View className="gap-2">
+            <Line>{c.postpartum.periodBack}</Line>
+            <CapsuleButton variant="outline" label={c.postpartum.switch} onPress={() => router.push('/perfil/modo')} />
+          </View>
+        ) : null}
+      </View>
+    );
+  }
   if (view.kind === 'pregnancy') {
     return (
       <View className="gap-2">

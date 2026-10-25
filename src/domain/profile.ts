@@ -1,6 +1,6 @@
 import { daysBetween, type IsoDate, isValidDate, yearOf } from './dates';
 
-export const MODES = ['period', 'no_bleeding', 'conceive', 'pregnancy', 'perimenopause'] as const;
+export const MODES = ['period', 'no_bleeding', 'conceive', 'pregnancy', 'perimenopause', 'postpartum'] as const;
 export type Mode = (typeof MODES)[number];
 
 export const REGULARITIES = ['regular', 'irregular', 'unknown'] as const;
@@ -33,6 +33,8 @@ export const LIMITS = {
   lutealLength: { min: 9, max: 18, default: 14 },
   lastPeriodMaxDaysAgo: 365,
   dueDateMaxDaysAhead: 300,
+  /** Pós-parto: a data do parto vale por até um ano. */
+  babyBirthMaxDaysAgo: 365,
 } as const;
 
 export type Profile = {
@@ -49,6 +51,8 @@ export type Profile = {
   lutealLength: number | null;
   /** Ciclos fora do padrão entram nas previsões e no resumo (padrão: não). */
   includeAtypical: boolean;
+  /** Pós-parto: data do parto (só neste modo). */
+  babyBirth: IsoDate | null;
 };
 
 export type ProfileInput = Pick<Profile, 'birthYear' | 'mode' | 'lastPeriodStart'> &
@@ -87,6 +91,7 @@ function withDefaults(input: ProfileInput): Profile {
     birthControl: input.birthControl ?? null,
     lutealLength: input.lutealLength ?? null,
     includeAtypical: input.includeAtypical ?? false,
+    babyBirth: input.mode === 'postpartum' ? (input.babyBirth ?? null) : null,
   };
 }
 
@@ -135,6 +140,7 @@ function checkLengths({ periodLength, cycleLength, lutealLength }: Profile): Pro
 
 function checkModeFields(profile: Profile, today: IsoDate): ProfileError[] {
   if (profile.mode === 'conceive' && profile.tryingSince === null) return [{ field: 'tryingSince', code: 'required' }];
+  if (profile.mode === 'postpartum') return checkBabyBirth(profile.babyBirth, today);
   if (profile.mode !== 'pregnancy') return [];
   if (profile.dueDate === null) return [{ field: 'dueDate', code: 'required' }];
   if (!isValidDate(profile.dueDate)) return [{ field: 'dueDate', code: 'invalid_date' }];
@@ -143,10 +149,19 @@ function checkModeFields(profile: Profile, today: IsoDate): ProfileError[] {
   return inRange ? [] : [{ field: 'dueDate', code: 'out_of_range' }];
 }
 
+function checkBabyBirth(value: IsoDate | null, today: IsoDate): ProfileError[] {
+  if (value === null) return [{ field: 'babyBirth', code: 'required' }];
+  if (!isValidDate(value)) return [{ field: 'babyBirth', code: 'invalid_date' }];
+  const daysAgo = daysBetween(value, today);
+  if (daysAgo < 0) return [{ field: 'babyBirth', code: 'in_future' }];
+  return daysAgo > LIMITS.babyBirthMaxDaysAgo ? [{ field: 'babyBirth', code: 'too_old' }] : [];
+}
+
 /** Erros que dependem só da passagem do tempo (a data envelhece sozinha). */
 const TIME_DEPENDENT: Partial<Record<ProfileField, ProfileErrorCode[]>> = {
   lastPeriodStart: ['too_old'],
   dueDate: ['out_of_range'],
+  babyBirth: ['too_old'],
 };
 
 /**

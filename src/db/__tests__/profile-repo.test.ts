@@ -16,6 +16,7 @@ const full: Profile = {
   birthControl: 'prefer_not_to_say',
   lutealLength: 12,
   includeAtypical: true,
+  babyBirth: null,
 };
 
 async function migratedDb() {
@@ -81,5 +82,33 @@ describe('migration v2 (profile)', () => {
     const db = await migratedDb();
 
     expect(() => db.raw.exec(sql)).toThrow();
+  });
+});
+
+describe('migration v10 (modo pós-parto)', () => {
+  it('mantém o perfil salvo antes e passa a aceitar o pós-parto com a data do parto', async () => {
+    const db = openMemoryDatabase();
+    await runMigrations(
+      db,
+      MIGRATIONS.filter((m) => m.version <= 9),
+    );
+    db.raw.exec(
+      "INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length, regularity, birth_control, luteal_length, include_atypical, updated_at) VALUES (1, 1990, 'period', '2026-10-01', 5, 30, 'regular', 'pill', 12, 1, 'x')",
+    );
+
+    await runMigrations(db, MIGRATIONS);
+
+    await expect(getProfile(db)).resolves.toMatchObject({
+      mode: 'period',
+      lastPeriodStart: '2026-10-01',
+      cycleLength: 30,
+      birthControl: 'pill',
+      lutealLength: 12,
+      includeAtypical: true,
+      babyBirth: null,
+    });
+    const postpartum = { ...full, mode: 'postpartum' as const, dueDate: null, babyBirth: '2026-09-15' };
+    await saveProfile(db, postpartum);
+    await expect(getProfile(db)).resolves.toEqual(postpartum);
   });
 });

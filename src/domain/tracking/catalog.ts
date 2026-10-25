@@ -96,6 +96,7 @@ export const CATALOG: readonly Category[] = [
   },
   { id: 'hot_flashes', group: 'cycle', kind: 'multi', options: ['hot_flash', 'night_sweats', 'chills'], onlyIn: ['perimenopause'] },
   { id: 'clots', group: 'cycle', kind: 'single', options: ['present'], hiddenIn: BLEEDING },
+  { id: 'lochia', group: 'cycle', kind: 'single', options: ['none', 'bright_red', 'brown_pink', 'yellow_white'], onlyIn: ['postpartum'] },
   // Corpo
   { id: 'energy', group: 'body', kind: 'single', options: ['exhausted', 'low', 'good', 'high'] },
   { id: 'sleep', group: 'body', kind: 'single', options: ['under_3h', '3_6h', '6_9h', 'over_9h'] },
@@ -113,6 +114,13 @@ export const CATALOG: readonly Category[] = [
   { id: 'mouth', group: 'body', kind: 'multi', options: ['bleeding_gums', 'burning_mouth'] },
   { id: 'breasts', group: 'body', kind: 'multi', options: ['nipple_discharge'] },
   { id: 'swelling', group: 'body', kind: 'multi', options: ['limbs', 'face', 'nasal'] },
+  {
+    id: 'lactation',
+    group: 'body',
+    kind: 'multi',
+    options: ['engorgement', 'lump', 'pain', 'redness', 'cracked_nipples', 'leaking'],
+    onlyIn: ['postpartum'],
+  },
   // Mente
   {
     id: 'feelings',

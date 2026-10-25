@@ -15,6 +15,7 @@ const profile: Profile = {
   birthControl: null,
   lutealLength: null,
   includeAtypical: false,
+  babyBirth: null,
 };
 // Ciclos de 28, 29, 27, 45 e 28 dias.
 const starts = ['2026-03-01'];
@@ -30,7 +31,7 @@ describe('ciclos fora do padrão no modelo', () => {
   });
 
   it('a pessoa pode incluir os fora do padrão na média', () => {
-    const model = cycleModelFor({ ...profile, includeAtypical: true }, signals, TODAY)!;
+    const model = cycleModelFor({ ...profile, includeAtypical: true, babyBirth: null }, signals, TODAY)!;
     expect(model.cycleLength).toBe(31);
   });
 

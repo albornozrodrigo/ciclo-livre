@@ -16,6 +16,7 @@ const profile: Profile = {
   birthControl: null,
   lutealLength: null,
   includeAtypical: false,
+  babyBirth: null,
 };
 const meds = [
   { name: 'Ferro', times: ['08:00', '20:00'], until: '2026-10-30' },

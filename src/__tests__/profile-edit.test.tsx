@@ -18,6 +18,7 @@ const profile: Profile = {
   birthControl: 'pill',
   lutealLength: null,
   includeAtypical: false,
+  babyBirth: null,
 };
 
 const mockSave = jest.fn();
@@ -104,7 +105,7 @@ describe('Dados do ciclo', () => {
     );
     await save();
 
-    await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, lutealLength: 13, includeAtypical: false }));
+    await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, lutealLength: 13, includeAtypical: false, babyBirth: null }));
   });
 
   it('incluir ciclos fora do padrão nas previsões', async () => {
@@ -113,7 +114,7 @@ describe('Dados do ciclo', () => {
     await fireEvent(screen.getByRole('switch', { name: ptBR.profile.atypical.toggle }), 'valueChange', true);
     await save();
 
-    await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, includeAtypical: true }));
+    await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, includeAtypical: true, babyBirth: null }));
   });
 
   it('"Não lembro" limpa a última menstruação', async () => {
