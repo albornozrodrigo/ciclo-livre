@@ -53,14 +53,16 @@ export function CycleNumbers({ summary }: { summary: CycleSummary }) {
       </View>
       {/* A média vale pouco com poucos ciclos: dizer de quantos ela vem. */}
       <Muted>{summary.count < 3 ? `${a.basis(summary.count)} ${a.basisGrowing}` : a.basis(summary.count)}</Muted>
+      {summary.excluded > 0 ? <Muted>{a.excluded(summary.excluded)}</Muted> : null}
     </View>
   );
 }
 
 export function CycleBars({ history, summary }: { history: CycleRow[]; summary: CycleSummary }) {
-  // As mesmas durações do resumo: sem as implausíveis, que achatariam as outras barras.
+  // As mesmas durações do resumo: sem as implausíveis e, se ficaram fora da média, sem as fora do padrão
+  // (`excluded` é 0 quando a pessoa as inclui). Elas continuam no histórico, com o selo.
   const complete = history
-    .filter((r) => r.length !== null && isPlausibleCycle(r.length))
+    .filter((r) => r.length !== null && isPlausibleCycle(r.length) && !(r.atypical && summary.excluded > 0))
     .slice(0, 12)
     .reverse();
   const bars = complete.map((r, i) => ({
@@ -94,16 +96,25 @@ export function CycleHistory({ history }: { history: CycleRow[] }) {
         const started = shortDate(r.start);
         const length = r.length === null ? a.history.ongoing : a.history.length(r.length);
         const period = r.periodLength === null ? a.history.periodFromProfile : a.history.period(r.periodLength);
+        // Diferença pequena é ruído: só a partir de 2 dias.
+        const diff = r.diffFromUsual !== null && Math.abs(r.diffFromUsual) >= 2 ? a.history.diff(r.diffFromUsual) : null;
+        const extra = [r.atypical ? a.history.atypical : null, diff].filter((x): x is string => x !== null);
         return (
           // Uma linha = um foco no TalkBack.
           <View
             key={r.start}
             accessible
-            accessibilityLabel={a.history.rowLabel(started, length, period)}
+            accessibilityLabel={[a.history.rowLabel(started, length, period), ...extra].join('. ')}
             className="min-h-14 flex-row items-center justify-between gap-3 border-b border-line py-2 dark:border-line-night">
             <View className="flex-1 gap-0.5">
               <Text className="text-base font-bold text-ink dark:text-ink-night">{a.history.started(started)}</Text>
               <Muted>{period}</Muted>
+              {diff ? <Muted>{diff}</Muted> : null}
+              {r.atypical ? (
+                <View className="mt-1 self-start rounded-full border-[1.5px] border-ink px-3 py-0.5 dark:border-ink-night">
+                  <Text className="text-sm font-bold text-ink dark:text-ink-night">{a.history.atypical}</Text>
+                </View>
+              ) : null}
             </View>
             <Text className="text-base font-bold text-ink [font-variant:tabular-nums] dark:text-ink-night">{length}</Text>
           </View>

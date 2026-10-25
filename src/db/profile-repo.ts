@@ -14,6 +14,7 @@ type ProfileRow = {
   trying_since: Profile['tryingSince'];
   birth_control: Profile['birthControl'];
   luteal_length: number | null;
+  include_atypical: number;
 };
 
 export async function getProfile(db: SqlExecutor): Promise<Profile | null> {
@@ -30,6 +31,7 @@ export async function getProfile(db: SqlExecutor): Promise<Profile | null> {
     tryingSince: row.trying_since,
     birthControl: row.birth_control,
     lutealLength: row.luteal_length,
+    includeAtypical: row.include_atypical === 1,
   };
 }
 
@@ -38,13 +40,14 @@ export async function saveProfile(db: SqlExecutor, profile: Profile, now = new D
   await enqueueWrite(db, () =>
     db.runAsync(
       `INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length,
-       regularity, due_date, trying_since, birth_control, luteal_length, updated_at)
-     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       regularity, due_date, trying_since, birth_control, luteal_length, include_atypical, updated_at)
+     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (id) DO UPDATE SET
        birth_year = excluded.birth_year, mode = excluded.mode, last_period_start = excluded.last_period_start,
        period_length = excluded.period_length, cycle_length = excluded.cycle_length,
        regularity = excluded.regularity, due_date = excluded.due_date, trying_since = excluded.trying_since,
-       birth_control = excluded.birth_control, luteal_length = excluded.luteal_length, updated_at = excluded.updated_at`,
+       birth_control = excluded.birth_control, luteal_length = excluded.luteal_length,
+       include_atypical = excluded.include_atypical, updated_at = excluded.updated_at`,
       profile.birthYear,
       profile.mode,
       profile.lastPeriodStart,
@@ -55,6 +58,7 @@ export async function saveProfile(db: SqlExecutor, profile: Profile, now = new D
       profile.tryingSince,
       profile.birthControl,
       profile.lutealLength,
+      profile.includeAtypical ? 1 : 0,
       now.toISOString(),
     ),
   );

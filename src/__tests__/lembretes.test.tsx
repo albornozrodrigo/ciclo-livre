@@ -89,6 +89,7 @@ beforeEach(async () => {
     tryingSince: null,
     birthControl: 'pill',
     lutealLength: null,
+    includeAtypical: false,
   };
 });
 
@@ -96,11 +97,11 @@ const reminder = async (kind: string) => (await listReminders(mockDb)).find((x) 
 
 describe('Lembretes (lista)', () => {
   it('mostra só os tipos do modo, com a janela fértil liberada', async () => {
-    mockProfile = { ...mockProfile, birthControl: 'condom', lutealLength: null };
+    mockProfile = { ...mockProfile, birthControl: 'condom', lutealLength: null, includeAtypical: false };
     await render(wrap(<LembretesScreen />));
     expect(await screen.findByRole('switch', { name: REMINDER_NAMES.fertile_soon })).toBeOnTheScreen();
 
-    mockProfile = { ...mockProfile, birthControl: 'pill', lutealLength: null };
+    mockProfile = { ...mockProfile, birthControl: 'pill', lutealLength: null, includeAtypical: false };
     await render(wrap(<LembretesScreen />));
     expect(await screen.findByRole('switch', { name: REMINDER_NAMES.birth_control })).toBeOnTheScreen();
     // Com contracepção hormonal não há janela fértil estimada.
@@ -203,7 +204,7 @@ describe('Lembrete (detalhe)', () => {
 
   it('anel: sem mensagem própria (colocar e tirar dizem coisas opostas)', async () => {
     mockTipo = 'birth_control';
-    mockProfile = { ...mockProfile, birthControl: 'ring', lutealLength: null };
+    mockProfile = { ...mockProfile, birthControl: 'ring', lutealLength: null, includeAtypical: false };
     await render(wrap(<LembreteScreen />));
     expect(await screen.findByText(r.preview)).toBeOnTheScreen();
     expect(screen.queryByLabelText(r.titleLabel)).toBeNull();

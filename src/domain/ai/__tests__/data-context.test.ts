@@ -23,8 +23,10 @@ const row = (start: string, length: number | null, periodLength: number | null):
   length,
   periodLength,
   ovulation: { date: '2026-01-01', method: 'calendar' } as CycleRow['ovulation'],
+  atypical: false,
+  diffFromUsual: null,
 });
-const summary: CycleSummary = { count: 7, mean: 25, min: 19, max: 29, sd: 3, periodMean: 5 };
+const summary: CycleSummary = { count: 7, mean: 25, min: 19, max: 29, sd: 3, periodMean: 5, excluded: 0 };
 const symptoms: SymptomRow[] = [{ category: 'pain', option: 'cramps', cycles: 6, total: 7, phase: 'menstruation' }];
 const weight: MeasureSeries = {
   points: [
@@ -60,6 +62,11 @@ const base: ContextInput = {
 
 describe('buildDataContext', () => {
   const out = buildDataContext(base, { cycles: 6, includeNotes: false }, labels);
+
+  it('marca o ciclo fora do padrão', () => {
+    const input: ContextInput = { ...base, history: [{ ...row('2026-09-22', 45, 5), atypical: true, diffFromUsual: 17 }] };
+    expect(buildDataContext(input, { cycles: 6, includeNotes: false }, labels).text).toContain('45 dias (fora do padrão, fora da média)');
+  });
 
   it('com contracepção hormonal não fala de janela fértil nem de ovulação estimada', () => {
     const hormonal: ContextInput = {

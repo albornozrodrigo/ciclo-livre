@@ -27,6 +27,7 @@ const profile = {
   tryingSince: null,
   birthControl: null,
   lutealLength: null,
+  includeAtypical: false,
 };
 
 const html = renderReportHtml(

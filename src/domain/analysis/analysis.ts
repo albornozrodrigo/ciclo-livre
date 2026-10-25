@@ -1,27 +1,41 @@
 import { bbtOvulation } from '@/domain/cycle/ovulation';
 import { type CycleModel, dayInfo, type Ovulation, type Phase } from '@/domain/cycle/model';
-import { isPlausibleCycle } from '@/domain/cycle/stats';
+import { isPlausibleCycle, recentAtypical, recentDiffs } from '@/domain/cycle/stats';
 import { addDays, daysBetween, type IsoDate } from '@/domain/dates';
 
 /** `periodLength` null: menstruação só informada no cadastro, sem dias registrados. */
 /** `ovulation` null com contracepção hormonal (sem estimativa). */
-export type CycleRow = { start: IsoDate; length: number | null; periodLength: number | null; ovulation: Ovulation | null };
+/** `atypical`: fora do padrão; `diffFromUsual`: dias acima (+) ou abaixo (−) do habitual (null no atual ou sem referência). */
+export type CycleRow = {
+  start: IsoDate;
+  length: number | null;
+  periodLength: number | null;
+  ovulation: Ovulation | null;
+  atypical: boolean;
+  diffFromUsual: number | null;
+};
 
 /**
  * Histórico de ciclos, do mais recente ao mais antigo. O atual (em curso) não tem duração.
  * A menstruação mostra só os dias registrados (a em andamento não ganha a duração estendida da previsão).
  */
 export function cycleHistory(model: CycleModel): CycleRow[] {
-  // Um ciclo por menstruação detectada: spans e periods andam juntos.
+  // Um ciclo por menstruação detectada: spans e periods andam juntos. O último é o atual (sem duração).
+  const complete = model.spans.slice(0, -1).map((span) => daysBetween(span.start, span.nextStart));
+  // As mesmas marcas da previsão (mesma janela dos 12 mais recentes).
+  const flags = recentAtypical(complete);
+  const diffs = recentDiffs(complete);
   return model.spans
     .map((span, i) => {
       const isCurrent = i === model.spans.length - 1;
       const period = model.periods[i];
       return {
         start: span.start,
-        length: isCurrent ? null : daysBetween(span.start, span.nextStart),
+        length: isCurrent ? null : complete[i],
         periodLength: period.source === 'seed' ? null : daysBetween(period.start, period.end) + 1,
         ovulation: model.fertilityHidden ? null : span.ovulation,
+        atypical: isCurrent ? false : flags[i],
+        diffFromUsual: isCurrent ? null : diffs[i],
       };
     })
     .reverse();
@@ -30,7 +44,16 @@ export function cycleHistory(model: CycleModel): CycleRow[] {
 const SUMMARY_CYCLES = 12;
 
 /** `periodMean` null quando nenhuma menstruação registrada terminou (só cadastro ou a atual). */
-export type CycleSummary = { count: number; mean: number; min: number; max: number; sd: number; periodMean: number | null };
+/** `excluded`: ciclos recentes fora do padrão que não entram no resumo (0 se a pessoa os inclui). */
+export type CycleSummary = {
+  count: number;
+  mean: number;
+  min: number;
+  max: number;
+  sd: number;
+  periodMean: number | null;
+  excluded: number;
+};
 
 const average = (values: readonly number[]) => values.reduce((a, b) => a + b, 0) / values.length;
 
@@ -50,6 +73,7 @@ function recentPeriodMean(model: CycleModel): number | null {
 export function cycleSummary(model: CycleModel): CycleSummary | null {
   const lengths = completeLengths(model);
   if (lengths.length === 0) return null;
+  const excluded = model.includeAtypical ? 0 : recentComplete(model).filter((r) => r.atypical && isPlausibleCycle(r.length)).length;
   const mean = average(lengths);
   const sd = Math.sqrt(lengths.reduce((acc, l) => acc + (l - mean) ** 2, 0) / lengths.length);
   return {
@@ -59,14 +83,25 @@ export function cycleSummary(model: CycleModel): CycleSummary | null {
     max: Math.max(...lengths),
     sd,
     periodMean: recentPeriodMean(model),
+    excluded,
   };
 }
 
-/** Durações dos ciclos completos recentes e plausíveis (as mesmas da previsão), do mais recente ao mais antigo. */
-export function completeLengths(model: CycleModel): number[] {
+/** Ciclos completos recentes (até 12), do mais recente ao mais antigo. */
+function recentComplete(model: CycleModel): (CycleRow & { length: number })[] {
   return cycleHistory(model)
-    .flatMap((row) => (row.length !== null && isPlausibleCycle(row.length) ? [row.length] : []))
+    .filter((row): row is CycleRow & { length: number } => row.length !== null)
     .slice(0, SUMMARY_CYCLES);
+}
+
+/**
+ * Durações dos ciclos completos recentes e plausíveis, do mais recente ao mais antigo. Sem os fora do padrão,
+ * a menos que a pessoa os inclua (como na previsão).
+ */
+export function completeLengths(model: CycleModel): number[] {
+  return recentComplete(model)
+    .filter((row) => isPlausibleCycle(row.length) && (model.includeAtypical || !row.atypical))
+    .map((row) => row.length);
 }
 
 /** Categorias que descrevem como a pessoa se sente (não fluxo, coleta, testes, contracepção ou medições). */

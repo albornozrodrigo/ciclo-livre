@@ -92,6 +92,7 @@ const profile: Profile = {
   tryingSince: null,
   birthControl: null,
   lutealLength: null,
+  includeAtypical: false,
 };
 const TODAY = '2026-10-22';
 const FAST = { N: 1024, r: 8, p: 1 };

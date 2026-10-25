@@ -78,7 +78,8 @@ function cycleLine(row: CycleRow, labels: ContextLabels): string {
     row.length === null || row.ovulation === null
       ? ''
       : `; ovulação estimada ${br(row.ovulation.date)} (${labels.method(row.ovulation.method)})`;
-  return `- início ${br(row.start)}: ${length}; ${period}${ovulation}`;
+  const atypical = row.atypical ? ' (fora do padrão, fora da média)' : '';
+  return `- início ${br(row.start)}: ${length}${atypical}; ${period}${ovulation}`;
 }
 
 function measureLines(measures: Record<MeasureKey, MeasureSeries>, labels: ContextLabels): string[] {

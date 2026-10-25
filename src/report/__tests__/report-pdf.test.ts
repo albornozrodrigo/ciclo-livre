@@ -25,6 +25,7 @@ const profile: Profile = {
   tryingSince: null,
   birthControl: null,
   lutealLength: null,
+  includeAtypical: false,
 };
 
 describe('createReportPdf', () => {

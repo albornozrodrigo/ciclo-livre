@@ -23,6 +23,7 @@ const profile: Profile = {
   tryingSince: null,
   birthControl: null,
   lutealLength: null,
+  includeAtypical: false,
 };
 
 beforeEach(async () => {

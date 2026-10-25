@@ -15,6 +15,7 @@ const full: Profile = {
   tryingSince: null,
   birthControl: 'prefer_not_to_say',
   lutealLength: 12,
+  includeAtypical: true,
 };
 
 async function migratedDb() {

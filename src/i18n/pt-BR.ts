@@ -62,7 +62,11 @@ export const ptBR = {
       periodFromProfile: 'início informado no cadastro',
       started: (date: string) => `Começou em ${date}`,
       rowLabel: (date: string, length: string, period: string) => `Ciclo que começou em ${date}: ${length}, ${period}`,
+      diff: (n: number) => `${Math.abs(n)} ${Math.abs(n) === 1 ? 'dia' : 'dias'} mais ${n < 0 ? 'curto' : 'longo'} que o normal`,
+      atypical: 'Fora do padrão',
     },
+    excluded: (n: number) =>
+      `${n === 1 ? '1 ciclo fora do padrão não entra' : `${n} ciclos fora do padrão não entram`} na média nem nas previsões. Dá para incluir em Mais → Dados do ciclo.`,
     symptoms: {
       title: 'Sintomas frequentes',
       row: (label: string, cycles: number, total: number) => `${label}: em ${cycles} de ${total} ciclos`,
@@ -469,6 +473,8 @@ export const ptBR = {
     cycles: 'Ciclos',
     cols: { start: 'Início', length: 'Duração', period: 'Menstruação', ovulation: 'Ovulação estimada' },
     current: 'Atual (em andamento)',
+    atypical: (days: string) => `${days} (fora do padrão)`,
+    excluded: (n: number) => `${n === 1 ? '1 ciclo fora do padrão ficou' : `${n} ciclos fora do padrão ficaram`} fora da média.`,
     notRecorded: 'informada no cadastro',
     methods: { bbt: 'temperatura', test: 'teste de ovulação', mucus: 'muco', calendar: 'calendário' },
     forecast: 'previsão',
@@ -591,6 +597,10 @@ export const ptBR = {
       detail: 'Do dia da ovulação até a véspera da menstruação.',
       label: 'Fase lútea',
       measuredWins: 'Se você registrar a temperatura e o app confirmar a ovulação, vale a medida.',
+    },
+    atypical: {
+      toggle: 'Incluir ciclos fora do padrão nas previsões',
+      detail: 'Ciclos muito mais curtos ou longos que o seu normal ficam fora da média, para não puxar as previsões.',
     },
   },
   appearance: {

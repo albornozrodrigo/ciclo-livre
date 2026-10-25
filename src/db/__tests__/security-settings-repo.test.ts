@@ -33,6 +33,7 @@ describe('security-settings-repo', () => {
         tryingSince: null,
         birthControl: null,
         lutealLength: null,
+        includeAtypical: false,
       },
       NOW,
     );

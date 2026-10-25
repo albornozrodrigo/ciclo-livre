@@ -27,6 +27,7 @@ const profile: Profile = {
   tryingSince: null,
   birthControl: 'pill',
   lutealLength: null,
+  includeAtypical: false,
 };
 jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile } }) }));
 

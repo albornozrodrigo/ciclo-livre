@@ -16,7 +16,7 @@ App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clu
 ## Current Milestone
 **v0.2 O que o Flo tem a mais** (v0.2.0)
 Status: 🚧 In Progress
-Phases: 3 of 8 complete
+Phases: 4 of 8 complete
 
 Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `notas/05-o-que-trazer-ao-ciclo-livre.md`). São os 8 itens de prioridade 1: tudo roda no aparelho e é grátis. No Flo, parte deles é paga (chance de engravidar) ou depende do servidor (previsões, sintomas do dia).
 
@@ -25,7 +25,7 @@ Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `n
 | 12 | Catálogo de registro completo | 1 | ✅ Complete | 2026-10-25 |
 | 13 | Contracepção hormonal esconde fertilidade | 1 | ✅ Complete | 2026-10-25 |
 | 14 | Fase lútea informada | 1 | ✅ Complete | 2026-10-25 |
-| 15 | Ciclos fora do padrão | TBD | Not started | - |
+| 15 | Ciclos fora do padrão | 1 | ✅ Complete | 2026-10-25 |
 | 16 | Status do modo Engravidar + chance por dia | TBD | Not started | - |
 | 17 | "Pode aparecer hoje" | TBD | Not started | - |
 | 18 | Lembretes de DIU, implante, injeção e remédios | TBD | Not started | - |

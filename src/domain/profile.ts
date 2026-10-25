@@ -47,6 +47,8 @@ export type Profile = {
   birthControl: BirthControl | null;
   /** null = não sei (o motor usa a medida pela temperatura ou 14 dias). */
   lutealLength: number | null;
+  /** Ciclos fora do padrão entram nas previsões e no resumo (padrão: não). */
+  includeAtypical: boolean;
 };
 
 export type ProfileInput = Pick<Profile, 'birthYear' | 'mode' | 'lastPeriodStart'> &
@@ -84,6 +86,7 @@ function withDefaults(input: ProfileInput): Profile {
     tryingSince: input.mode === 'conceive' ? (input.tryingSince ?? null) : null,
     birthControl: input.birthControl ?? null,
     lutealLength: input.lutealLength ?? null,
+    includeAtypical: input.includeAtypical ?? false,
   };
 }
 

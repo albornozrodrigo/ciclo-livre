@@ -55,6 +55,7 @@ describe('chat-repo', () => {
         tryingSince: null,
         birthControl: null,
         lutealLength: null,
+        includeAtypical: false,
       },
       NOW,
     );

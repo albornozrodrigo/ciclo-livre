@@ -2,6 +2,7 @@ import { Text, View } from 'react-native';
 
 import { CycleLengthsFields } from '@/components/fields/cycle-lengths-fields';
 import { LutealLengthField } from '@/components/fields/luteal-length-field';
+import { SwitchRow } from '@/components/reminders/switch-row';
 import { FormScreen } from '@/components/form-screen';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { ChoiceList } from '@/components/ui/choice-list';
@@ -35,6 +36,12 @@ export default function CycleDataScreen() {
       </View>
       <CycleLengthsFields value={draft} onChange={update} />
       <LutealLengthField value={draft.lutealLength} onChange={(lutealLength) => update({ lutealLength })} />
+      <SwitchRow
+        label={ptBR.profile.atypical.toggle}
+        detail={ptBR.profile.atypical.detail}
+        value={draft.includeAtypical}
+        onValueChange={(includeAtypical) => update({ includeAtypical })}
+      />
       <View className="gap-3">
         <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{ob.birthControl.title}</Text>
         <ChoiceList

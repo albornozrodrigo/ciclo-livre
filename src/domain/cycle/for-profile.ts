@@ -34,6 +34,7 @@ export function cycleModelFor(profile: Profile, signals: CycleSignals, today: Is
       profileCycleLength: profile.cycleLength,
       profilePeriodLength: profile.periodLength,
       profileLutealLength: profile.lutealLength,
+      includeAtypical: profile.includeAtypical,
     },
     today,
   );

@@ -68,6 +68,7 @@ const profile: Profile = {
   tryingSince: null,
   birthControl: null,
   lutealLength: null,
+  includeAtypical: false,
 };
 // 22/10/2026, 8h local.
 const NOW = new Date(2026, 9, 22, 8, 0);

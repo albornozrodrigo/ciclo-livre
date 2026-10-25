@@ -118,6 +118,11 @@ export const MIGRATIONS: Migration[] = [
     version: 8,
     statements: ['ALTER TABLE profile ADD COLUMN luteal_length INTEGER CHECK (luteal_length IS NULL OR luteal_length BETWEEN 9 AND 18)'],
   },
+  {
+    // Incluir ciclos fora do padrão nas previsões (preferência; padrão não).
+    version: 9,
+    statements: ['ALTER TABLE profile ADD COLUMN include_atypical INTEGER NOT NULL DEFAULT 0 CHECK (include_atypical IN (0, 1))'],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

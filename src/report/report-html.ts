@@ -59,14 +59,14 @@ export function renderReportHtml(report: Report): string {
           <div><dt>${t.cycleMean}</dt><dd>${t.days(s.mean)}</dd></div>
           <div><dt>${t.range}</dt><dd>${s.min === s.max ? t.days(s.min) : `${s.min}–${s.max} dias`}</dd></div>
           ${s.periodMean !== null ? `<div><dt>${t.periodMean}</dt><dd>${t.days(s.periodMean)}</dd></div>` : ''}
-        </dl><p class="muted">${t.basis(s.count)}</p>`
+        </dl><p class="muted">${t.basis(s.count)}${s.excluded > 0 ? ` ${t.excluded(s.excluded)}` : ''}</p>`
           : `<p class="muted">${t.basis(0)}</p>`
       }`);
 
     // Com contracepção hormonal nenhuma linha tem ovulação: a coluna sai do relatório.
     const showOvulation = [c.current, ...c.complete].some((r) => r.ovulation !== null);
     const row = (r: (typeof c.complete)[number], isCurrent: boolean) =>
-      `<tr><td>${date(r.start)}</td><td>${isCurrent ? t.current : t.days(r.length ?? 0)}</td>
+      `<tr><td>${date(r.start)}</td><td>${isCurrent ? t.current : r.atypical ? t.atypical(t.days(r.length ?? 0)) : t.days(r.length ?? 0)}</td>
         <td>${r.periodLength === null ? t.notRecorded : t.days(r.periodLength)}</td>
         ${showOvulation ? `<td>${r.ovulation === null ? '—' : `${date(r.ovulation.date)} (${isCurrent && r.ovulation.method === 'calendar' ? t.forecast : t.methods[r.ovulation.method]})`}</td>` : ''}</tr>`;
     sections.push(`<h2>${t.cycles}</h2>

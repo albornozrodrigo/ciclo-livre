@@ -20,6 +20,7 @@ const PROFILE = {
   tryingSince: null,
   birthControl: null,
   lutealLength: null,
+  includeAtypical: false,
 } as const;
 
 async function migratedDb() {
@@ -140,6 +141,7 @@ describe('health-settings-repo', () => {
         tryingSince: null,
         birthControl: null,
         lutealLength: null,
+        includeAtypical: false,
       },
       NOW,
     );

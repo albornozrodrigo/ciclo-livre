@@ -13,6 +13,7 @@ const profile: Profile = {
   tryingSince: null,
   birthControl: null,
   lutealLength: null,
+  includeAtypical: false,
 };
 const signals = { flowDates: [], temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], painDates: [] };
 
@@ -30,7 +31,7 @@ describe('fase lútea informada', () => {
   const flow = { ...signals, flowDates: ['2026-08-15', '2026-08-16', '2026-09-12', '2026-09-13', '2026-10-10', '2026-10-11'] };
 
   it('sem temperatura, a ovulação por calendário fica N dias antes da próxima menstruação', () => {
-    const model = cycleModelFor({ ...profile, lutealLength: 11 }, flow, '2026-10-22')!;
+    const model = cycleModelFor({ ...profile, lutealLength: 11, includeAtypical: false }, flow, '2026-10-22')!;
     expect(model.current.ovulation).toEqual({ date: addDays(model.expected, -11), method: 'calendar' });
   });
 
@@ -41,7 +42,7 @@ describe('fase lútea informada', () => {
 
   it('valor informado que não cabe no ciclo medido é ignorado (janela fértil cairia na menstruação)', () => {
     const short = { ...signals, flowDates: ['2026-09-10', '2026-09-11', '2026-10-01', '2026-10-02', '2026-10-22'] };
-    const model = cycleModelFor({ ...profile, periodLength: 5, lutealLength: 18 }, short, '2026-10-23')!;
+    const model = cycleModelFor({ ...profile, periodLength: 5, lutealLength: 18, includeAtypical: false }, short, '2026-10-23')!;
     expect(model.cycleLength).toBe(21);
     expect(model.lutealLength).toBe(14);
   });
@@ -51,7 +52,7 @@ describe('fase lútea informada', () => {
     // Ciclo de 15/08 a 11/09: subida confirmada em 27/08 → ovulação 26/08, lútea 17 dias.
     ['08-20', '08-21', '08-22', '08-23', '08-24', '08-25', '08-26'].forEach((d) => (temperatures[`2026-${d}`] = 36.3));
     ['08-27', '08-28', '08-29'].forEach((d) => (temperatures[`2026-${d}`] = 36.7));
-    const model = cycleModelFor({ ...profile, lutealLength: 11 }, { ...flow, temperatures }, '2026-10-22')!;
+    const model = cycleModelFor({ ...profile, lutealLength: 11, includeAtypical: false }, { ...flow, temperatures }, '2026-10-22')!;
     expect(model.lutealLength).toBe(17);
   });
 });

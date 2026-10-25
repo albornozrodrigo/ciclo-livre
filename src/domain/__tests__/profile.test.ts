@@ -32,6 +32,7 @@ describe('validateProfile', () => {
           tryingSince: null,
           birthControl: null,
           lutealLength: null,
+          includeAtypical: false,
         },
       });
     });
@@ -102,8 +103,8 @@ describe('validateProfile', () => {
     });
 
     it('aceita de 9 a 18 dias', () => {
-      expect(errorsOf({ ...base, lutealLength: 9 })).toEqual([]);
-      expect(errorsOf({ ...base, lutealLength: 18 })).toEqual([]);
+      expect(errorsOf({ ...base, lutealLength: 9, includeAtypical: false })).toEqual([]);
+      expect(errorsOf({ ...base, lutealLength: 18, includeAtypical: false })).toEqual([]);
     });
 
     it.each([8, 19, 12.5])('recusa %p', (lutealLength) => {
@@ -111,7 +112,7 @@ describe('validateProfile', () => {
     });
 
     it('não trava a edição por causa da duração do ciclo (o motor decide se o valor cabe)', () => {
-      expect(errorsOf({ ...base, cycleLength: 16, periodLength: 3, lutealLength: 16 })).toEqual([]);
+      expect(errorsOf({ ...base, cycleLength: 16, periodLength: 3, lutealLength: 16, includeAtypical: false })).toEqual([]);
     });
   });
 
@@ -184,6 +185,7 @@ describe('validateProfileEdit', () => {
     tryingSince: null,
     birthControl: null,
     lutealLength: null,
+    includeAtypical: false,
   };
 
   it('não bloqueia por uma data guardada que envelheceu e não foi mexida', () => {

@@ -60,10 +60,27 @@ beforeEach(async () => {
     tryingSince: null,
     birthControl: null,
     lutealLength: null,
+    includeAtypical: false,
   };
 });
 
 describe('Análise', () => {
+  it('ciclo fora do padrão: selo no histórico, fora da média, e o aviso de como incluir', async () => {
+    const today = todayIso();
+    // Ciclos de 28, 28, 28 e 45 dias; o atual começa hoje.
+    for (const start of [-129, -101, -73, -45, 0]) {
+      for (const d of [0, 1, 2]) if (start + d <= 0) await setSelection(mockDb, addDays(today, start + d), 'period', ['medium']);
+    }
+    await renderAnalise();
+
+    expect(await screen.findByLabelText(`${a.stats.cycle}: ${a.stats.cycleValue(28)}`)).toBeOnTheScreen();
+    expect(screen.getByText(a.excluded(1))).toBeOnTheScreen();
+    expect(screen.getByLabelText(new RegExp(`45 dias.*${a.history.atypical}.*${a.history.diff(17)}`))).toBeOnTheScreen();
+    // O gráfico usa os mesmos ciclos do resumo: barras de 28 dias, nenhuma de 45.
+    expect(screen.getAllByLabelText(/^Ciclo de .*: 28 dias$/, { includeHiddenElements: true })).toHaveLength(3);
+    expect(screen.queryByLabelText(/^Ciclo de .*: 45 dias$/, { includeHiddenElements: true })).toBeNull();
+  });
+
   it('mostra os números dos ciclos', async () => {
     await seed();
     await renderAnalise();

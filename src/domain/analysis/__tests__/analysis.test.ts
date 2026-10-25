@@ -35,10 +35,38 @@ const model = buildCycleModel(
 describe('cycleHistory', () => {
   it('ciclos do mais recente para o mais antigo; o atual sem duração', () => {
     expect(cycleHistory(model)).toEqual([
-      { start: '2026-09-26', length: null, periodLength: 5, ovulation: { date: '2026-10-10', method: 'calendar' } },
-      { start: '2026-08-30', length: 27, periodLength: 3, ovulation: { date: '2026-09-12', method: 'calendar' } },
-      { start: '2026-08-01', length: 29, periodLength: 4, ovulation: { date: '2026-08-16', method: 'calendar' } },
-      { start: '2026-07-04', length: 28, periodLength: 3, ovulation: { date: '2026-07-18', method: 'calendar' } },
+      {
+        start: '2026-09-26',
+        length: null,
+        periodLength: 5,
+        ovulation: { date: '2026-10-10', method: 'calendar' },
+        atypical: false,
+        diffFromUsual: null,
+      },
+      {
+        start: '2026-08-30',
+        length: 27,
+        periodLength: 3,
+        ovulation: { date: '2026-09-12', method: 'calendar' },
+        atypical: false,
+        diffFromUsual: -1,
+      },
+      {
+        start: '2026-08-01',
+        length: 29,
+        periodLength: 4,
+        ovulation: { date: '2026-08-16', method: 'calendar' },
+        atypical: false,
+        diffFromUsual: 1,
+      },
+      {
+        start: '2026-07-04',
+        length: 28,
+        periodLength: 3,
+        ovulation: { date: '2026-07-18', method: 'calendar' },
+        atypical: false,
+        diffFromUsual: 0,
+      },
     ]);
   });
 
@@ -77,7 +105,7 @@ describe('cycleHistory', () => {
 
 describe('cycleSummary', () => {
   it('média, mínima, máxima, desvio, menstruação média e contagem', () => {
-    expect(cycleSummary(model)).toEqual({ count: 3, mean: 28, min: 27, max: 29, sd: expect.closeTo(0.816, 3), periodMean: 4 });
+    expect(cycleSummary(model)).toEqual({ count: 3, mean: 28, min: 27, max: 29, sd: expect.closeTo(0.816, 3), periodMean: 4, excluded: 0 });
   });
 
   it('ignora durações implausíveis (menstruação esquecida), como a previsão', () => {

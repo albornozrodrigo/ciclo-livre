@@ -30,6 +30,7 @@ const profile: Profile = {
   tryingSince: '1_3m',
   birthControl: null,
   lutealLength: null,
+  includeAtypical: false,
 };
 jest.mock('@/profile/profile-context', () => ({
   useProfile: () => ({

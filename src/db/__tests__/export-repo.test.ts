@@ -23,6 +23,7 @@ const profile: Profile = {
   tryingSince: null,
   birthControl: 'pill',
   lutealLength: 11,
+  includeAtypical: false,
 };
 
 async function migratedDb() {
@@ -49,7 +50,7 @@ async function seeded() {
 describe('exportAll', () => {
   it('formato aberto e versionado, com tudo da pessoa', async () => {
     const data = await exportAll(await seeded(), NOW);
-    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 8, profile });
+    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 9, profile });
     expect(data.selections).toEqual([
       { date: '2026-10-12', category: 'pain', option: 'back' },
       { date: '2026-10-12', category: 'pain', option: 'cramps' },
@@ -175,6 +176,13 @@ describe('backup de antes da fase lútea', () => {
     delete data.profile.lutealLength;
 
     expect(parseExport(data).profile?.lutealLength).toBeNull();
+  });
+
+  it('perfil sem includeAtypical é aceito e fica false', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    delete data.profile.includeAtypical;
+
+    expect(parseExport(data).profile?.includeAtypical).toBe(false);
   });
 
   it('valor fora da faixa recusa o arquivo', async () => {

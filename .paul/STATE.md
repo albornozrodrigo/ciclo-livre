@@ -11,19 +11,19 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.2 O que o Flo tem a mais — Fase 14 (Fase lútea informada)
+**Current focus:** v0.2 O que o Flo tem a mais — Fase 15 (Ciclos fora do padrão)
 
 ## Current Position
 
 Milestone: v0.2 O que o Flo tem a mais
-Phase: 14 of 19 (Fase lútea informada)
-Plan: 14-01 completo
+Phase: 15 of 19 (Ciclos fora do padrão)
+Plan: 15-01 completo
 Status: Fase completa
-Last activity: 2026-10-25 — Fase 14 completa
+Last activity: 2026-10-25 — Fase 15 completa
 
 Progress:
 - v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
-- v0.2 O que o Flo tem a mais: [████░░░░░░] 38%
+- v0.2 O que o Flo tem a mais: [█████░░░░░] 50%
 
 ## Loop Position
 
@@ -104,9 +104,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-25
-Stopped at: 2026-10-25 — Fase 14 completa
-Next action: /paul:apply da fase 15 (15-01-PLAN pronto)
-Resume file: .paul/phases/15-ciclos-fora-do-padrao/15-01-PLAN.md
+Stopped at: 2026-10-25 — Fase 15 completa
+Next action: /paul:apply da fase 16 (16-01-PLAN pronto)
+Resume file: .paul/phases/16-status-engravidar-chance-por-dia/16-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

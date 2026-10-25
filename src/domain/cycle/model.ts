@@ -14,6 +14,8 @@ export type CycleInputs = {
   profilePeriodLength: number;
   /** Fase lútea informada no perfil; vale quando não há medida pela temperatura. */
   profileLutealLength?: number | null;
+  /** Incluir ciclos fora do padrão na média (padrão: não). */
+  includeAtypical?: boolean;
 };
 
 export type Confidence = 'low' | 'medium' | 'high';
@@ -39,6 +41,8 @@ export type CycleModel = {
   current: CycleSpan;
   /** Contracepção hormonal: sem janela fértil nem ovulação em nenhuma tela. Ligado por `cycleModelFor`. */
   fertilityHidden: boolean;
+  /** Ciclos fora do padrão entram na média (preferência do perfil). */
+  includeAtypical: boolean;
 };
 
 const DEFAULT_LUTEAL = 14;
@@ -100,7 +104,8 @@ function measuredLuteal(inputs: CycleInputs, periods: readonly Period[], cycleLe
 export function buildCycleModel(inputs: CycleInputs, today: IsoDate): CycleModel | null {
   const periods = detectPeriods(inputs.flowDates, inputs.seed);
   if (periods.length === 0) return null;
-  const stats = cycleStats(cycleLengths(periods), inputs.profileCycleLength);
+  const includeAtypical = inputs.includeAtypical ?? false;
+  const stats = cycleStats(cycleLengths(periods), inputs.profileCycleLength, { includeAtypical });
   const cycleLength = Math.round(stats.mean);
   const periodLength = averagePeriodLength(periods, inputs.profilePeriodLength, today);
   const luteal = measuredLuteal(inputs, periods, cycleLength, periodLength);
@@ -146,6 +151,7 @@ export function buildCycleModel(inputs: CycleInputs, today: IsoDate): CycleModel
     spans: [...spans, current],
     current,
     fertilityHidden: false,
+    includeAtypical,
   };
 }
 

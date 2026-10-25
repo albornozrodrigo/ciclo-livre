@@ -16,6 +16,7 @@ const STEP_OF_FIELD: Record<ProfileField, Step> = {
   birthControl: 'birth_control',
   // Não é perguntado no onboarding (só na edição do perfil); erros dele cairiam na tela de durações.
   lutealLength: 'lengths',
+  includeAtypical: 'lengths',
 };
 
 /**
