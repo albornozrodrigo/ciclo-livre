@@ -29,8 +29,10 @@ const profile: Profile = {
   lutealLength: null,
   includeAtypical: false,
   babyBirth: null,
+  twins: false,
 };
-jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile } }) }));
+let mockProfile: Profile = profile;
+jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile: mockProfile } }) }));
 
 const mockShow = jest.fn();
 jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: mockShow }) }));
@@ -62,6 +64,7 @@ const renderRegistro = async () => {
 };
 
 beforeEach(async () => {
+  mockProfile = profile;
   mockDb = openMemoryDatabase();
   await runMigrations(mockDb, MIGRATIONS);
   mockShow.mockReset();
@@ -326,5 +329,25 @@ describe('Registro › Pode aparecer hoje', () => {
     mockDate = addDays(today, -1);
     await renderRegistro();
     expect(screen.queryByText(ptBR.cycle.likelyToday.title)).toBeNull();
+  });
+});
+
+describe('Registro › teste de gravidez positivo', () => {
+  it('fora do modo gravidez oferece trocar de modo', async () => {
+    mockDate = todayIso();
+    await setSelection(mockDb, mockDate, 'tests', ['pregnancy_faint']);
+    await renderRegistroWaitingFor(ptBR.profile.positiveTest.text);
+
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.profile.positiveTest.action }));
+    expect(mockPush).toHaveBeenCalledWith('/perfil/modo');
+  });
+
+  it('no pós-parto não oferece (o teste continua positivo por semanas)', async () => {
+    mockDate = todayIso();
+    mockProfile = { ...mockProfile, mode: 'postpartum', babyBirth: addDays(mockDate, -10) };
+    await setSelection(mockDb, mockDate, 'tests', ['pregnancy_positive']);
+    await renderRegistro();
+
+    expect(screen.queryByText(ptBR.profile.positiveTest.text)).toBeNull();
   });
 });

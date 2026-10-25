@@ -53,6 +53,8 @@ export type Profile = {
   includeAtypical: boolean;
   /** Pós-parto: data do parto (só neste modo). */
   babyBirth: IsoDate | null;
+  /** Gravidez de gêmeos (só neste modo). */
+  twins: boolean;
 };
 
 export type ProfileInput = Pick<Profile, 'birthYear' | 'mode' | 'lastPeriodStart'> &
@@ -92,6 +94,7 @@ function withDefaults(input: ProfileInput): Profile {
     lutealLength: input.lutealLength ?? null,
     includeAtypical: input.includeAtypical ?? false,
     babyBirth: input.mode === 'postpartum' ? (input.babyBirth ?? null) : null,
+    twins: input.mode === 'pregnancy' ? (input.twins ?? false) : false,
   };
 }
 

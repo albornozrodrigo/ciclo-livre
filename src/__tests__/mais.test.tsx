@@ -32,6 +32,7 @@ const profile: Profile = {
   lutealLength: null,
   includeAtypical: false,
   babyBirth: null,
+  twins: false,
 };
 jest.mock('@/profile/profile-context', () => ({
   useProfile: () => ({

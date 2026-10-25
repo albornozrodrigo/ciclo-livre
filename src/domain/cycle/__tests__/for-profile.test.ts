@@ -15,6 +15,7 @@ const profile: Profile = {
   lutealLength: null,
   includeAtypical: false,
   babyBirth: null,
+  twins: false,
 };
 const signals = { flowDates: [], temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], painDates: [] };
 
@@ -32,7 +33,11 @@ describe('fase lútea informada', () => {
   const flow = { ...signals, flowDates: ['2026-08-15', '2026-08-16', '2026-09-12', '2026-09-13', '2026-10-10', '2026-10-11'] };
 
   it('sem temperatura, a ovulação por calendário fica N dias antes da próxima menstruação', () => {
-    const model = cycleModelFor({ ...profile, lutealLength: 11, includeAtypical: false, babyBirth: null }, flow, '2026-10-22')!;
+    const model = cycleModelFor(
+      { ...profile, lutealLength: 11, includeAtypical: false, babyBirth: null, twins: false },
+      flow,
+      '2026-10-22',
+    )!;
     expect(model.current.ovulation).toEqual({ date: addDays(model.expected, -11), method: 'calendar' });
   });
 
@@ -44,7 +49,7 @@ describe('fase lútea informada', () => {
   it('valor informado que não cabe no ciclo medido é ignorado (janela fértil cairia na menstruação)', () => {
     const short = { ...signals, flowDates: ['2026-09-10', '2026-09-11', '2026-10-01', '2026-10-02', '2026-10-22'] };
     const model = cycleModelFor(
-      { ...profile, periodLength: 5, lutealLength: 18, includeAtypical: false, babyBirth: null },
+      { ...profile, periodLength: 5, lutealLength: 18, includeAtypical: false, babyBirth: null, twins: false },
       short,
       '2026-10-23',
     )!;
@@ -58,7 +63,7 @@ describe('fase lútea informada', () => {
     ['08-20', '08-21', '08-22', '08-23', '08-24', '08-25', '08-26'].forEach((d) => (temperatures[`2026-${d}`] = 36.3));
     ['08-27', '08-28', '08-29'].forEach((d) => (temperatures[`2026-${d}`] = 36.7));
     const model = cycleModelFor(
-      { ...profile, lutealLength: 11, includeAtypical: false, babyBirth: null },
+      { ...profile, lutealLength: 11, includeAtypical: false, babyBirth: null, twins: false },
       { ...flow, temperatures },
       '2026-10-22',
     )!;

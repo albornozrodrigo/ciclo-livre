@@ -17,6 +17,7 @@ const full: Profile = {
   lutealLength: 12,
   includeAtypical: true,
   babyBirth: null,
+  twins: true,
 };
 
 async function migratedDb() {
@@ -106,8 +107,9 @@ describe('migration v10 (modo pós-parto)', () => {
       lutealLength: 12,
       includeAtypical: true,
       babyBirth: null,
+      twins: false,
     });
-    const postpartum = { ...full, mode: 'postpartum' as const, dueDate: null, babyBirth: '2026-09-15' };
+    const postpartum = { ...full, mode: 'postpartum' as const, dueDate: null, babyBirth: '2026-09-15', twins: false };
     await saveProfile(db, postpartum);
     await expect(getProfile(db)).resolves.toEqual(postpartum);
   });

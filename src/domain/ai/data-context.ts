@@ -60,7 +60,8 @@ function currentLines(view: TodayView | null, labels: ContextLabels): string[] {
     ];
   }
   if (view.kind === 'pregnancy') {
-    return [`Gravidez: semana ${view.week}, dia ${view.day}; ${view.daysToDue} dias até a data prevista do parto.`];
+    const twins = view.twins ? ' Gestação de gêmeos.' : '';
+    return [`Gravidez: semana ${view.week}, dia ${view.day}; ${view.daysToDue} dias até a data prevista do parto.${twins}`];
   }
   const late = view.late ? ` Atraso de ${view.lateDays ?? 0} dias em relação à previsão.` : '';
   return [

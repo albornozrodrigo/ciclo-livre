@@ -660,6 +660,21 @@ export const ptBR = {
       label: 'Fase lútea',
       measuredWins: 'Se você registrar a temperatura e o app confirmar a ovulação, vale a medida.',
     },
+    endPregnancy: {
+      entry: 'Encerrar gravidez',
+      title: 'Encerrar gravidez',
+      hint: 'O app muda de modo conforme o que aconteceu. Seus registros continuam guardados.',
+      options: { birth: 'O bebê nasceu', other: 'A gravidez terminou de outra forma' },
+      care: 'Sentimos muito. O app volta para "Menstruação e ciclo" e não pergunta mais nada sobre isso. Você pode trocar de modo quando quiser em Mais.',
+      support:
+        'Se precisar, procure o serviço de saúde. Para conversar sobre o que está sentindo, o CVV atende de graça, a qualquer hora, pelo 188.',
+      save: 'Confirmar',
+    },
+    twins: 'Gestação de gêmeos',
+    positiveTest: {
+      text: 'Você marcou um teste de gravidez positivo. Se quiser, o app passa a acompanhar a gravidez semana a semana.',
+      action: 'Mudar para o modo Gravidez',
+    },
     atypical: {
       toggle: 'Incluir ciclos fora do padrão nas previsões',
       detail: 'Ciclos muito mais curtos ou longos que o seu normal ficam fora da média, para não puxar as previsões.',

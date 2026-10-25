@@ -151,6 +151,11 @@ export const MIGRATIONS: Migration[] = [
       'ALTER TABLE profile_v10 RENAME TO profile',
     ],
   },
+  {
+    // Gravidez de gêmeos.
+    version: 11,
+    statements: ['ALTER TABLE profile ADD COLUMN twins INTEGER NOT NULL DEFAULT 0 CHECK (twins IN (0, 1))'],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

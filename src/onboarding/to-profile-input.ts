@@ -18,6 +18,7 @@ const STEP_OF_FIELD: Record<ProfileField, Step> = {
   lutealLength: 'lengths',
   includeAtypical: 'lengths',
   babyBirth: 'baby_birth',
+  twins: 'due_date',
 };
 
 /**

@@ -15,6 +15,7 @@ const profile: Profile = {
   lutealLength: null,
   includeAtypical: false,
   babyBirth: null,
+  twins: false,
 };
 const signals = {
   flowDates: ['2026-08-01', '2026-08-02', '2026-08-29', '2026-08-30', '2026-09-26', '2026-09-27'],
@@ -76,6 +77,7 @@ describe('todayCycleView', () => {
       week: 12,
       day: 5,
       daysToDue: 191,
+      twins: false,
     });
   });
 

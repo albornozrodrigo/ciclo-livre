@@ -63,7 +63,9 @@ export function CycleCard({ view }: { view: TodayView }) {
         <Text accessibilityRole="header" className="text-[32px] font-bold leading-[34px] tracking-[-0.96px] text-ink dark:text-ink-night">
           {c.pregnancyWeeks(view.week, view.day)}
         </Text>
+        {view.twins ? <Line>{ptBR.profile.twins}</Line> : null}
         <Muted>{c.dueIn(view.daysToDue)}</Muted>
+        <CapsuleButton variant="outline" label={ptBR.profile.endPregnancy.entry} onPress={() => router.push('/perfil/encerrar-gravidez')} />
       </View>
     );
   }

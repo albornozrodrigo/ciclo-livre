@@ -21,6 +21,7 @@ const profile: Profile = {
   lutealLength: null,
   includeAtypical: false,
   babyBirth: null,
+  twins: false,
 };
 const signals = {
   flowDates: ['2026-08-15', '2026-08-16', '2026-08-17', '2026-09-12', '2026-09-13', '2026-09-14', '2026-10-10', '2026-10-11', '2026-10-12'],
@@ -47,7 +48,7 @@ describe('contracepção hormonal esconde a fertilidade', () => {
 
   it('a previsão do próximo sangramento não muda', () => {
     const withPill = cycleModelFor(
-      { ...profile, birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null },
+      { ...profile, birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
       signals,
       TODAY,
     )!;
@@ -57,7 +58,7 @@ describe('contracepção hormonal esconde a fertilidade', () => {
 
   it('calendário sem anel de ovulação', () => {
     const model = cycleModelFor(
-      { ...profile, birthControl: 'ring', lutealLength: null, includeAtypical: false, babyBirth: null },
+      { ...profile, birthControl: 'ring', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
       signals,
       TODAY,
     );
@@ -70,7 +71,7 @@ describe('contracepção hormonal esconde a fertilidade', () => {
 
   it('Hoje sem janela fértil e com o motivo', () => {
     const view = todayCycleView(
-      { ...profile, birthControl: 'implant', lutealLength: null, includeAtypical: false, babyBirth: null },
+      { ...profile, birthControl: 'implant', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
       signals,
       TODAY,
     );
@@ -80,7 +81,7 @@ describe('contracepção hormonal esconde a fertilidade', () => {
 
   it('Hoje com DIU de cobre continua com janela fértil', () => {
     const view = todayCycleView(
-      { ...profile, birthControl: 'iud_copper', lutealLength: null, includeAtypical: false, babyBirth: null },
+      { ...profile, birthControl: 'iud_copper', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
       signals,
       TODAY,
     );
@@ -89,7 +90,7 @@ describe('contracepção hormonal esconde a fertilidade', () => {
 
   it('histórico de ciclos sem ovulação estimada', () => {
     const model = cycleModelFor(
-      { ...profile, birthControl: 'patch', lutealLength: null, includeAtypical: false, babyBirth: null },
+      { ...profile, birthControl: 'patch', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
       signals,
       TODAY,
     )!;
@@ -99,13 +100,13 @@ describe('contracepção hormonal esconde a fertilidade', () => {
   it('lembrete de janela fértil avisa que não há estimativa', () => {
     expect(
       reminderNotice(
-        { ...profile, birthControl: 'injection', lutealLength: null, includeAtypical: false, babyBirth: null },
+        { ...profile, birthControl: 'injection', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
         'fertile_soon',
       ),
     ).toBe('hormonal_no_fertile');
     expect(
       reminderNotice(
-        { ...profile, birthControl: 'iud_copper', lutealLength: null, includeAtypical: false, babyBirth: null },
+        { ...profile, birthControl: 'iud_copper', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
         'fertile_soon',
       ),
     ).toBeNull();
@@ -115,7 +116,7 @@ describe('contracepção hormonal esconde a fertilidade', () => {
 describe('revisão da fase 13', () => {
   it('modo Tentar engravidar mostra a fertilidade mesmo com método hormonal salvo no perfil', () => {
     const view = todayCycleView(
-      { ...profile, mode: 'conceive', birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null },
+      { ...profile, mode: 'conceive', birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
       signals,
       TODAY,
     );
@@ -124,7 +125,7 @@ describe('revisão da fase 13', () => {
 
   it('gráfico de temperatura não marca ovulação com método hormonal', () => {
     const model = cycleModelFor(
-      { ...profile, birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null },
+      { ...profile, birthControl: 'pill', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false },
       signals,
       TODAY,
     )!;
@@ -137,11 +138,11 @@ describe('revisão da fase 13', () => {
   });
 
   it('lembrete de janela fértil nem é oferecido com método hormonal', () => {
-    expect(availableKinds({ ...profile, birthControl: 'ring', lutealLength: null, includeAtypical: false, babyBirth: null })).not.toContain(
-      'fertile_soon',
-    );
     expect(
-      availableKinds({ ...profile, birthControl: 'iud_copper', lutealLength: null, includeAtypical: false, babyBirth: null }),
+      availableKinds({ ...profile, birthControl: 'ring', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false }),
+    ).not.toContain('fertile_soon');
+    expect(
+      availableKinds({ ...profile, birthControl: 'iud_copper', lutealLength: null, includeAtypical: false, babyBirth: null, twins: false }),
     ).toContain('fertile_soon');
   });
 });

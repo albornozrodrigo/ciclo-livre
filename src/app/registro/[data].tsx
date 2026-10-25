@@ -44,6 +44,13 @@ export default function RegistroScreen() {
   const isToday = date === today;
   const title = isToday ? t.today : formatLongDate(date);
   const groups = groupCategories(ordered);
+  // Teste de gravidez positivo (ou linha fraca) registrado hoje, fora do modo gravidez: oferece a troca, sem trocar sozinho.
+  const positiveTest =
+    isToday &&
+    // No pós-parto o teste continua positivo por semanas: o cartão seria doloroso e inútil.
+    profile.mode !== 'pregnancy' &&
+    profile.mode !== 'postpartum' &&
+    (day.selections.tests ?? []).some((option) => option === 'pregnancy_positive' || option === 'pregnancy_faint');
 
   return (
     <KeyboardAvoidingView behavior="padding" style={{ paddingTop: insets.top }} className="flex-1 bg-water dark:bg-water-night">
@@ -74,6 +81,13 @@ export default function RegistroScreen() {
             />
           </View>
         </View>
+
+        {positiveTest ? (
+          <View className="mt-8 gap-3 rounded-[28px] border-[1.5px] border-ink p-5 dark:border-ink-night">
+            <Text className="text-base leading-6 text-ink dark:text-ink-night">{ptBR.profile.positiveTest.text}</Text>
+            <CapsuleButton variant="outline" label={ptBR.profile.positiveTest.action} onPress={() => router.push('/perfil/modo')} />
+          </View>
+        ) : null}
 
         {isToday && todayView?.kind === 'cycle' && todayView.likelyToday.length > 0 ? (
           <View className="mt-8">

@@ -15,8 +15,8 @@ App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clu
 
 ## Current Milestone
 **v0.2 O que o Flo tem a mais** (v0.2.0)
-Status: 🚧 In Progress
-Phases: 7 of 8 complete
+Status: ✅ Fases completas (falta testar no S21 FE, push e /paul:complete-milestone)
+Phases: 8 of 8 complete
 
 Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `notas/05-o-que-trazer-ao-ciclo-livre.md`). São os 8 itens de prioridade 1: tudo roda no aparelho e é grátis. No Flo, parte deles é paga (chance de engravidar) ou depende do servidor (previsões, sintomas do dia).
 
@@ -29,7 +29,7 @@ Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `n
 | 16 | Status do modo Engravidar + chance por dia | 1 | ✅ Complete | 2026-10-25 |
 | 17 | "Pode aparecer hoje" | 1 | ✅ Complete | 2026-10-25 |
 | 18 | Lembretes de DIU, implante, injeção e remédios | 2 | ✅ Complete | 2026-10-25 |
-| 19 | Pós-parto + encerrar gravidez | 2 | In progress | - |
+| 19 | Pós-parto + encerrar gravidez | 2 | ✅ Complete | 2026-10-25 |
 
 ### Phase 12: Catálogo de registro completo
 **Goal:** Acrescentar ao registro diário as opções que o Flo tem e o Ciclo Livre não:

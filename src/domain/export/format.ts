@@ -75,7 +75,11 @@ function profileOf(v: unknown): Profile | null {
     includeAtypical: v.includeAtypical ?? false,
     // Backups de antes da v10 não têm o campo.
     babyBirth: v.babyBirth ?? null,
+    // Backups de antes da v11 não têm o campo.
+    twins: v.twins ?? false,
   };
+  // Gêmeos só valem na gravidez (como em withDefaults).
+  if (p.mode !== 'pregnancy') p.twins = false;
   check(isInt(p.birthYear, 1900, 2100) && oneOf(MODES, p.mode) && nullOr(p.lastPeriodStart, isDate));
   check(isInt(p.periodLength, 1, 15) && isInt(p.cycleLength, 15, 90) && oneOf(REGULARITIES, p.regularity));
   check(nullOr(p.dueDate, isDate) && nullOr(p.tryingSince, (x): x is string => oneOf(TRYING_SINCE, x)));
@@ -84,6 +88,7 @@ function profileOf(v: unknown): Profile | null {
   check(typeof p.includeAtypical === 'boolean' && nullOr(p.babyBirth, isDate));
   // Pós-parto sem data do parto deixaria Hoje vazio e o perfil travado: arquivo assim é recusado.
   check(p.mode !== 'postpartum' || p.babyBirth !== null);
+  check(typeof p.twins === 'boolean');
   return p as Profile;
 }
 

@@ -184,7 +184,11 @@ describe('buildDataContext', () => {
 
   it('gravidez: semana e dias para a data prevista, sem ciclos', () => {
     const preg = buildDataContext(
-      { ...base, profile: { ...base.profile, mode: 'pregnancy' }, todayView: { kind: 'pregnancy', week: 20, day: 3, daysToDue: 137 } },
+      {
+        ...base,
+        profile: { ...base.profile, mode: 'pregnancy' },
+        todayView: { kind: 'pregnancy', week: 20, day: 3, daysToDue: 137, twins: false },
+      },
       { cycles: 6, includeNotes: false },
       labels,
     );

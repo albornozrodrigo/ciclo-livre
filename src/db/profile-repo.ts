@@ -16,6 +16,7 @@ type ProfileRow = {
   luteal_length: number | null;
   include_atypical: number;
   baby_birth: string | null;
+  twins: number;
 };
 
 export async function getProfile(db: SqlExecutor): Promise<Profile | null> {
@@ -34,6 +35,7 @@ export async function getProfile(db: SqlExecutor): Promise<Profile | null> {
     lutealLength: row.luteal_length,
     includeAtypical: row.include_atypical === 1,
     babyBirth: row.baby_birth,
+    twins: row.twins === 1,
   };
 }
 
@@ -42,14 +44,14 @@ export async function saveProfile(db: SqlExecutor, profile: Profile, now = new D
   await enqueueWrite(db, () =>
     db.runAsync(
       `INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length,
-       regularity, due_date, trying_since, birth_control, luteal_length, include_atypical, baby_birth, updated_at)
-     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       regularity, due_date, trying_since, birth_control, luteal_length, include_atypical, baby_birth, twins, updated_at)
+     VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (id) DO UPDATE SET
        birth_year = excluded.birth_year, mode = excluded.mode, last_period_start = excluded.last_period_start,
        period_length = excluded.period_length, cycle_length = excluded.cycle_length,
        regularity = excluded.regularity, due_date = excluded.due_date, trying_since = excluded.trying_since,
        birth_control = excluded.birth_control, luteal_length = excluded.luteal_length,
-       include_atypical = excluded.include_atypical, baby_birth = excluded.baby_birth, updated_at = excluded.updated_at`,
+       include_atypical = excluded.include_atypical, baby_birth = excluded.baby_birth, twins = excluded.twins, updated_at = excluded.updated_at`,
       profile.birthYear,
       profile.mode,
       profile.lastPeriodStart,
@@ -62,6 +64,7 @@ export async function saveProfile(db: SqlExecutor, profile: Profile, now = new D
       profile.lutealLength,
       profile.includeAtypical ? 1 : 0,
       profile.babyBirth,
+      profile.twins ? 1 : 0,
       now.toISOString(),
     ),
   );

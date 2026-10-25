@@ -19,6 +19,7 @@ const profile: Profile = {
   lutealLength: null,
   includeAtypical: false,
   babyBirth: '2026-10-05',
+  twins: false,
 };
 const signals = { flowDates: ['2026-08-01'], temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], painDates: [] };
 
@@ -32,12 +33,12 @@ describe('modo pós-parto', () => {
   });
 
   it('depois de 12 semanas conta em meses', () => {
-    const view = todayCycleView({ ...profile, babyBirth: '2026-06-20' }, signals, TODAY);
+    const view = todayCycleView({ ...profile, babyBirth: '2026-06-20', twins: false }, signals, TODAY);
     expect(view).toMatchObject({ kind: 'postpartum', months: 4 });
   });
 
   it('menstruação registrada 6 semanas ou mais depois do parto: sugere voltar ao modo ciclo', () => {
-    const view = todayCycleView({ ...profile, babyBirth: '2026-08-01' }, { ...signals, flowDates: ['2026-09-12'] }, TODAY);
+    const view = todayCycleView({ ...profile, babyBirth: '2026-08-01', twins: false }, { ...signals, flowDates: ['2026-09-12'] }, TODAY);
     expect(view).toMatchObject({ kind: 'postpartum', periodBack: true });
   });
 

@@ -17,11 +17,11 @@ phases = 8
 [phase]
 number = 19
 name = "Pós-parto + encerrar gravidez"
-status = "in_progress"
+status = "complete"
 plans_completed = 0
 
 [loop]
-position = "APPLY"
+position = "IDLE"
 
 [satellite]
 groom = true

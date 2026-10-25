@@ -22,6 +22,7 @@ const PROFILE = {
   lutealLength: null,
   includeAtypical: false,
   babyBirth: null,
+  twins: false,
 } as const;
 
 async function migratedDb() {
@@ -144,6 +145,7 @@ describe('health-settings-repo', () => {
         lutealLength: null,
         includeAtypical: false,
         babyBirth: null,
+        twins: false,
       },
       NOW,
     );

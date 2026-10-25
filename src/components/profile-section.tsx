@@ -23,6 +23,7 @@ export function ProfileSection() {
         onPress={() => router.push('/perfil/modo')}
       />
       <ListRow label={copy.cycleData} detail={copy.cycleDataHint} onPress={() => router.push('/perfil/ciclo')} />
+      {mode === 'pregnancy' ? <ListRow label={copy.endPregnancy.entry} onPress={() => router.push('/perfil/encerrar-gravidez')} /> : null}
     </View>
   );
 }

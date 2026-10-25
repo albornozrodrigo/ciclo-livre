@@ -17,20 +17,20 @@ See: .paul/PROJECT.md (updated 2026-10-22)
 
 Milestone: v0.2 O que o Flo tem a mais
 Phase: 19 of 19 (Pós-parto + encerrar gravidez)
-Plan: 19-01 completo; 19-02 em seguida
-Status: APPLY concluído; UNIFY em seguida
-Last activity: 2026-10-25 — 19-01 fechado (modo Pós-parto)
+Plan: 19-01 e 19-02 completos
+Status: Fase completa
+Last activity: 2026-10-25 — Fase 19 completa; milestone v0.2 com as 8 fases prontas
 
 Progress:
 - v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
-- v0.2 O que o Flo tem a mais: [█████████░] 88%
+- v0.2 O que o Flo tem a mais: [██████████] 100% (8 de 8 fases; falta teste no aparelho e push)
 
 ## Loop Position
 
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ○     [APPLY concluído; UNIFY em seguida]
+  ✓        ✓        ✓     [Fase completa]
 ```
 
 ## Accumulated Context
@@ -91,6 +91,10 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
 | Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
+| v0.2 sem teste completo no S21 FE (desconectou várias vezes; validado no emulador e por testes de componente); conferir "Coágulos" no registro | v0.2 | S | Antes do push |
+| Cartão "teste positivo" pode aparecer nas semanas seguintes a uma perda (não guardamos a data do fim) | 19-02 | S | Decisão de produto |
+| Artigo próprio sobre perda gestacional (cuidado editorial) | 19-02 | M | Quando houver revisão |
+| Revisão de código da v0.2 por subagente focado no diff (o /code-review comparava com base antiga por falta de push) | v0.2 | S | Rodar /code-review depois do push |
 | /cso da fase 10 ficou parcial (finish encadeado após submit recusado); coberto por revisão manual | 10 | S | /cso completo antes do release |
 
 ### Blockers/Concerns
@@ -104,9 +108,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-25
-Stopped at: 2026-10-25 — 19-01 fechado (modo Pós-parto)
-Next action: /paul:apply .paul/phases/19-pos-parto-encerrar-gravidez/19-02-PLAN.md
-Resume file: .paul/phases/19-pos-parto-encerrar-gravidez/19-02-PLAN.md
+Stopped at: 2026-10-25 — Fase 19 completa; milestone v0.2 com as 8 fases prontas
+Next action: Testar a v0.2 no S21 FE; depois push e /paul:complete-milestone
+Resume file: .paul/ROADMAP.md
 
 ---
 *STATE.md — Updated after every significant action*

@@ -34,6 +34,7 @@ describe('validateProfile', () => {
           lutealLength: null,
           includeAtypical: false,
           babyBirth: null,
+          twins: false,
         },
       });
     });
@@ -104,8 +105,8 @@ describe('validateProfile', () => {
     });
 
     it('aceita de 9 a 18 dias', () => {
-      expect(errorsOf({ ...base, lutealLength: 9, includeAtypical: false, babyBirth: null })).toEqual([]);
-      expect(errorsOf({ ...base, lutealLength: 18, includeAtypical: false, babyBirth: null })).toEqual([]);
+      expect(errorsOf({ ...base, lutealLength: 9, includeAtypical: false, babyBirth: null, twins: false })).toEqual([]);
+      expect(errorsOf({ ...base, lutealLength: 18, includeAtypical: false, babyBirth: null, twins: false })).toEqual([]);
     });
 
     it.each([8, 19, 12.5])('recusa %p', (lutealLength) => {
@@ -113,9 +114,9 @@ describe('validateProfile', () => {
     });
 
     it('não trava a edição por causa da duração do ciclo (o motor decide se o valor cabe)', () => {
-      expect(errorsOf({ ...base, cycleLength: 16, periodLength: 3, lutealLength: 16, includeAtypical: false, babyBirth: null })).toEqual(
-        [],
-      );
+      expect(
+        errorsOf({ ...base, cycleLength: 16, periodLength: 3, lutealLength: 16, includeAtypical: false, babyBirth: null, twins: false }),
+      ).toEqual([]);
     });
   });
 
@@ -126,16 +127,20 @@ describe('validateProfile', () => {
 
     it('aceita de hoje até 365 dias atrás', () => {
       expect(errorsOf({ ...base, mode: 'postpartum', babyBirth: TODAY })).toEqual([]);
-      expect(errorsOf({ ...base, mode: 'postpartum', babyBirth: '2025-10-22' })).toEqual([]);
+      expect(errorsOf({ ...base, mode: 'postpartum', babyBirth: '2025-10-22', twins: false })).toEqual([]);
     });
 
     it('recusa data no futuro e de mais de um ano', () => {
-      expect(errorsOf({ ...base, mode: 'postpartum', babyBirth: '2026-10-23' })).toEqual([{ field: 'babyBirth', code: 'in_future' }]);
-      expect(errorsOf({ ...base, mode: 'postpartum', babyBirth: '2025-10-21' })).toEqual([{ field: 'babyBirth', code: 'too_old' }]);
+      expect(errorsOf({ ...base, mode: 'postpartum', babyBirth: '2026-10-23', twins: false })).toEqual([
+        { field: 'babyBirth', code: 'in_future' },
+      ]);
+      expect(errorsOf({ ...base, mode: 'postpartum', babyBirth: '2025-10-21', twins: false })).toEqual([
+        { field: 'babyBirth', code: 'too_old' },
+      ]);
     });
 
     it('a data do parto só vale no modo pós-parto', () => {
-      const result = validateProfile({ ...base, babyBirth: '2026-10-01' }, TODAY);
+      const result = validateProfile({ ...base, babyBirth: '2026-10-01', twins: false }, TODAY);
       expect(result.ok && result.profile.babyBirth).toBeNull();
     });
   });
@@ -211,6 +216,7 @@ describe('validateProfileEdit', () => {
     lutealLength: null,
     includeAtypical: false,
     babyBirth: null,
+    twins: false,
   };
 
   it('não bloqueia por uma data guardada que envelheceu e não foi mexida', () => {

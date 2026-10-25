@@ -11,7 +11,7 @@ import type { CycleSignals } from './signals';
 export type TodayView =
   | { kind: 'none' }
   | { kind: 'no_bleeding' }
-  | { kind: 'pregnancy'; week: number; day: number; daysToDue: number }
+  | { kind: 'pregnancy'; week: number; day: number; daysToDue: number; twins: boolean }
   /** Pós-parto: tempo desde o parto; `periodBack` quando há menstruação registrada depois dele. */
   | { kind: 'postpartum'; weeks: number; days: number; months: number; periodBack: boolean }
   | {
@@ -55,7 +55,8 @@ function monthsBetween(from: IsoDate, to: IsoDate): number {
 
 /** O que a tela Hoje mostra sobre o ciclo, por modo. Função pura: `today` injetado. */
 export function todayCycleView(profile: Profile, signals: CycleSignals, today: IsoDate): TodayView {
-  if (profile.mode === 'pregnancy' && profile.dueDate) return { kind: 'pregnancy', ...pregnancyWeek(profile.dueDate, today) };
+  if (profile.mode === 'pregnancy' && profile.dueDate)
+    return { kind: 'pregnancy', ...pregnancyWeek(profile.dueDate, today), twins: profile.twins };
   if (profile.mode === 'no_bleeding') return { kind: 'no_bleeding' };
   if (profile.mode === 'postpartum') {
     if (!profile.babyBirth) return { kind: 'none' };
