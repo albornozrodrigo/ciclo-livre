@@ -91,7 +91,7 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
 | Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
 | Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
-| v0.2 sem teste completo no S21 FE (desconectou várias vezes; validado no emulador e por testes de componente); conferir "Coágulos" no registro | v0.2 | S | Antes do push |
+| Ciclos fora do padrão e "Pode aparecer hoje" não puderam ser vistos no S21 FE (só 2 ciclos de teste); cobertos por testes e emulador | v0.2 | S | Quando houver mais ciclos registrados |
 | Cartão "teste positivo" pode aparecer nas semanas seguintes a uma perda (não guardamos a data do fim) | 19-02 | S | Decisão de produto |
 | Artigo próprio sobre perda gestacional (cuidado editorial) | 19-02 | M | Quando houver revisão |
 | Revisão de código da v0.2 por subagente focado no diff (o /code-review comparava com base antiga por falta de push) | v0.2 | S | Rodar /code-review depois do push |
@@ -109,7 +109,7 @@ None yet.
 
 Last session: 2026-10-25
 Stopped at: 2026-10-25 — Fase 19 completa; milestone v0.2 com as 8 fases prontas
-Next action: Testar a v0.2 no S21 FE; depois push e /paul:complete-milestone
+Next action: /paul:complete-milestone (v0.1 e v0.2); v0.2 testada no S21 FE e publicada (push 36a3da4)
 Resume file: .paul/ROADMAP.md
 
 ---
