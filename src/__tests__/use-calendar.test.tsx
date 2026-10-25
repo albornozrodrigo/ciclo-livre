@@ -1,7 +1,8 @@
-import { act, renderHook, waitFor } from '@testing-library/react-native';
+import { renderHook, waitFor } from '@testing-library/react-native';
 
-import { useCalendar } from '@/cycle/use-calendar';
+import { useCalendarData } from '@/cycle/use-calendar';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
+import { setSelection } from '@/db/log-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import type { Profile } from '@/domain/profile';
 
@@ -28,22 +29,18 @@ beforeEach(async () => {
   await runMigrations(mockDb, MIGRATIONS);
 });
 
-it('ao trocar de mês não devolve a grade do mês anterior enquanto o novo carrega', async () => {
-  const { result, rerender } = await renderHook(({ month }: { month: number }) => useCalendar(profile, 2026, month), {
-    initialProps: { month: 10 },
-  });
+it('lê de uma vez os dias com registro e o primeiro deles, para a lista inteira de meses', async () => {
+  await setSelection(mockDb, '2026-10-12', 'period', ['medium']);
+  await setSelection(mockDb, '2019-03-08', 'period', ['light']);
+
+  const { result } = await renderHook(() => useCalendarData(profile));
+
   await waitFor(() => expect(result.current).not.toBeNull());
-  let release: () => void = () => {};
-  const realAll = mockDb.getAllAsync;
-  mockDb.getAllAsync = async <T,>(sql: string, ...params: (string | number | null)[]) => {
-    await new Promise<void>((r) => (release = r));
-    return realAll<T>(sql, ...params);
-  };
+  expect(result.current?.firstLogged).toBe('2019-03-08');
+  expect(result.current?.logged.has('2026-10-12')).toBe(true);
+});
 
-  await rerender({ month: 11 });
-
+it('sem perfil, não há dados', async () => {
+  const { result } = await renderHook(() => useCalendarData(null));
   expect(result.current).toBeNull();
-  mockDb.getAllAsync = realAll;
-  await act(async () => release());
-  await waitFor(() => expect(result.current?.flat().some((c) => c.date === '2026-11-15')).toBe(true));
 });

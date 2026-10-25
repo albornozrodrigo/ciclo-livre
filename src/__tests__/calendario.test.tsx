@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import CalendarioScreen from '@/app/(tabs)/calendario';
@@ -28,14 +28,20 @@ const metrics = {
   frame: { x: 0, y: 0, width: 390, height: 844 },
   insets: { top: 24, left: 0, right: 0, bottom: 0 },
 };
+const monthName = (offset: number) => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth() + offset, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+};
 const renderCalendar = async () => {
   await render(
     <SafeAreaProvider initialMetrics={metrics}>
       <CalendarioScreen />
     </SafeAreaProvider>,
   );
-  await screen.findByRole('button', { name: cal.previousMonth });
+  await screen.findByRole('header', { name: new RegExp(monthName(0), 'i') });
 };
+// A VirtualizedList repassa as props dela para o ScrollView nativo.
+const list = () => screen.getByTestId('calendar-list');
 
 beforeEach(async () => {
   mockDb = openMemoryDatabase();
@@ -55,20 +61,28 @@ beforeEach(async () => {
 });
 
 describe('Calendário', () => {
-  it('mostra o mês atual por extenso e uma legenda escrita', async () => {
+  it('abre no mês atual, numa lista que rola de mês em mês, com legenda escrita', async () => {
     await renderCalendar();
 
-    const month = new Date().toLocaleDateString('pt-BR', {
-      month: 'long',
-      year: 'numeric',
-    });
-    expect(screen.getByRole('header', { name: new RegExp(month, 'i') })).toBeOnTheScreen();
-    expect(screen.getByText(cal.legend.menstruation)).toBeOnTheScreen();
+    expect(screen.queryByRole('button', { name: 'Mês anterior' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Próximo mês' })).toBeNull();
+    // O mês seguinte já vem logo abaixo.
+    expect(screen.getByRole('header', { name: new RegExp(monthName(1), 'i') })).toBeOnTheScreen();
+    expect(screen.getByText(cal.legend.menstruation, { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('a lista começa 12 meses atrás e cresce para o futuro sem limite', async () => {
+    await renderCalendar();
+    const before = list().props.data.length;
+    expect(list().props.initialScrollIndex).toBe(12);
+
+    for (let i = 0; i < 5; i++) await act(async () => list().props.onEndReached());
+
+    expect(list().props.data.length).toBe(before + 5 * 12);
   });
 
   it('cada dia tem nome acessível com fase e registro (cor nunca sozinha)', async () => {
-    const today = todayIso();
-    await setSelection(mockDb, today, 'period', ['medium']);
+    await setSelection(mockDb, todayIso(), 'period', ['medium']);
 
     await renderCalendar();
 
@@ -87,41 +101,31 @@ describe('Calendário', () => {
     expect(mockPush).toHaveBeenCalledWith(`/registro/${todayIso()}`);
   });
 
-  it('navega para meses seguintes sem limite', async () => {
+  it('dia futuro não abre registro e é anunciado como desativado', async () => {
     await renderCalendar();
+    const now = new Date();
+    const label = new Date(now.getFullYear(), now.getMonth() + 1, 15).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
 
-    for (let i = 0; i < 24; i++) await fireEvent.press(screen.getByRole('button', { name: cal.nextMonth }));
-
-    const future = new Date(new Date().getFullYear() + 2, new Date().getMonth(), 1).toLocaleDateString('pt-BR', {
-      month: 'long',
-      year: 'numeric',
-    });
-    expect(screen.getByRole('header', { name: new RegExp(future, 'i') })).toBeOnTheScreen();
-  });
-
-  it('dia futuro não abre registro', async () => {
-    await renderCalendar();
-    await fireEvent.press(screen.getByRole('button', { name: cal.nextMonth }));
-
-    const futureDay = screen.getAllByRole('button', { name: /^\d+ de / })[10];
+    const futureDay = screen.getAllByRole('button', { name: new RegExp(`^${label}`) })[0];
+    expect(futureDay).toBeDisabled();
     await fireEvent.press(futureDay);
-
     expect(mockPush).not.toHaveBeenCalled();
   });
-});
 
-describe('Calendário › acessibilidade', () => {
-  it('dias futuros são anunciados como desativados', async () => {
+  it('"Voltar para hoje" aparece só quando o mês atual sai da tela', async () => {
     await renderCalendar();
-    await fireEvent.press(screen.getByRole('button', { name: cal.nextMonth }));
+    const current = list().props.data[12];
 
-    const futureDay = screen.getAllByRole('button', { name: /^\d+ de / })[10];
-    expect(futureDay).toBeDisabled();
+    await act(async () => list().props.onViewableItemsChanged({ viewableItems: [{ item: current, index: 12, key: String(current), isViewable: true }], changed: [] }));
+    expect(screen.queryByRole('button', { name: cal.goToday })).toBeNull();
+
+    await act(async () => list().props.onViewableItemsChanged({ viewableItems: [], changed: [] }));
+    expect(screen.getByRole('button', { name: cal.goToday })).toBeOnTheScreen();
   });
+
   it('hoje tem a marca de sol (e a legenda explica)', async () => {
     await renderCalendar();
     // Uma no dia de hoje, outra na legenda.
     expect(await screen.findAllByTestId('today-mark', { includeHiddenElements: true })).toHaveLength(2);
-    expect(screen.getByText(cal.legend.today)).toBeOnTheScreen();
   });
 });

@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
 import type { CalendarCell } from '@/domain/cycle/calendar';
 import { dateFromIso } from '@/domain/dates';
@@ -6,6 +6,11 @@ import type { Phase } from '@/domain/cycle/model';
 import { ptBR } from '@/i18n/pt-BR';
 
 const cal = ptBR.calendar;
+
+/** Alturas fixas da grade (a lista de meses calcula a posição de cada mês sem medir). */
+export const DAY_ROW_HEIGHT = 64;
+/** Linha das iniciais dos dias da semana, antes da escala de fonte do sistema. */
+export const WEEKDAY_LINE = 20;
 
 /** Só menstruação e janela fértil ganham cor; as outras fases ficam na água (sem ruído). */
 const FILL: Partial<Record<Phase, string>> = {
@@ -77,10 +82,11 @@ export function CalendarGrid({
   onPressDay: (cell: CalendarCell) => void;
   isDisabled: (cell: CalendarCell) => boolean;
 }) {
+  const { fontScale } = useWindowDimensions();
   return (
     // Avança 12dp em cada margem da tela: em telas de 360dp, cada dia fica com ≥ 48dp de largura (alvo de toque).
     <View className="-mx-3">
-      <View className="flex-row" importantForAccessibility="no-hide-descendants">
+      <View className="flex-row" style={{ height: WEEKDAY_LINE * fontScale }} importantForAccessibility="no-hide-descendants">
         {cal.weekdays.map((d, i) => (
           <Text key={i} className="flex-1 text-center text-sm font-bold text-ink-muted dark:text-ink-muted-night">
             {d}

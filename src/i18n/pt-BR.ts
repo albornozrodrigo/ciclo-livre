@@ -490,8 +490,6 @@ export const ptBR = {
       'Este relatório organiza o que foi registrado pela pessoa. Não é diagnóstico, as datas são estimativas e não serve como contracepção.',
   },
   calendar: {
-    previousMonth: 'Mês anterior',
-    nextMonth: 'Próximo mês',
     goToday: 'Voltar para hoje',
     todayLabel: 'Hoje',
     logged: 'com registro',

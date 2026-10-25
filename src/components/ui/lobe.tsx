@@ -35,7 +35,7 @@ export function useLobeHeight() {
  * É decorativo; o significado sempre vem do texto sobre ele.
  */
 /** "Remover animações" do sistema: com ele ligado, as trocas são secas. */
-function useReduceMotion(): boolean {
+export function useReduceMotion(): boolean {
   const [reduce, setReduce] = useState(false);
   useEffect(() => {
     let active = true;
