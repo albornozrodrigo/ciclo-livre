@@ -28,7 +28,7 @@ Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `n
 | 15 | Ciclos fora do padrão | 1 | ✅ Complete | 2026-10-25 |
 | 16 | Status do modo Engravidar + chance por dia | 1 | ✅ Complete | 2026-10-25 |
 | 17 | "Pode aparecer hoje" | 1 | ✅ Complete | 2026-10-25 |
-| 18 | Lembretes de DIU, implante, injeção e remédios | TBD | Not started | - |
+| 18 | Lembretes de DIU, implante, injeção e remédios | 2 | In progress | - |
 | 19 | Pós-parto + encerrar gravidez | TBD | Not started | - |
 
 ### Phase 12: Catálogo de registro completo

@@ -17,6 +17,10 @@ export type ReminderKind = (typeof REMINDER_KINDS)[number];
 export const PACKS = ['cyclic', 'continuous'] as const;
 export const FREQUENCIES = ['daily', 'every_3_days', 'weekly', 'fortnightly', 'monthly'] as const;
 export const DAYS_BEFORE = { min: 1, max: 7 } as const;
+/** DIU: quando lembrar de checar os fios. */
+export const THREADS = ['after_period', 'monthly', 'never'] as const;
+/** Validade do DIU/implante em anos (null = padrão do método). */
+export const DEVICE_YEARS = { min: 1, max: 12, iud_hormonal: 5, iud_copper: 10, implant: 3 } as const;
 
 /**
  * `daysBefore`: menstruação em breve. `pack`: pílula 21+7 (`cyclic`) ou contínua.
@@ -29,6 +33,9 @@ export type ReminderOptions = {
   anchor: IsoDate | null;
   /** Método a que a data de referência se refere: trocar de método invalida a data. */
   anchorFor: BirthControlPlan | null;
+  /** DIU e implante: validade em anos a partir da colocação; null = padrão do método. */
+  years: number | null;
+  threads: (typeof THREADS)[number];
 };
 
 /** `time` em HH:MM local; `title`/`body` null = texto padrão. */
@@ -41,7 +48,7 @@ export type Reminder = {
   body: string | null;
 };
 
-export const BIRTH_CONTROL_PLANS_LIST = ['pill', 'patch', 'ring', 'injection'] as const;
+export const BIRTH_CONTROL_PLANS_LIST = ['pill', 'patch', 'ring', 'injection', 'iud_hormonal', 'iud_copper', 'implant'] as const;
 export type BirthControlPlan = (typeof BIRTH_CONTROL_PLANS_LIST)[number];
 
 const BIRTH_CONTROL_PLANS: Partial<Record<BirthControl, BirthControlPlan>> = {
@@ -49,9 +56,13 @@ const BIRTH_CONTROL_PLANS: Partial<Record<BirthControl, BirthControlPlan>> = {
   patch: 'patch',
   ring: 'ring',
   injection: 'injection',
+  // Cada DIU é um plano: trocar de um para o outro é nova colocação (a data antiga deixa de valer).
+  iud_hormonal: 'iud_hormonal',
+  iud_copper: 'iud_copper',
+  implant: 'implant',
 };
 
-/** Métodos com agenda (DIU, implante, camisinha etc. não pedem lembrete periódico). */
+/** Métodos com agenda (camisinha e outros não pedem lembrete). */
 export const birthControlPlan = (method: BirthControl | null): BirthControlPlan | null =>
   method ? (BIRTH_CONTROL_PLANS[method] ?? null) : null;
 
@@ -61,6 +72,8 @@ const DEFAULT_OPTIONS: ReminderOptions = {
   frequency: 'daily',
   anchor: null,
   anchorFor: null,
+  years: null,
+  threads: 'after_period',
 };
 const DEFAULT_TIME: Record<ReminderKind, string> = {
   period_soon: '09:00',
@@ -106,6 +119,8 @@ const validDaysBefore = (v: unknown): v is number =>
 const oneOf = <T extends string>(list: readonly T[], v: unknown): v is T =>
   typeof v === 'string' && (list as readonly string[]).includes(v);
 const validAnchor = (v: unknown): v is IsoDate => isValidDate(v);
+const validYears = (v: unknown): v is number =>
+  Number.isInteger(v) && (v as number) >= DEVICE_YEARS.min && (v as number) <= DEVICE_YEARS.max;
 
 /** Opções válidas? (o repositório recusa as inválidas ao salvar) */
 export function validOptions(o: ReminderOptions): boolean {
@@ -114,7 +129,9 @@ export function validOptions(o: ReminderOptions): boolean {
     oneOf(PACKS, o.pack) &&
     oneOf(FREQUENCIES, o.frequency) &&
     (o.anchor === null || validAnchor(o.anchor)) &&
-    (o.anchorFor === null || oneOf(BIRTH_CONTROL_PLANS_LIST, o.anchorFor))
+    (o.anchorFor === null || oneOf(BIRTH_CONTROL_PLANS_LIST, o.anchorFor)) &&
+    (o.years === null || validYears(o.years)) &&
+    oneOf(THREADS, o.threads)
   );
 }
 
@@ -133,6 +150,8 @@ export function parseOptions(raw: string): ReminderOptions {
     frequency: oneOf(FREQUENCIES, data.frequency) ? data.frequency : DEFAULT_OPTIONS.frequency,
     anchor: validAnchor(data.anchor) ? data.anchor : null,
     anchorFor: oneOf(BIRTH_CONTROL_PLANS_LIST, data.anchorFor) ? data.anchorFor : null,
+    years: validYears(data.years) ? data.years : null,
+    threads: oneOf(THREADS, data.threads) ? data.threads : DEFAULT_OPTIONS.threads,
   };
 }
 
@@ -153,6 +172,7 @@ export function needsAnchor(reminder: Reminder, profile: Profile): boolean {
 /** Mensagem própria só quando todos os avisos do lembrete dizem a mesma coisa (anel: colocar ≠ tirar). */
 export function customMessageAllowed(kind: ReminderKind, profile: Profile): boolean {
   if (kind === 'phase_change') return false;
+  // DIU e implante têm avisos diferentes (fios, troca): mensagem própria só na pílula.
   if (kind === 'birth_control') return birthControlPlan(profile.birthControl) === 'pill';
   return true;
 }

@@ -15,13 +15,13 @@ status = "in_progress"
 phases = 8
 
 [phase]
-number = 17
-name = ""Pode aparecer hoje""
-status = "complete"
+number = 18
+name = "Lembretes de DIU, implante, injeção e remédios"
+status = "in_progress"
 plans_completed = 0
 
 [loop]
-position = "IDLE"
+position = "APPLY"
 
 [satellite]
 groom = true

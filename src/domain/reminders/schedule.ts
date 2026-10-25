@@ -1,9 +1,9 @@
 import { pregnancyTestDate } from '@/domain/cycle/conceive';
 import { type CycleModel, dayInfo, type Phase } from '@/domain/cycle/model';
-import { addDays, daysBetween, type IsoDate } from '@/domain/dates';
+import { addDays, daysBetween, type IsoDate, isValidDate } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 
-import { anchorFor, availableKinds, birthControlPlan, type Reminder, type ReminderKind } from './catalog';
+import { anchorFor, availableKinds, birthControlPlan, DEVICE_YEARS, type Reminder, type ReminderKind } from './catalog';
 
 /** A agenda só é recalculada quando o app abre: 60 dias cobrem quem fica semanas sem abrir. */
 export const HORIZON_DAYS = 60;
@@ -37,6 +37,10 @@ export type Variant =
   | 'ring_remove'
   | 'injection_soon'
   | 'injection_due'
+  | 'iud_threads'
+  | 'device_change_soon'
+  | 'device_change_due'
+  | 'device_overdue'
   | 'daily_log'
   | 'pregnancy_test';
 
@@ -118,13 +122,69 @@ function phaseDates(kind: ReminderKind, model: CycleModel, today: IsoDate, end: 
   return out;
 }
 
-function birthControlDates(r: Reminder, profile: Profile, today: IsoDate, end: IsoDate): Occurrence[] {
+const DEVICE_NOTICE = 30;
+
+/** Mesmo dia do mês da referência (em mês mais curto, o último dia). */
+function monthlyFrom(anchor: IsoDate, today: IsoDate, end: IsoDate): IsoDate[] {
+  const target = dayOfMonth(anchor);
+  return windowDays(today, end).filter((d) => dayOfMonth(d) === target || (isLastOfMonth(d) && dayOfMonth(d) < target));
+}
+
+/** Data em que vence o DIU/implante: mesma data, N anos depois (29/02 cai em 28/02). */
+function addYears(date: IsoDate, years: number): IsoDate {
+  const sameDay = `${String(Number(date.slice(0, 4)) + years).padStart(4, '0')}${date.slice(4)}`;
+  const lastOfFebruary = addDays(`${sameDay.slice(0, 8)}01`, 27);
+  return isValidDate(sameDay) ? sameDay : lastOfFebruary;
+}
+
+type DevicePlan = 'iud_hormonal' | 'iud_copper' | 'implant';
+export const isDevicePlan = (plan: string | null): plan is DevicePlan =>
+  plan === 'iud_hormonal' || plan === 'iud_copper' || plan === 'implant';
+
+/** Data em que vence o DIU/implante pela validade informada (ou a padrão do método). */
+export function deviceDueDate(r: Reminder, plan: DevicePlan, anchor: IsoDate): IsoDate {
+  return addYears(anchor, r.options.years ?? DEVICE_YEARS[plan]);
+}
+
+/** DIU (fios e troca) e implante (troca). Nada antes da colocação. */
+function deviceDates(r: Reminder, plan: DevicePlan, anchor: IsoDate, model: CycleModel | null, today: IsoDate, end: IsoDate): Occurrence[] {
+  const out: Occurrence[] = [];
+  const from = anchor >= today ? addDays(anchor, 1) : today;
+  if (plan !== 'implant' && r.options.threads !== 'never') {
+    if (r.options.threads === 'after_period' && model && !model.late) {
+      // Dia seguinte ao fim da menstruação atual (se ainda não passou) e de cada uma das previstas.
+      const ends = [model.current.periodEnd];
+      for (let start = model.expected; start <= end; start = addDays(start, model.cycleLength))
+        ends.push(addDays(start, model.periodLength - 1));
+      for (const last of ends) {
+        const date = addDays(last, 1);
+        if (date >= from && date <= end) out.push({ date, variant: 'iud_threads' });
+      }
+    } else {
+      // "Todo mês", ou "depois da menstruação" sem ciclo previsto (sem sangramento, atraso): no dia da colocação.
+      for (const date of monthlyFrom(anchor, from, end)) out.push({ date, variant: 'iud_threads' });
+    }
+  }
+  const due = deviceDueDate(r, plan, anchor);
+  if (due < today) {
+    // Venceu: avisa todo mês, no dia do vencimento, até a pessoa atualizar a data ou a validade.
+    for (const date of monthlyFrom(due, today, end)) out.push({ date, variant: 'device_overdue' });
+    return out;
+  }
+  const soon = addDays(due, -DEVICE_NOTICE);
+  if (soon >= today && soon <= end) out.push({ date: soon, variant: 'device_change_soon' });
+  if (due <= end) out.push({ date: due, variant: 'device_change_due' });
+  return out;
+}
+
+function birthControlDates(r: Reminder, profile: Profile, model: CycleModel | null, today: IsoDate, end: IsoDate): Occurrence[] {
   const plan = birthControlPlan(profile.birthControl);
   const { pack } = r.options;
   // Data de outro método (ex.: trocou pílula por injeção) não vale.
   const anchor = anchorFor(r, profile);
   if (plan === 'pill' && pack === 'continuous') return windowDays(today, end).map((date) => ({ date, variant: 'pill' }));
   if (!plan || !anchor) return [];
+  if (isDevicePlan(plan)) return deviceDates(r, plan, anchor, model, today, end);
 
   if (plan === 'injection') {
     const out: Occurrence[] = [];
@@ -172,7 +232,7 @@ export function planSchedule({ reminders, profile, model, now }: Input): Fire[] 
     .filter((r) => r.enabled && allowed.has(r.kind))
     .flatMap((r) => {
       let occurrences: Occurrence[] = [];
-      if (r.kind === 'birth_control') occurrences = birthControlDates(r, profile, today, end);
+      if (r.kind === 'birth_control') occurrences = birthControlDates(r, profile, model, today, end);
       else if (r.kind === 'daily_log') occurrences = dailyLogDates(r, today, end);
       // No dia em que a menstruação é esperada; com atraso, Hoje já diz que dá para testar.
       else if (r.kind === 'pregnancy_test') occurrences = model ? pregnancyTestDates(model, today, end) : [];

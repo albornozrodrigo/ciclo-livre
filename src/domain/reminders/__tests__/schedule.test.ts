@@ -1,3 +1,4 @@
+import { addDays } from '@/domain/dates';
 import { buildCycleModel } from '@/domain/cycle/model';
 import type { Profile } from '@/domain/profile';
 import { defaultReminder, type Reminder, type ReminderKind } from '@/domain/reminders/catalog';
@@ -224,5 +225,80 @@ describe('planSchedule — regras gerais', () => {
     expect(new Set(fires.map((f) => f.key)).size).toBe(fires.length);
     const order = fires.map((f) => `${f.date} ${f.time}`);
     expect(order).toEqual([...order].sort());
+  });
+});
+
+describe('planSchedule — DIU e implante', () => {
+  const withMethod = (method: Profile['birthControl']): Profile => ({ ...profile, birthControl: method });
+  const iud = (options: Partial<Reminder['options']>) =>
+    on('birth_control', {}, { anchor: '2021-12-01', anchorFor: 'iud_copper', ...options });
+  const variantsOf = (fires: ReturnType<typeof plan>, variant: string) => fires.filter((f) => f.variant === variant).map((f) => f.date);
+
+  it('DIU: checar os fios no dia seguinte ao fim de cada menstruação prevista', () => {
+    const model = modelAt(TODAY)!;
+    const fires = plan([iud({ threads: 'after_period' })], withMethod('iud_copper'));
+    const expected = ['2026-10-24', '2026-11-21'].map((start) => addDays(start, model.periodLength));
+    // (a menstruação atual, de 26/09, já terminou antes de hoje)
+    expect(variantsOf(fires, 'iud_threads')).toEqual(expected);
+  });
+
+  it('DIU: checar os fios todo mês, no dia da colocação; ou nunca', () => {
+    expect(variantsOf(plan([iud({ threads: 'monthly' })], withMethod('iud_copper')), 'iud_threads')).toEqual(['2026-11-01', '2026-12-01']);
+    expect(variantsOf(plan([iud({ threads: 'never' })], withMethod('iud_copper')), 'iud_threads')).toEqual([]);
+  });
+
+  it('DIU: troca 30 dias antes e no dia em que vence', () => {
+    const fires = plan([iud({ threads: 'never', years: 5 })], withMethod('iud_copper'));
+    expect(fires.map((f) => [f.date, f.variant])).toEqual([
+      ['2026-11-01', 'device_change_soon'],
+      ['2026-12-01', 'device_change_due'],
+    ]);
+  });
+
+  it('implante: troca pela validade escolhida (aviso que já passou não é agendado)', () => {
+    const fires = plan([on('birth_control', {}, { anchor: '2023-11-15', anchorFor: 'implant', years: 3 })], withMethod('implant'));
+    expect(fires.map((f) => [f.date, f.variant])).toEqual([['2026-11-15', 'device_change_due']]);
+  });
+
+  it('validade padrão: DIU de cobre 10 anos, hormonal 5', () => {
+    const copper = plan(
+      [on('birth_control', {}, { anchor: '2016-12-01', anchorFor: 'iud_copper', threads: 'never' })],
+      withMethod('iud_copper'),
+    );
+    expect(copper.map((f) => f.variant)).toEqual(['device_change_soon', 'device_change_due']);
+    const hormonal = plan(
+      [on('birth_control', {}, { anchor: '2021-12-01', anchorFor: 'iud_hormonal', threads: 'never' })],
+      withMethod('iud_hormonal'),
+    );
+    expect(hormonal.map((f) => f.variant)).toEqual(['device_change_soon', 'device_change_due']);
+  });
+
+  it('trocar de DIU hormonal para cobre invalida a data da colocação', () => {
+    expect(plan([iud({ anchorFor: 'iud_hormonal' })], withMethod('iud_copper'))).toEqual([]);
+  });
+
+  it('"depois da menstruação" sem ciclo previsto (sem sangramento) vira todo mês, no dia da colocação', () => {
+    const fires = plan([iud({ threads: 'after_period' })], { ...withMethod('iud_copper'), mode: 'no_bleeding' }, at8, null);
+    expect(variantsOf(fires, 'iud_threads')).toEqual(['2026-11-01', '2026-12-01']);
+  });
+
+  it('menstruação em andamento: checar os fios no dia seguinte ao fim dela', () => {
+    const now = { date: '2026-09-27', minutes: 8 * 60 };
+    const model = modelAt(now.date)!;
+    const fires = plan([iud({ threads: 'after_period' })], withMethod('iud_copper'), now, model);
+    expect(variantsOf(fires, 'iud_threads')[0]).toBe(addDays(model.current.periodEnd, 1));
+  });
+
+  it('validade vencida: avisa todo mês no dia do vencimento, até a pessoa atualizar', () => {
+    const fires = plan([on('birth_control', {}, { anchor: '2021-11-05', anchorFor: 'implant', years: 3 })], withMethod('implant'));
+    expect(fires.map((f) => [f.date, f.variant])).toEqual([
+      ['2026-11-05', 'device_overdue'],
+      ['2026-12-05', 'device_overdue'],
+    ]);
+  });
+
+  it('colocação no futuro: nada antes dela', () => {
+    const fires = plan([iud({ anchor: '2026-11-10', threads: 'monthly' })], withMethod('iud_copper'));
+    expect(variantsOf(fires, 'iud_threads')).toEqual(['2026-12-10']);
   });
 });

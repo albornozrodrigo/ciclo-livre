@@ -63,6 +63,8 @@ describe('defaultReminder', () => {
         frequency: 'daily',
         anchor: null,
         anchorFor: null,
+        years: null,
+        threads: 'after_period',
       },
       title: null,
       body: null,
@@ -72,19 +74,29 @@ describe('defaultReminder', () => {
 
 describe('parseOptions', () => {
   it('mantém valores válidos e troca inválidos pelo padrão campo a campo', () => {
-    expect(parseOptions('{"daysBefore":5,"pack":"continuous","frequency":"weekly","anchor":"2026-10-20","anchorFor":"ring"}')).toEqual({
+    expect(
+      parseOptions(
+        '{"daysBefore":5,"pack":"continuous","frequency":"weekly","anchor":"2026-10-20","anchorFor":"iud_copper","years":8,"threads":"monthly"}',
+      ),
+    ).toEqual({
       daysBefore: 5,
       pack: 'continuous',
       frequency: 'weekly',
       anchor: '2026-10-20',
-      anchorFor: 'ring',
+      anchorFor: 'iud_copper',
+      years: 8,
+      threads: 'monthly',
     });
-    expect(parseOptions('{"daysBefore":9,"pack":"x","frequency":1,"anchor":"20/10/2026","anchorFor":"x","extra":true}')).toEqual({
+    expect(
+      parseOptions('{"daysBefore":9,"pack":"x","frequency":1,"anchor":"20/10/2026","anchorFor":"x","years":40,"threads":"x","extra":true}'),
+    ).toEqual({
       daysBefore: 2,
       pack: 'cyclic',
       frequency: 'daily',
       anchor: null,
       anchorFor: null,
+      years: null,
+      threads: 'after_period',
     });
     expect(parseOptions('não é json')).toEqual(defaultReminder('daily_log').options);
   });

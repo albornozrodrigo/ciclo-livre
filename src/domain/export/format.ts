@@ -159,7 +159,16 @@ function remindersOf(v: unknown): Reminder[] {
     check(isObject(r) && oneOf(REMINDER_KINDS, r.kind) && typeof r.enabled === 'boolean');
     check(typeof r.time === 'string' && validTime(r.time) && isObject(r.options));
     const o = r.options;
-    const options = { daysBefore: o.daysBefore, pack: o.pack, frequency: o.frequency, anchor: o.anchor, anchorFor: o.anchorFor };
+    // Backups de antes da v0.2 não têm `years`/`threads`: valem os padrões.
+    const options = {
+      daysBefore: o.daysBefore,
+      pack: o.pack,
+      frequency: o.frequency,
+      anchor: o.anchor,
+      anchorFor: o.anchorFor,
+      years: o.years ?? null,
+      threads: o.threads ?? 'after_period',
+    };
     check(validOptions(options as Reminder['options']));
     check(nullOr(r.title, (x): x is string => typeof x === 'string') && nullOr(r.body, (x): x is string => typeof x === 'string'));
     const message = validateMessage(r.title, r.body);

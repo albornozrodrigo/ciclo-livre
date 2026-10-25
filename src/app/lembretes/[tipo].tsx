@@ -6,7 +6,7 @@ import { FormScreen } from '@/components/form-screen';
 import { DeniedNotice } from '@/components/reminders/denied-notice';
 import { SwitchRow } from '@/components/reminders/switch-row';
 import { ChoiceList } from '@/components/ui/choice-list';
-import { DateField } from '@/components/ui/date-field';
+import { DateField, formatLongDate } from '@/components/ui/date-field';
 import { NumberStepper } from '@/components/ui/number-stepper';
 import { useSnackbar } from '@/components/ui/snackbar';
 import { TimeField } from '@/components/ui/time-field';
@@ -16,6 +16,8 @@ import type { Profile } from '@/domain/profile';
 import {
   anchorFor,
   birthControlPlan,
+  DEVICE_YEARS,
+  THREADS,
   customMessageAllowed,
   DAYS_BEFORE,
   FREQUENCIES,
@@ -27,7 +29,7 @@ import {
   reminderNotice,
 } from '@/domain/reminders/catalog';
 import { MESSAGE_LIMITS, validateMessage } from '@/domain/reminders/message';
-import type { Variant } from '@/domain/reminders/schedule';
+import { deviceDueDate, isDevicePlan, type Variant } from '@/domain/reminders/schedule';
 import { ptBR } from '@/i18n/pt-BR';
 import { REMINDER_NAMES, reminderContent } from '@/i18n/pt-BR-reminders';
 import { log } from '@/lib/logger';
@@ -40,6 +42,8 @@ const frequencyOptions = FREQUENCIES.map((value) => ({
   label: r.frequencies[value],
 }));
 
+const threadOptions = THREADS.map((value) => ({ value, label: ptBR.reminders.threads.options[value] }));
+
 const isKind = (v: unknown): v is ReminderKind => typeof v === 'string' && (REMINDER_KINDS as readonly string[]).includes(v);
 
 /** Variante mostrada na prévia. */
@@ -47,6 +51,8 @@ function previewVariant(kind: ReminderKind, profile: Profile): Variant {
   if (kind === 'phase_change') return hidesFertility(profile) ? 'phase_hormonal' : 'phase_follicular';
   if (kind !== 'birth_control') return kind;
   const plan = birthControlPlan(profile.birthControl);
+  if (plan === 'iud_hormonal' || plan === 'iud_copper') return 'iud_threads';
+  if (plan === 'implant') return 'device_change_soon';
   return plan === 'patch' ? 'patch_change' : plan === 'ring' ? 'ring_insert' : plan === 'injection' ? 'injection_soon' : 'pill';
 }
 
@@ -97,6 +103,10 @@ function Editor({ initial, profile, discreet, denied, save }: EditorProps) {
   const today = todayIso();
   const plan = birthControlPlan(profile.birthControl);
   const anchorMissing = needsAnchor(draft, profile);
+  // Validade vencida pela data e anos informados: avisa na tela (a agenda avisa todo mês).
+  const deviceAnchor = draft.kind === 'birth_control' ? anchorFor(draft, profile) : null;
+  const due = deviceAnchor && isDevicePlan(plan) ? deviceDueDate(draft, plan, deviceAnchor) : null;
+  const overdue = due && due < today ? due : null;
   const allowMessage = customMessageAllowed(draft.kind, profile);
   const dirty = JSON.stringify(draft) !== JSON.stringify(initial) || title !== (initial.title ?? '') || body !== (initial.body ?? '');
   useConfirmLeave(dirty && !saved);
@@ -188,12 +198,39 @@ function Editor({ initial, profile, discreet, denied, save }: EditorProps) {
             label={r.anchor[plan]}
             value={anchorFor(draft, profile)}
             placeholder={r.anchorPlaceholder}
-            min={addDays(today, -120)}
+            // DIU e implante duram anos; os outros métodos só precisam da data recente.
+            min={isDevicePlan(plan) ? addDays(today, -366 * DEVICE_YEARS.max) : addDays(today, -120)}
             max={addDays(today, 30)}
             initial={today}
             onChange={(anchor) => setOptions({ anchor, anchorFor: plan })}
           />
           {anchorMissing ? <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{r.anchorNeeded}</Text> : null}
+        </View>
+      ) : null}
+      {draft.kind === 'birth_control' && isDevicePlan(plan) ? (
+        <NumberStepper
+          label={r.deviceYears}
+          value={draft.options.years ?? DEVICE_YEARS[plan]}
+          min={DEVICE_YEARS.min}
+          max={DEVICE_YEARS.max}
+          onChange={(years) => setOptions({ years })}
+          format={r.years}
+          decreaseLabel={`${ptBR.onboarding.lengths.decrease}: ${r.deviceYears}`}
+          increaseLabel={`${ptBR.onboarding.lengths.increase}: ${r.deviceYears}`}
+        />
+      ) : null}
+      {draft.kind === 'birth_control' && isDevicePlan(plan) && overdue ? (
+        <Text className="text-base font-bold leading-6 text-ink dark:text-ink-night">{r.deviceOverdue(formatLongDate(overdue))}</Text>
+      ) : null}
+      {draft.kind === 'birth_control' && (plan === 'iud_hormonal' || plan === 'iud_copper') ? (
+        <View className="gap-2">
+          <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{r.threads.title}</Text>
+          <ChoiceList
+            label={r.threads.title}
+            options={threadOptions}
+            value={draft.options.threads}
+            onChange={(threads) => setOptions({ threads })}
+          />
         </View>
       ) : null}
 

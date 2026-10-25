@@ -6,7 +6,8 @@ import LembretesScreen from '@/app/lembretes/index';
 import LembreteScreen from '@/app/lembretes/[tipo]';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
-import { getDiscreet, listReminders, setDiscreet } from '@/db/reminder-repo';
+import { getDiscreet, listReminders, saveReminder, setDiscreet } from '@/db/reminder-repo';
+import { defaultReminder } from '@/domain/reminders/catalog';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 import { REMINDER_NAMES } from '@/i18n/pt-BR-reminders';
@@ -195,6 +196,34 @@ describe('Lembrete (detalhe)', () => {
     await fireEvent(await screen.findByRole('switch', { name: r.enabled }), 'valueChange', true);
     expect(screen.getByRole('button', { name: r.save })).toBeDisabled();
     expect(screen.getByText(r.anchorNeeded)).toBeOnTheScreen();
+  });
+
+  it('DIU: pede a data da colocação, a validade e quando checar os fios; salva as escolhas', async () => {
+    mockTipo = 'birth_control';
+    mockProfile = { ...mockProfile, birthControl: 'iud_copper' };
+    await render(wrap(<LembreteScreen />));
+
+    expect(await screen.findByText(r.anchor.iud_copper)).toBeOnTheScreen();
+    // DIU de cobre: 10 anos por padrão.
+    expect(screen.getByText(r.years(10))).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: `${ptBR.onboarding.lengths.increase}: ${r.deviceYears}` }));
+    await fireEvent.press(screen.getByRole('radio', { name: r.threads.options.monthly }));
+    await fireEvent.press(screen.getByRole('button', { name: r.save }));
+
+    const saved = await reminder('birth_control');
+    expect(saved.options).toMatchObject({ years: 11, threads: 'monthly' });
+  });
+
+  it('implante com validade vencida avisa na tela', async () => {
+    mockTipo = 'birth_control';
+    mockProfile = { ...mockProfile, birthControl: 'implant' };
+    await saveReminder(mockDb, {
+      ...defaultReminder('birth_control'),
+      options: { ...defaultReminder('birth_control').options, anchor: '2020-01-10', anchorFor: 'implant' },
+    });
+    await render(wrap(<LembreteScreen />));
+
+    expect(await screen.findByText(/a troca era em/)).toBeOnTheScreen();
   });
 
   it('mensagem longa demais mostra o erro em pt-BR e não salva', async () => {

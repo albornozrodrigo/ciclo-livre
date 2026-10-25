@@ -66,6 +66,22 @@ const DEFAULTS: Record<Variant, (r: Reminder) => { title: string; body: string }
     title: 'Dia da injeção',
     body: 'Hoje é o dia da próxima aplicação.',
   }),
+  iud_threads: () => ({
+    title: 'Hora de checar os fios do DIU',
+    body: 'Se não sentir os fios ou eles mudarem, procure o serviço de saúde.',
+  }),
+  device_change_soon: () => ({
+    title: 'Troca do contraceptivo em 30 dias',
+    body: 'A validade termina daqui a um mês. Vale marcar a consulta.',
+  }),
+  device_change_due: () => ({
+    title: 'Dia da troca do contraceptivo',
+    body: 'Pela validade que você informou, a troca é hoje. Confirme com o serviço de saúde.',
+  }),
+  device_overdue: () => ({
+    title: 'Troca do contraceptivo atrasada',
+    body: 'Pela validade que você informou, a data da troca já passou. Confirme com o serviço de saúde.',
+  }),
   daily_log: () => ({
     title: 'Como foi seu dia?',
     body: 'Um toque para registrar como você está.',

@@ -11,15 +11,15 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.2 O que o Flo tem a mais — Fase 17 ("Pode aparecer hoje")
+**Current focus:** v0.2 O que o Flo tem a mais — Fase 18 (Lembretes de DIU, implante, injeção e remédios)
 
 ## Current Position
 
 Milestone: v0.2 O que o Flo tem a mais
-Phase: 17 of 19 ("Pode aparecer hoje")
-Plan: 17-01 completo
-Status: Fase completa
-Last activity: 2026-10-25 — Fase 17 completa
+Phase: 18 of 19 (Lembretes de DIU, implante, injeção e remédios)
+Plan: 18-01 completo; 18-02 em seguida
+Status: APPLY concluído; UNIFY em seguida
+Last activity: 2026-10-25 — 18-01 fechado (DIU e implante)
 
 Progress:
 - v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
@@ -30,7 +30,7 @@ Progress:
 Current loop state:
 ```
 PLAN ──▶ APPLY ──▶ UNIFY
-  ✓        ✓        ✓     [Fase completa]
+  ✓        ✓        ○     [APPLY concluído; UNIFY em seguida]
 ```
 
 ## Accumulated Context
@@ -104,9 +104,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-25
-Stopped at: 2026-10-25 — Fase 17 completa
-Next action: /paul:apply da fase 18 (18-01-PLAN pronto)
-Resume file: .paul/phases/18-lembretes-diu-implante-injecao-remedios/18-01-PLAN.md
+Stopped at: 2026-10-25 — 18-01 fechado (DIU e implante)
+Next action: /paul:apply .paul/phases/18-lembretes-diu-implante-injecao-remedios/18-02-PLAN.md
+Resume file: .paul/phases/18-lembretes-diu-implante-injecao-remedios/18-02-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

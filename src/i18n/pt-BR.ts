@@ -342,6 +342,17 @@ export const ptBR = {
       patch: 'Dia em que colocou o adesivo atual',
       ring: 'Dia em que colocou o anel',
       injection: 'Dia da última injeção',
+      iud_hormonal: 'Data da colocação do DIU',
+      iud_copper: 'Data da colocação do DIU',
+      implant: 'Data da colocação do implante',
+    },
+    deviceYears: 'Validade',
+    deviceOverdue: (date: string) =>
+      `Pela data e validade informadas, a troca era em ${date}. O lembrete avisa todo mês até você atualizar.`,
+    years: (n: number) => `${n} ${n === 1 ? 'ano' : 'anos'}`,
+    threads: {
+      title: 'Checar os fios',
+      options: { after_period: 'Depois de cada menstruação', monthly: 'Todo mês', never: 'Não lembrar' },
     },
     anchorPlaceholder: 'Escolher a data',
     anchorNeeded: 'Escolha a data para calcular os próximos avisos.',

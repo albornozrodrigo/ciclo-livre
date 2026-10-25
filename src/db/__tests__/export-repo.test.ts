@@ -178,6 +178,16 @@ describe('backup de antes da fase lútea', () => {
     expect(parseExport(data).profile?.lutealLength).toBeNull();
   });
 
+  it('lembrete sem years/threads (antes do DIU) é aceito com os padrões', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    for (const r of data.reminders) {
+      delete r.options.years;
+      delete r.options.threads;
+    }
+
+    expect(parseExport(data).reminders[0].options).toMatchObject({ years: null, threads: 'after_period' });
+  });
+
   it('perfil sem includeAtypical é aceito e fica false', async () => {
     const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
     delete data.profile.includeAtypical;

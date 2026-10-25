@@ -572,3 +572,9 @@ action = "phase_complete"
 phase = 17
 plan = "17-01"
 at = "2026-10-25"
+
+[[entry]]
+action = "apply"
+phase = 18
+plan = "18-01"
+at = "2026-10-25"
