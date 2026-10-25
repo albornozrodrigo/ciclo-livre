@@ -20,6 +20,7 @@ const GROUPS: { key: keyof typeof r.groups; kinds: ReminderKind[] }[] = [
     kinds: ['period_soon', 'period_due', 'period_late', 'fertile_soon', 'phase_change', 'pregnancy_test'],
   },
   { key: 'contraception', kinds: ['birth_control'] },
+  { key: 'health', kinds: ['medication'] },
   { key: 'log', kinds: ['daily_log'] },
 ];
 
@@ -33,7 +34,8 @@ export default function LembretesScreen() {
 
   async function toggle(rem: Reminder, enabled: boolean) {
     // Precisa de data de referência: abre o detalhe já ligado, onde a data é pedida.
-    if (enabled && profile && needsAnchor(rem, profile)) {
+    // Remédios sem nenhum remédio cadastrado: também abre o detalhe (ligar vazio não dispararia nada).
+    if (enabled && profile && (needsAnchor(rem, profile) || (rem.kind === 'medication' && rem.options.meds.length === 0))) {
       router.push({ pathname: '/lembretes/[tipo]', params: { tipo: rem.kind, ligar: '1' } });
       return;
     }
@@ -67,7 +69,9 @@ export default function LembretesScreen() {
                 <SwitchRow
                   key={kind}
                   label={REMINDER_NAMES[kind]}
-                  detail={r.rowDetail(rem.enabled, rem.time)}
+                  detail={
+                    kind === 'medication' ? r.medsRowDetail(rem.enabled, rem.options.meds.length) : r.rowDetail(rem.enabled, rem.time)
+                  }
                   value={rem.enabled}
                   onValueChange={(on) => toggle(rem, on)}
                   onPress={() =>

@@ -31,6 +31,20 @@ export async function createTag(db: SqlExecutor, raw: string): Promise<Tag> {
   });
 }
 
+/** Garante uma tag para cada nome (ex.: remédios do lembrete); as que já existem pela chave ficam como estão. */
+export async function ensureTags(db: SqlExecutor, names: readonly string[]): Promise<void> {
+  const seen = new Set<string>();
+  for (const raw of names) {
+    const result = validateTagName(raw, []);
+    if (!result.ok) continue;
+    const key = normalizeTagKey(result.name);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const exists = await db.getFirstAsync<{ id: number }>('SELECT id FROM tag WHERE key = ?', key);
+    if (!exists) await createTag(db, result.name);
+  }
+}
+
 export async function renameTag(db: SqlExecutor, id: number, raw: string): Promise<void> {
   await enqueueWrite(db, async () => {
     const name = await validName(db, raw, id);

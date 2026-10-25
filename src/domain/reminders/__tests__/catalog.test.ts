@@ -25,18 +25,27 @@ const base: Profile = {
 
 describe('availableKinds', () => {
   it('período: todos os de ciclo e registro; contraceptivo só com método que tem agenda', () => {
-    expect(availableKinds(base)).toEqual(['period_soon', 'period_due', 'period_late', 'fertile_soon', 'phase_change', 'daily_log']);
+    expect(availableKinds(base)).toEqual([
+      'period_soon',
+      'period_due',
+      'period_late',
+      'fertile_soon',
+      'phase_change',
+      'medication',
+      'daily_log',
+    ]);
     expect(availableKinds({ ...base, birthControl: 'pill', lutealLength: null, includeAtypical: false })).toContain('birth_control');
     expect(availableKinds({ ...base, birthControl: 'condom', lutealLength: null, includeAtypical: false })).not.toContain('birth_control');
   });
 
-  it('gravidez: só registro', () => {
-    expect(availableKinds({ ...base, mode: 'pregnancy', dueDate: '2027-03-01' })).toEqual(['daily_log']);
+  it('gravidez: remédios e registro', () => {
+    expect(availableKinds({ ...base, mode: 'pregnancy', dueDate: '2027-03-01' })).toEqual(['medication', 'daily_log']);
   });
 
   it('sem sangramento: sem menstruação nem fase', () => {
     expect(availableKinds({ ...base, mode: 'no_bleeding', birthControl: 'ring', lutealLength: null, includeAtypical: false })).toEqual([
       'birth_control',
+      'medication',
       'daily_log',
     ]);
   });
@@ -65,6 +74,7 @@ describe('defaultReminder', () => {
         anchorFor: null,
         years: null,
         threads: 'after_period',
+        meds: [],
       },
       title: null,
       body: null,
@@ -86,6 +96,7 @@ describe('parseOptions', () => {
       anchorFor: 'iud_copper',
       years: 8,
       threads: 'monthly',
+      meds: [],
     });
     expect(
       parseOptions('{"daysBefore":9,"pack":"x","frequency":1,"anchor":"20/10/2026","anchorFor":"x","years":40,"threads":"x","extra":true}'),
@@ -97,6 +108,7 @@ describe('parseOptions', () => {
       anchorFor: null,
       years: null,
       threads: 'after_period',
+      meds: [],
     });
     expect(parseOptions('não é json')).toEqual(defaultReminder('daily_log').options);
   });

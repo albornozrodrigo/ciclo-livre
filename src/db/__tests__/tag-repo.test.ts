@@ -1,5 +1,5 @@
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
-import { createTag, deleteTag, getDayTags, listTags, renameTag, setDayTags } from '@/db/tag-repo';
+import { createTag, deleteTag, getDayTags, listTags, renameTag, setDayTags, ensureTags } from '@/db/tag-repo';
 import { TAG_LIMIT } from '@/domain/tracking/tags';
 
 import { openMemoryDatabase } from './node-sqlite-adapter';
@@ -73,5 +73,17 @@ describe('tag-repo', () => {
     const db = await migratedDb();
 
     await expect(setDayTags(db, DAY, [999])).rejects.toThrow();
+  });
+});
+
+describe('ensureTags (remédios viram tags do registro)', () => {
+  it('cria só as que faltam, sem duplicar pela chave (maiúsculas e acentos)', async () => {
+    const db = openMemoryDatabase();
+    await runMigrations(db, MIGRATIONS);
+    await createTag(db, 'Ferro');
+
+    await ensureTags(db, ['ferro', 'Vitamina D', 'Vitamina D']);
+
+    expect((await listTags(db)).map((t) => t.name)).toEqual(['Ferro', 'Vitamina D']);
   });
 });

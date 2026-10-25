@@ -308,7 +308,30 @@ export const ptBR = {
     title: 'Lembretes',
     hint: 'Todos liberados, inclusive o da janela fértil. Ficam só neste aparelho.',
     rowDetail: (on: boolean, time: string) => (on ? `Ligado · ${time}` : 'Desligado'),
-    groups: { cycle: 'Ciclo', contraception: 'Contraceptivo', log: 'Registro' },
+    medsRowDetail: (on: boolean, count: number) =>
+      on
+        ? `Ligado · ${count} ${count === 1 ? 'remédio' : 'remédios'}`
+        : count > 0
+          ? `Desligado · ${count} ${count === 1 ? 'remédio' : 'remédios'}`
+          : 'Desligado',
+    groups: { cycle: 'Ciclo', contraception: 'Contraceptivo', health: 'Saúde', log: 'Registro' },
+    meds: {
+      hint: 'Cada remédio vira uma tag no registro do dia, para você marcar quando tomar.',
+      name: (n: number) => `Remédio ${n}`,
+      namePlaceholder: 'Nome do remédio',
+      time: (n: number) => `Horário ${n}`,
+      timeChange: (name: string, time: string) => `${name}: horário ${time}. Toque para mudar`,
+      addTime: 'Adicionar horário',
+      removeTime: (time: string) => `Tirar o horário das ${time}`,
+      until: 'Até quando (opcional)',
+      untilPlaceholder: 'Sem data de término',
+      noEnd: 'Sem data de término',
+      remove: (name: string) => `Remover ${name}`,
+      add: 'Adicionar remédio',
+      invalid: 'Dê um nome a cada remédio (até 30 letras) e use horários diferentes.',
+      empty: 'Adicione pelo menos um remédio para ligar o lembrete.',
+      ended: (date: string) => `Terminou em ${date}: este remédio não avisa mais.`,
+    },
     discreet: 'Notificações discretas',
     discreetHint:
       'Na tela de bloqueio os lembretes nunca mostram o texto. Com este modo, nem com o celular desbloqueado: aparece só "Ciclo Livre: você tem um lembrete".',

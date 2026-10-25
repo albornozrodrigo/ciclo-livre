@@ -8,10 +8,10 @@ import { anchorFor, availableKinds, birthControlPlan, DEVICE_YEARS, type Reminde
 /** A agenda só é recalculada quando o app abre: 60 dias cobrem quem fica semanas sem abrir. */
 export const HORIZON_DAYS = 60;
 /**
- * Limite de alarmes pendentes (o Android aceita ~500 por app). Alto o bastante para dois lembretes
- * diários cobrirem os 60 dias inteiros; só corta numa combinação extrema.
+ * Limite de alarmes pendentes (o Android aceita ~500 por app). Os outros lembretes vêm primeiro; os remédios
+ * (até 20 por dia) usam o que sobra, então muitos remédios cobrem menos dias até o app abrir de novo.
  */
-export const MAX_FIRES = 200;
+export const MAX_FIRES = 400;
 
 const PACK_DAYS = 28;
 const ACTIVE_DAYS = 21;
@@ -42,7 +42,8 @@ export type Variant =
   | 'device_change_due'
   | 'device_overdue'
   | 'daily_log'
-  | 'pregnancy_test';
+  | 'pregnancy_test'
+  | `medication_${0 | 1 | 2 | 3 | 4}`;
 
 /** Um disparo: data e hora locais. `key` é estável para cancelar e reagendar sem duplicar. */
 export type Fire = {
@@ -62,7 +63,8 @@ type Input = {
   model: CycleModel | null;
   now: Clock;
 };
-type Occurrence = { date: IsoDate; variant: Variant };
+/** `time`: horário próprio do disparo (remédios); senão vale o do lembrete. */
+type Occurrence = { date: IsoDate; variant: Variant; time?: string };
 
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 const minutesOf = (time: string) => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
@@ -209,6 +211,17 @@ function birthControlDates(r: Reminder, profile: Profile, model: CycleModel | nu
   });
 }
 
+/** Cada horário de cada remédio, todo dia até o término. */
+function medicationDates(r: Reminder, today: IsoDate, end: IsoDate): Occurrence[] {
+  return r.options.meds
+    .slice(0, 5)
+    .flatMap((med, i) =>
+      windowDays(today, med.until !== null && med.until < end ? med.until : end).flatMap((date) =>
+        med.times.map((time) => ({ date, time, variant: `medication_${i as 0 | 1 | 2 | 3 | 4}` as const })),
+      ),
+    );
+}
+
 function dailyLogDates(r: Reminder, today: IsoDate, end: IsoDate): Occurrence[] {
   const anchor = r.options.anchor ?? today;
   const { frequency } = r.options;
@@ -234,21 +247,32 @@ export function planSchedule({ reminders, profile, model, now }: Input): Fire[] 
       let occurrences: Occurrence[] = [];
       if (r.kind === 'birth_control') occurrences = birthControlDates(r, profile, model, today, end);
       else if (r.kind === 'daily_log') occurrences = dailyLogDates(r, today, end);
+      else if (r.kind === 'medication') occurrences = medicationDates(r, today, end);
       // No dia em que a menstruação é esperada; com atraso, Hoje já diz que dá para testar.
       else if (r.kind === 'pregnancy_test') occurrences = model ? pregnancyTestDates(model, today, end) : [];
       else if (model && (r.kind === 'fertile_soon' || r.kind === 'phase_change')) occurrences = phaseDates(r.kind, model, today, end);
       else if (model) occurrences = periodDates(r.kind, r, model, today, end);
       return occurrences
-        .filter((o) => o.date <= end && (o.date > today || minutesOf(r.time) > now.minutes))
+        .filter((o) => o.date <= end && (o.date > today || minutesOf(o.time ?? r.time) > now.minutes))
         .map((o): Fire => ({
-          key: `${o.variant}:${o.date}`,
+          key: o.time ? `${o.variant}:${o.date}:${o.time}` : `${o.variant}:${o.date}`,
           kind: r.kind,
           variant: o.variant,
           date: o.date,
-          time: r.time,
+          time: o.time ?? r.time,
         }));
     });
 
   const order = (f: Fire) => `${f.date} ${f.time} ${f.key}`;
-  return fires.sort((a, b) => (order(a) < order(b) ? -1 : 1)).slice(0, MAX_FIRES);
+  const byTime = (a: Fire, b: Fire) => (order(a) < order(b) ? -1 : 1);
+  // Remédios podem ter até 20 disparos por dia: eles usam o espaço que sobra, sem expulsar os outros lembretes.
+  const others = fires
+    .filter((f) => f.kind !== 'medication')
+    .sort(byTime)
+    .slice(0, MAX_FIRES);
+  const meds = fires
+    .filter((f) => f.kind === 'medication')
+    .sort(byTime)
+    .slice(0, MAX_FIRES - others.length);
+  return [...others, ...meds].sort(byTime);
 }

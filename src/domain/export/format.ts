@@ -168,6 +168,7 @@ function remindersOf(v: unknown): Reminder[] {
       anchorFor: o.anchorFor,
       years: o.years ?? null,
       threads: o.threads ?? 'after_period',
+      meds: o.meds ?? [],
     };
     check(validOptions(options as Reminder['options']));
     check(nullOr(r.title, (x): x is string => typeof x === 'string') && nullOr(r.body, (x): x is string => typeof x === 'string'));

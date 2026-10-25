@@ -2,6 +2,8 @@ import { type IsoDate, isValidDate } from '@/domain/dates';
 import { hidesFertility, modeHasCycle } from '@/domain/cycle/for-profile';
 import type { BirthControl, Profile } from '@/domain/profile';
 
+import { type Med, validMeds } from './medication';
+
 export const REMINDER_KINDS = [
   'period_soon',
   'period_due',
@@ -11,6 +13,7 @@ export const REMINDER_KINDS = [
   'birth_control',
   'daily_log',
   'pregnancy_test',
+  'medication',
 ] as const;
 export type ReminderKind = (typeof REMINDER_KINDS)[number];
 
@@ -36,6 +39,8 @@ export type ReminderOptions = {
   /** DIU e implante: validade em anos a partir da colocação; null = padrão do método. */
   years: number | null;
   threads: (typeof THREADS)[number];
+  /** Lembrete de remédios: cada um com os próprios horários. */
+  meds: Med[];
 };
 
 /** `time` em HH:MM local; `title`/`body` null = texto padrão. */
@@ -74,6 +79,7 @@ const DEFAULT_OPTIONS: ReminderOptions = {
   anchorFor: null,
   years: null,
   threads: 'after_period',
+  meds: [],
 };
 const DEFAULT_TIME: Record<ReminderKind, string> = {
   period_soon: '09:00',
@@ -84,6 +90,7 @@ const DEFAULT_TIME: Record<ReminderKind, string> = {
   birth_control: '21:00',
   daily_log: '20:00',
   pregnancy_test: '09:00',
+  medication: '08:00',
 };
 
 export const defaultReminder = (kind: ReminderKind): Reminder => ({
@@ -99,11 +106,11 @@ const CYCLE_KINDS: ReminderKind[] = ['period_soon', 'period_due', 'period_late',
 
 /** Tipos que valem no modo e método atuais, na ordem de exibição. */
 export function availableKinds(profile: Profile): ReminderKind[] {
-  if (profile.mode === 'pregnancy') return ['daily_log'];
+  if (profile.mode === 'pregnancy') return ['medication', 'daily_log'];
   const cycle = modeHasCycle(profile) ? CYCLE_KINDS.filter((k) => k !== 'fertile_soon' || !hidesFertility(profile)) : [];
   const contraception: ReminderKind[] = birthControlPlan(profile.birthControl) ? ['birth_control'] : [];
   const conceive: ReminderKind[] = profile.mode === 'conceive' ? ['pregnancy_test'] : [];
-  return [...cycle, ...conceive, ...contraception, 'daily_log'];
+  return [...cycle, ...conceive, ...contraception, 'medication', 'daily_log'];
 }
 
 /** Aviso que a tela mostra junto do lembrete (nunca desliga nada sozinho). */
@@ -131,7 +138,8 @@ export function validOptions(o: ReminderOptions): boolean {
     (o.anchor === null || validAnchor(o.anchor)) &&
     (o.anchorFor === null || oneOf(BIRTH_CONTROL_PLANS_LIST, o.anchorFor)) &&
     (o.years === null || validYears(o.years)) &&
-    oneOf(THREADS, o.threads)
+    oneOf(THREADS, o.threads) &&
+    validMeds(o.meds)
   );
 }
 
@@ -152,6 +160,7 @@ export function parseOptions(raw: string): ReminderOptions {
     anchorFor: oneOf(BIRTH_CONTROL_PLANS_LIST, data.anchorFor) ? data.anchorFor : null,
     years: validYears(data.years) ? data.years : null,
     threads: oneOf(THREADS, data.threads) ? data.threads : DEFAULT_OPTIONS.threads,
+    meds: validMeds(data.meds) ? data.meds.map((m) => ({ ...m, name: m.name.trim() })) : [],
   };
 }
 
@@ -171,7 +180,8 @@ export function needsAnchor(reminder: Reminder, profile: Profile): boolean {
 
 /** Mensagem própria só quando todos os avisos do lembrete dizem a mesma coisa (anel: colocar ≠ tirar). */
 export function customMessageAllowed(kind: ReminderKind, profile: Profile): boolean {
-  if (kind === 'phase_change') return false;
+  // Remédios: a notificação já leva o nome de cada um.
+  if (kind === 'phase_change' || kind === 'medication') return false;
   // DIU e implante têm avisos diferentes (fios, troca): mensagem própria só na pílula.
   if (kind === 'birth_control') return birthControlPlan(profile.birthControl) === 'pill';
   return true;

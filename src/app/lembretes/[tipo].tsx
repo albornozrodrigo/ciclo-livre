@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams, useNavigation, usePreventRemove } from 'expo-router';
+import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { Alert, Text, TextInput, View } from 'react-native';
 
@@ -10,6 +11,9 @@ import { DateField, formatLongDate } from '@/components/ui/date-field';
 import { NumberStepper } from '@/components/ui/number-stepper';
 import { useSnackbar } from '@/components/ui/snackbar';
 import { TimeField } from '@/components/ui/time-field';
+import { MedicationList } from '@/components/reminders/medication-list';
+import { ensureTags } from '@/db/tag-repo';
+import { validMeds } from '@/domain/reminders/medication';
 import { hidesFertility } from '@/domain/cycle/for-profile';
 import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
@@ -49,6 +53,7 @@ const isKind = (v: unknown): v is ReminderKind => typeof v === 'string' && (REMI
 /** Variante mostrada na prévia. */
 function previewVariant(kind: ReminderKind, profile: Profile): Variant {
   if (kind === 'phase_change') return hidesFertility(profile) ? 'phase_hormonal' : 'phase_follicular';
+  if (kind === 'medication') return 'medication_0';
   if (kind !== 'birth_control') return kind;
   const plan = birthControlPlan(profile.birthControl);
   if (plan === 'iud_hormonal' || plan === 'iud_copper') return 'iud_threads';
@@ -100,6 +105,8 @@ function Editor({ initial, profile, discreet, denied, save }: EditorProps) {
   const [body, setBody] = useState(initial.body ?? '');
   const [errors, setErrors] = useState<{ title?: string; body?: string }>({});
   const [saved, setSaved] = useState(false);
+  const [medsError, setMedsError] = useState<string | null>(null);
+  const db = useSQLiteContext();
   const today = todayIso();
   const plan = birthControlPlan(profile.birthControl);
   const anchorMissing = needsAnchor(draft, profile);
@@ -129,6 +136,12 @@ function Editor({ initial, profile, discreet, denied, save }: EditorProps) {
       return;
     }
     setErrors({});
+    const meds = draft.options.meds.map((med) => ({ ...med, name: med.name.trim() }));
+    if (draft.kind === 'medication') {
+      if (!validMeds(meds)) return setMedsError(r.meds.invalid);
+      if (draft.enabled && meds.length === 0) return setMedsError(r.meds.empty);
+      setMedsError(null);
+    }
     const anchor = draft.kind === 'daily_log' && !draft.options.anchor ? today : draft.options.anchor;
     try {
       const ok = await save({
@@ -136,9 +149,17 @@ function Editor({ initial, profile, discreet, denied, save }: EditorProps) {
         // Sem mensagem própria onde os avisos dizem coisas opostas (ex.: anel colocar/tirar).
         title: allowMessage ? message.title : null,
         body: allowMessage ? message.body : null,
-        options: { ...draft.options, anchor },
+        options: { ...draft.options, anchor, meds },
       });
       if (!ok) return;
+      // Cada remédio vira uma tag do registro (só cria as que ainda não existem).
+      // A tag do registro é um extra: se falhar, o lembrete já foi salvo e a mensagem continua sendo de sucesso.
+      if (draft.kind === 'medication') {
+        await ensureTags(
+          db,
+          meds.map((med) => med.name),
+        ).catch((error: unknown) => log.error('medication_tags_failed', error));
+      }
       show(r.saved);
       setSaved(true);
     } catch (error) {
@@ -165,13 +186,17 @@ function Editor({ initial, profile, discreet, denied, save }: EditorProps) {
       ) : null}
 
       <SwitchRow label={r.enabled} value={draft.enabled} onValueChange={(enabled) => setDraft((d) => ({ ...d, enabled }))} />
-      <TimeField
-        label={r.time}
-        value={draft.time}
-        accessibilityLabel={r.timeChange(draft.time)}
-        accessibilityHint={r.timeHint}
-        onChange={(time) => setDraft((d) => ({ ...d, time }))}
-      />
+      {draft.kind === 'medication' ? (
+        <MedicationList meds={draft.options.meds} error={medsError} onChange={(meds) => setOptions({ meds })} />
+      ) : (
+        <TimeField
+          label={r.time}
+          value={draft.time}
+          accessibilityLabel={r.timeChange(draft.time)}
+          accessibilityHint={r.timeHint}
+          onChange={(time) => setDraft((d) => ({ ...d, time }))}
+        />
+      )}
 
       {draft.kind === 'period_soon' ? (
         <NumberStepper

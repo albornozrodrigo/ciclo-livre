@@ -1,6 +1,9 @@
 import type { Reminder, ReminderKind } from '@/domain/reminders/catalog';
 import type { Variant } from '@/domain/reminders/schedule';
 
+/** Remédio do lembrete pelo índice; o nome é o que a pessoa escreveu. */
+const medicationContent = (r: Reminder, i: number) => ({ title: 'Hora do remédio', body: r.options.meds[i]?.name ?? 'Remédio' });
+
 const days = (n: number) => `${n} ${n === 1 ? 'dia' : 'dias'}`;
 
 /** Textos padrão das notificações (próprios do Ciclo Livre; nunca copiados de outro app). */
@@ -86,6 +89,11 @@ const DEFAULTS: Record<Variant, (r: Reminder) => { title: string; body: string }
     title: 'Como foi seu dia?',
     body: 'Um toque para registrar como você está.',
   }),
+  medication_0: (r) => medicationContent(r, 0),
+  medication_1: (r) => medicationContent(r, 1),
+  medication_2: (r) => medicationContent(r, 2),
+  medication_3: (r) => medicationContent(r, 3),
+  medication_4: (r) => medicationContent(r, 4),
   pregnancy_test: () => ({
     title: 'Dia do teste de gravidez',
     body: 'Se a menstruação não veio hoje, um teste já dá um resultado confiável.',
@@ -120,4 +128,5 @@ export const REMINDER_NAMES: Record<ReminderKind, string> = {
   birth_control: 'Contraceptivo',
   daily_log: 'Lembrete de registro',
   pregnancy_test: 'Dia do teste de gravidez',
+  medication: 'Remédios',
 };

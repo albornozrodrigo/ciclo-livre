@@ -7,6 +7,7 @@ import LembreteScreen from '@/app/lembretes/[tipo]';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
 import { getDiscreet, listReminders, saveReminder, setDiscreet } from '@/db/reminder-repo';
+import { listTags } from '@/db/tag-repo';
 import { defaultReminder } from '@/domain/reminders/catalog';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
@@ -224,6 +225,42 @@ describe('Lembrete (detalhe)', () => {
     await render(wrap(<LembreteScreen />));
 
     expect(await screen.findByText(/a troca era em/)).toBeOnTheScreen();
+  });
+
+  it('ligar "Remédios" pela lista sem nenhum remédio abre o detalhe em vez de ligar vazio', async () => {
+    mockGranted = true;
+    await render(wrap(<LembretesScreen />));
+    await fireEvent(await screen.findByRole('switch', { name: REMINDER_NAMES.medication }), 'valueChange', true);
+
+    expect(mockPush).toHaveBeenCalledWith({ pathname: '/lembretes/[tipo]', params: { tipo: 'medication', ligar: '1' } });
+    expect((await reminder('medication')).enabled).toBe(false);
+  });
+
+  it('remédios: adiciona, dá nome, salva e cria a tag do registro', async () => {
+    mockTipo = 'medication';
+    mockGranted = true;
+    await render(wrap(<LembreteScreen />));
+
+    await fireEvent.press(await screen.findByRole('button', { name: r.meds.add }));
+    await fireEvent.changeText(screen.getByLabelText(r.meds.name(1)), 'Ferro');
+    await fireEvent.press(screen.getByRole('button', { name: r.meds.addTime }));
+    await fireEvent(screen.getByRole('switch', { name: r.enabled }), 'valueChange', true);
+    await fireEvent.press(screen.getByRole('button', { name: r.save }));
+
+    const saved = await reminder('medication');
+    expect(saved.options.meds).toEqual([{ name: 'Ferro', times: ['08:00', '12:00'], until: null }]);
+    expect((await listTags(mockDb)).map((t) => t.name)).toContain('Ferro');
+  });
+
+  it('remédio sem nome mostra o erro e não salva', async () => {
+    mockTipo = 'medication';
+    await render(wrap(<LembreteScreen />));
+
+    await fireEvent.press(await screen.findByRole('button', { name: r.meds.add }));
+    await fireEvent.press(screen.getByRole('button', { name: r.save }));
+
+    expect(screen.getByText(r.meds.invalid)).toBeOnTheScreen();
+    expect((await reminder('medication')).options.meds).toEqual([]);
   });
 
   it('mensagem longa demais mostra o erro em pt-BR e não salva', async () => {
