@@ -5,7 +5,7 @@ import CalendarioScreen from '@/app/(tabs)/calendario';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
 import { setSelection } from '@/db/log-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
-import { todayIso } from '@/domain/dates';
+import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 
@@ -134,5 +134,14 @@ describe('Calendário', () => {
     await renderCalendar();
     // Uma no dia de hoje, outra na legenda.
     expect(await screen.findAllByTestId('today-mark', { includeHiddenElements: true })).toHaveLength(2);
+  });
+});
+
+describe('Calendário › Tentar engravidar', () => {
+  it('os dias da janela dizem a chance no nome acessível', async () => {
+    mockProfile = { ...mockProfile, mode: 'conceive', lastPeriodStart: addDays(todayIso(), -3) };
+    await renderCalendar();
+
+    expect((await screen.findAllByRole('button', { name: new RegExp(cal.chance.high) })).length).toBeGreaterThan(0);
   });
 });

@@ -1,6 +1,7 @@
 import { addDays, daysBetween, type IsoDate } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 
+import { type ConceiveStatus, conceiveStatus } from './conceive';
 import { cycleModelFor } from './for-profile';
 import { type Confidence, dayInfo, fertileWindow, type Phase, pregnancyWeek } from './model';
 import { predictPainDays } from './pain';
@@ -25,6 +26,8 @@ export type TodayView =
       painDays: IsoDate[];
       /** Fase que vem depois da de hoje e em quantos dias ela começa (lobo secundário de Hoje). */
       nextPhase: { phase: Phase; inDays: number } | null;
+      /** Só no modo Tentar engravidar: chance do dia e próximo passo. */
+      conceive?: ConceiveStatus;
     };
 
 /** Procura o primeiro dia à frente com outra fase (no máximo um ciclo longo). */
@@ -62,5 +65,6 @@ export function todayCycleView(profile: Profile, signals: CycleSignals, today: I
     confidence: model.confidence,
     painDays: predictPainDays(model.periods, signals.painDates, model.next.start),
     nextPhase: model.late ? null : findNextPhase(model, info.phase, today),
+    ...(profile.mode === 'conceive' && !model.fertilityHidden ? { conceive: conceiveStatus(model, today) } : {}),
   };
 }

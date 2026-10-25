@@ -504,6 +504,7 @@ export const ptBR = {
     logged: 'com registro',
     predicted: 'prevista',
     ovulation: 'ovulação estimada',
+    chance: { medium: 'chance média de engravidar', high: 'chance alta de engravidar' },
     phase: {
       menstruation: 'menstruação',
       follicular: 'fase folicular',
@@ -542,6 +543,17 @@ export const ptBR = {
     late: (n: number) => (n === 1 ? 'Menstruação atrasada há 1 dia' : `Menstruação atrasada há ${n} dias`),
     lateHint: 'Atrasos acontecem. Se ela não vier ou se você tiver dúvida, um teste de gravidez ou um serviço de saúde podem ajudar.',
     fertile: (from: string, to: string) => `Janela fértil: ${from} a ${to}`,
+    conceive: {
+      chance: { low: 'baixa', medium: 'média', high: 'alta' },
+      chanceToday: (level: string) => `Chance de engravidar hoje: ${level}`,
+      bestIn: (n: number) =>
+        n === 0 ? 'Melhor chance: a partir de hoje' : n === 1 ? 'Melhor chance: a partir de amanhã' : `Melhor chance em ${n} dias`,
+      lastFertile: (date: string) => `Último dia fértil estimado: ${date}`,
+      testFrom: (date: string, n: number) =>
+        n <= 0 ? 'Teste de gravidez: já dá para fazer hoje' : `Teste de gravidez a partir de ${date} (em ${n} ${n === 1 ? 'dia' : 'dias'})`,
+      lateTest: 'A menstruação atrasou: um teste de gravidez já dá resultado confiável.',
+      source: 'Chance por dia segundo Wilcox e colegas (NEJM, 1995). É uma estimativa e não serve como contracepção.',
+    },
     fertilityHidden:
       'Com contracepção hormonal, o app não estima janela fértil nem ovulação. O sangramento previsto é o da pausa ou de escape.',
     confidence: {

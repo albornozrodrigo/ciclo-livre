@@ -70,6 +70,10 @@ const DEFAULTS: Record<Variant, (r: Reminder) => { title: string; body: string }
     title: 'Como foi seu dia?',
     body: 'Um toque para registrar como você está.',
   }),
+  pregnancy_test: () => ({
+    title: 'Dia do teste de gravidez',
+    body: 'Se a menstruação não veio hoje, um teste já dá um resultado confiável.',
+  }),
 };
 
 const DISCREET = {
@@ -79,7 +83,7 @@ const DISCREET = {
 
 /** Título e texto da notificação: discreto > mensagem própria > padrão. */
 /** Variantes em que uma mensagem própria faz sentido (as demais têm avisos opostos no mesmo lembrete). */
-const CUSTOMIZABLE = new Set<Variant>(['period_soon', 'period_due', 'period_late', 'fertile_soon', 'pill', 'daily_log']);
+const CUSTOMIZABLE = new Set<Variant>(['period_soon', 'period_due', 'period_late', 'fertile_soon', 'pill', 'daily_log', 'pregnancy_test']);
 
 export function reminderContent(reminder: Reminder, variant: Variant, discreet: boolean): { title: string; body: string } {
   if (discreet) return { ...DISCREET };
@@ -99,4 +103,5 @@ export const REMINDER_NAMES: Record<ReminderKind, string> = {
   phase_change: 'Mudança de fase',
   birth_control: 'Contraceptivo',
   daily_log: 'Lembrete de registro',
+  pregnancy_test: 'Dia do teste de gravidez',
 };

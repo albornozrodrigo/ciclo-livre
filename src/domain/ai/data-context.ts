@@ -48,6 +48,8 @@ const br = (iso: IsoDate) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${iso.slice
 /** Texto livre da pessoa vai como dado: sem marcação nem caracteres de controle, e curto. */
 const cleanNote = (text: string) => sanitizeForPrompt(text, NOTE_MAX);
 
+const CHANCE = { low: 'baixa', medium: 'média', high: 'alta' } as const;
+
 function currentLines(view: TodayView | null, labels: ContextLabels): string[] {
   if (!view || view.kind === 'none') return ['Ciclo atual: sem dados suficientes para estimar.'];
   if (view.kind === 'no_bleeding') return ['Ciclo atual: modo sem menstruação (sem previsão de ciclo).'];
@@ -61,6 +63,7 @@ function currentLines(view: TodayView | null, labels: ContextLabels): string[] {
     view.fertile
       ? `Janela fértil estimada: ${br(view.fertile.start)} a ${br(view.fertile.end)}.`
       : 'Contracepção hormonal: o app não estima janela fértil nem ovulação.',
+    ...(view.conceive ? [`Chance de engravidar hoje (estimativa por dia da ovulação): ${CHANCE[view.conceive.chance]}.`] : []),
   ];
 }
 

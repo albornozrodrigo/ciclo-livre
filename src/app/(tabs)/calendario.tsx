@@ -31,7 +31,7 @@ function monthTitle(year: number, month: number) {
 const Month = memo(function Month({ index, data }: { index: number; data: CalendarData }) {
   const { year, month } = fromMonthIndex(index);
   const { fontScale } = useWindowDimensions();
-  const weeks = useMemo(() => monthGrid(year, month, data.model, data.logged, data.today), [year, month, data]);
+  const weeks = useMemo(() => monthGrid(year, month, data.model, data.logged, data.today, { chance: data.chance }), [year, month, data]);
   return (
     <View className="px-5" style={{ height: monthHeight(weeks.length, fontScale) }}>
       <View style={{ height: TITLE_LINE * fontScale, marginBottom: TITLE_GAP }}>

@@ -16,6 +16,8 @@ export type CalendarData = {
   /** Primeiro dia com registro: a lista de meses começa, no máximo, nele. */
   firstLogged: IsoDate | null;
   today: IsoDate;
+  /** Modo Tentar engravidar: o calendário diz a chance de cada dia da janela. */
+  chance: boolean;
 };
 
 const ALL = { from: '0000-01-01', to: '9999-12-31' } as const;
@@ -50,6 +52,7 @@ export function useCalendarData(profile: Profile | null): CalendarData | null {
       // getLoggedDates devolve em ordem de data.
       firstLogged: loaded.dates[0] ?? null,
       today,
+      chance: profile.mode === 'conceive',
     };
   }, [profile, loaded, today]);
 }

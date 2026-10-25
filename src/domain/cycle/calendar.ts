@@ -1,5 +1,6 @@
 import { addDays, firstOfMonth, type IsoDate, toDayNumber } from '@/domain/dates';
 
+import { type Chance, chanceFor } from './conceive';
 import { type CycleModel, dayInfo, type Phase } from './model';
 
 export type CalendarCell = {
@@ -10,6 +11,8 @@ export type CalendarCell = {
   ovulation: boolean;
   today: boolean;
   logged: boolean;
+  /** Modo Tentar engravidar: chance nos dias de chance média ou alta; null nos outros. */
+  chance: Exclude<Chance, 'low'> | null;
 };
 
 /** Domingo = 0. 1970-01-01 (dia 0) foi uma quinta-feira. */
@@ -29,6 +32,7 @@ export function monthGrid(
   model: CycleModel | null,
   logged: ReadonlySet<IsoDate>,
   today: IsoDate,
+  options: { chance?: boolean } = {},
 ): CalendarCell[][] {
   const first = firstOfMonth(year, month);
   const last = lastDayOfMonth(year, month);
@@ -47,7 +51,12 @@ export function monthGrid(
       ovulation: info !== null && !model?.fertilityHidden && info.ovulation.date === date,
       today: date === today,
       logged: logged.has(date),
+      chance: null,
     };
+    if (options.chance && info && !model?.fertilityHidden) {
+      const chance = chanceFor(date, info.ovulation.date);
+      cell.chance = chance === 'low' ? null : chance;
+    }
     if (weekday(date) === 0) weeks.push([]);
     weeks[weeks.length - 1].push(cell);
   }

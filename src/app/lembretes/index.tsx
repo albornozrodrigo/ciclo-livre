@@ -17,7 +17,7 @@ const r = ptBR.reminders;
 const GROUPS: { key: keyof typeof r.groups; kinds: ReminderKind[] }[] = [
   {
     key: 'cycle',
-    kinds: ['period_soon', 'period_due', 'period_late', 'fertile_soon', 'phase_change'],
+    kinds: ['period_soon', 'period_due', 'period_late', 'fertile_soon', 'phase_change', 'pregnancy_test'],
   },
   { key: 'contraception', kinds: ['birth_control'] },
   { key: 'log', kinds: ['daily_log'] },

@@ -10,6 +10,7 @@ export const REMINDER_KINDS = [
   'phase_change',
   'birth_control',
   'daily_log',
+  'pregnancy_test',
 ] as const;
 export type ReminderKind = (typeof REMINDER_KINDS)[number];
 
@@ -69,6 +70,7 @@ const DEFAULT_TIME: Record<ReminderKind, string> = {
   phase_change: '09:00',
   birth_control: '21:00',
   daily_log: '20:00',
+  pregnancy_test: '09:00',
 };
 
 export const defaultReminder = (kind: ReminderKind): Reminder => ({
@@ -87,7 +89,8 @@ export function availableKinds(profile: Profile): ReminderKind[] {
   if (profile.mode === 'pregnancy') return ['daily_log'];
   const cycle = modeHasCycle(profile) ? CYCLE_KINDS.filter((k) => k !== 'fertile_soon' || !hidesFertility(profile)) : [];
   const contraception: ReminderKind[] = birthControlPlan(profile.birthControl) ? ['birth_control'] : [];
-  return [...cycle, ...contraception, 'daily_log'];
+  const conceive: ReminderKind[] = profile.mode === 'conceive' ? ['pregnancy_test'] : [];
+  return [...cycle, ...conceive, ...contraception, 'daily_log'];
 }
 
 /** Aviso que a tela mostra junto do lembrete (nunca desliga nada sozinho). */

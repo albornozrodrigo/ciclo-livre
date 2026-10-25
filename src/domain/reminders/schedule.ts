@@ -1,3 +1,4 @@
+import { pregnancyTestDate } from '@/domain/cycle/conceive';
 import { type CycleModel, dayInfo, type Phase } from '@/domain/cycle/model';
 import { addDays, daysBetween, type IsoDate } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
@@ -36,7 +37,8 @@ export type Variant =
   | 'ring_remove'
   | 'injection_soon'
   | 'injection_due'
-  | 'daily_log';
+  | 'daily_log'
+  | 'pregnancy_test';
 
 /** Um disparo: data e hora locais. `key` é estável para cancelar e reagendar sem duplicar. */
 export type Fire = {
@@ -81,6 +83,18 @@ function periodDates(kind: ReminderKind, r: Reminder, model: CycleModel, today: 
   for (let start = model.expected; addDays(start, -before) <= end; start = addDays(start, model.cycleLength)) {
     const date = addDays(start, -before);
     if (date >= today) out.push({ date, variant: kind as 'period_soon' | 'period_due' });
+  }
+  return out;
+}
+
+/** Teste de gravidez em cada ciclo da janela: o do ciclo atual (ovulação real) e, depois, a cada ciclo previsto. */
+function pregnancyTestDates(model: CycleModel, today: IsoDate, end: IsoDate): Occurrence[] {
+  // Com atraso, Hoje já diz que dá para testar.
+  if (model.late) return [];
+  const out: Occurrence[] = [];
+  const first = pregnancyTestDate(model);
+  for (let date = first; date <= end; date = addDays(date, model.cycleLength)) {
+    if (date >= today) out.push({ date, variant: 'pregnancy_test' });
   }
   return out;
 }
@@ -160,6 +174,8 @@ export function planSchedule({ reminders, profile, model, now }: Input): Fire[] 
       let occurrences: Occurrence[] = [];
       if (r.kind === 'birth_control') occurrences = birthControlDates(r, profile, today, end);
       else if (r.kind === 'daily_log') occurrences = dailyLogDates(r, today, end);
+      // No dia em que a menstruação é esperada; com atraso, Hoje já diz que dá para testar.
+      else if (r.kind === 'pregnancy_test') occurrences = model ? pregnancyTestDates(model, today, end) : [];
       else if (model && (r.kind === 'fertile_soon' || r.kind === 'phase_change')) occurrences = phaseDates(r.kind, model, today, end);
       else if (model) occurrences = periodDates(r.kind, r, model, today, end);
       return occurrences

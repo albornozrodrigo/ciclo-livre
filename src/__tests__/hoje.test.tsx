@@ -134,3 +134,23 @@ describe('Hoje › ciclo', () => {
     expect(await screen.findByText(c.pregnancyWeeks(12, 5))).toBeOnTheScreen();
   });
 });
+
+describe('Hoje › Tentar engravidar', () => {
+  it('mostra a chance do dia, o próximo passo e a fonte', async () => {
+    mockProfile = { ...mockProfile, mode: 'conceive', lastPeriodStart: addDays(todayIso(), -3) };
+    await renderHoje();
+
+    const k = ptBR.cycle.conceive;
+    expect(await screen.findByText(k.chanceToday(k.chance.low))).toBeOnTheScreen();
+    expect(screen.getByText(/^Melhor chance/)).toBeOnTheScreen();
+    expect(screen.getByText(k.source)).toBeOnTheScreen();
+  });
+
+  it('no modo menstruação não fala de chance de engravidar', async () => {
+    mockProfile = { ...mockProfile, mode: 'period', lastPeriodStart: addDays(todayIso(), -3) };
+    await renderHoje();
+
+    await screen.findByText(ptBR.cycle.dayOfCycle(4));
+    expect(screen.queryByText(/Chance de engravidar/)).toBeNull();
+  });
+});

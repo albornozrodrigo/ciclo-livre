@@ -15,8 +15,8 @@ status = "in_progress"
 phases = 8
 
 [phase]
-number = 15
-name = "Ciclos fora do padrão"
+number = 16
+name = "Status do modo Engravidar + chance por dia"
 status = "complete"
 plans_completed = 0
 

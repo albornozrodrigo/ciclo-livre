@@ -71,6 +71,28 @@ export function CycleCard({ view }: { view: TodayView }) {
         </Text>
         <Muted>{view.late ? c.lateHint : c.range(shortDate(view.next.earliest), shortDate(view.next.latest))}</Muted>
       </View>
+      {view.conceive ? <ConceiveBlock status={view.conceive} /> : null}
+    </View>
+  );
+}
+
+/** Modo Tentar engravidar: chance do dia (com fonte) e o próximo passo. */
+function ConceiveBlock({ status }: { status: NonNullable<Extract<TodayView, { kind: 'cycle' }>['conceive']> }) {
+  const k = c.conceive;
+  const s = status.status;
+  const next =
+    s.kind === 'best_in'
+      ? k.bestIn(s.days)
+      : s.kind === 'last_fertile'
+        ? k.lastFertile(shortDate(s.date))
+        : s.kind === 'test_from'
+          ? k.testFrom(shortDate(s.date), s.days)
+          : k.lateTest;
+  return (
+    <View className="gap-1">
+      <Text className="text-lg font-bold leading-7 text-ink dark:text-ink-night">{k.chanceToday(k.chance[status.chance])}</Text>
+      <Line>{next}</Line>
+      <Muted>{k.source}</Muted>
     </View>
   );
 }

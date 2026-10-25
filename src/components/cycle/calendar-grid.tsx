@@ -28,6 +28,7 @@ function cellLabel(cell: CalendarCell): string {
   const parts = [cell.today ? `${cal.todayLabel}, ${date}` : date];
   if (cell.phase) parts.push(cell.predicted ? `${cal.phase[cell.phase]} ${cal.predicted}` : cal.phase[cell.phase]);
   if (cell.ovulation) parts.push(cal.ovulation);
+  if (cell.chance) parts.push(cal.chance[cell.chance]);
   if (cell.logged) parts.push(cal.logged);
   return parts.join(', ');
 }

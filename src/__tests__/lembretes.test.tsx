@@ -113,6 +113,17 @@ describe('Lembretes (lista)', () => {
     expect(screen.queryByRole('switch', { name: REMINDER_NAMES.fertile_soon })).toBeNull();
   });
 
+  it('no modo Tentar engravidar aparece o lembrete do teste de gravidez', async () => {
+    mockProfile = { ...mockProfile, mode: 'conceive', birthControl: null };
+    await render(wrap(<LembretesScreen />));
+    expect(await screen.findByRole('switch', { name: REMINDER_NAMES.pregnancy_test })).toBeOnTheScreen();
+
+    mockProfile = { ...mockProfile, mode: 'period' };
+    await render(wrap(<LembretesScreen />));
+    await screen.findByRole('switch', { name: REMINDER_NAMES.period_due });
+    expect(screen.queryByRole('switch', { name: REMINDER_NAMES.pregnancy_test })).toBeNull();
+  });
+
   it('ligar pede a permissão e salva ligado', async () => {
     await render(wrap(<LembretesScreen />));
     await fireEvent(await screen.findByRole('switch', { name: REMINDER_NAMES.period_due }), 'valueChange', true);
