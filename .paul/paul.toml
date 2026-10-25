@@ -17,7 +17,7 @@ phases = 8
 [phase]
 number = 12
 name = "Catálogo de registro completo"
-status = "not_started"
+status = "complete"
 plans_completed = 0
 
 [loop]

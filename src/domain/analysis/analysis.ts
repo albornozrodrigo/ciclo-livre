@@ -84,6 +84,10 @@ const SYMPTOM_CATEGORIES = new Set([
   'stress',
   'hot_flashes',
   'ailments',
+  'clots',
+  'mouth',
+  'breasts',
+  'swelling',
 ]);
 /** Estados neutros ou bons: aparecem no registro, mas não são sintomas. */
 const NOT_SYMPTOMS = new Set([

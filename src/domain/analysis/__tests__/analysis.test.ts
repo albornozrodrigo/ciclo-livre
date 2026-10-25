@@ -3,13 +3,32 @@ import { buildCycleModel } from '@/domain/cycle/model';
 
 const TODAY = '2026-10-22';
 const flow = [
-  '2026-07-04', '2026-07-05', '2026-07-06',
-  '2026-08-01', '2026-08-02', '2026-08-03', '2026-08-04',
-  '2026-08-30', '2026-08-31', '2026-09-01',
-  '2026-09-26', '2026-09-27', '2026-09-28', '2026-09-29', '2026-09-30',
+  '2026-07-04',
+  '2026-07-05',
+  '2026-07-06',
+  '2026-08-01',
+  '2026-08-02',
+  '2026-08-03',
+  '2026-08-04',
+  '2026-08-30',
+  '2026-08-31',
+  '2026-09-01',
+  '2026-09-26',
+  '2026-09-27',
+  '2026-09-28',
+  '2026-09-29',
+  '2026-09-30',
 ];
 const model = buildCycleModel(
-  { flowDates: flow, seed: null, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+  {
+    flowDates: flow,
+    seed: null,
+    temperatures: {},
+    eggWhiteDates: [],
+    positiveOvulationTests: [],
+    profileCycleLength: 28,
+    profilePeriodLength: 5,
+  },
   TODAY,
 )!;
 
@@ -25,7 +44,15 @@ describe('cycleHistory', () => {
 
   it('menstruação em andamento mostra só os dias registrados, não a duração estendida', () => {
     const ongoing = buildCycleModel(
-      { flowDates: ['2026-09-24', '2026-09-25', '2026-09-26', '2026-10-21', '2026-10-22'], seed: null, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      {
+        flowDates: ['2026-09-24', '2026-09-25', '2026-09-26', '2026-10-21', '2026-10-22'],
+        seed: null,
+        temperatures: {},
+        eggWhiteDates: [],
+        positiveOvulationTests: [],
+        profileCycleLength: 28,
+        profilePeriodLength: 5,
+      },
       TODAY,
     )!;
     expect(cycleHistory(ongoing)[0]).toMatchObject({ start: '2026-10-21', length: null, periodLength: 2 });
@@ -33,7 +60,15 @@ describe('cycleHistory', () => {
 
   it('menstruação só informada no cadastro (semente) não tem duração medida', () => {
     const seeded = buildCycleModel(
-      { flowDates: ['2026-10-01', '2026-10-02'], seed: { start: '2026-09-03', length: 5 }, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      {
+        flowDates: ['2026-10-01', '2026-10-02'],
+        seed: { start: '2026-09-03', length: 5 },
+        temperatures: {},
+        eggWhiteDates: [],
+        positiveOvulationTests: [],
+        profileCycleLength: 28,
+        profilePeriodLength: 5,
+      },
       TODAY,
     )!;
     expect(cycleHistory(seeded).map((r) => r.periodLength)).toEqual([2, null]);
@@ -47,7 +82,15 @@ describe('cycleSummary', () => {
 
   it('ignora durações implausíveis (menstruação esquecida), como a previsão', () => {
     const gap = buildCycleModel(
-      { flowDates: ['2026-03-06', '2026-03-07', '2026-03-08', ...flow], seed: null, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      {
+        flowDates: ['2026-03-06', '2026-03-07', '2026-03-08', ...flow],
+        seed: null,
+        temperatures: {},
+        eggWhiteDates: [],
+        positiveOvulationTests: [],
+        profileCycleLength: 28,
+        profilePeriodLength: 5,
+      },
       TODAY,
     )!;
     expect(cycleSummary(gap)).toMatchObject({ count: 3, mean: 28, min: 27, max: 29 });
@@ -55,7 +98,15 @@ describe('cycleSummary', () => {
 
   it('menstruação média só com menstruações registradas; sem nenhuma terminada, null', () => {
     const seeded = buildCycleModel(
-      { flowDates: ['2026-10-01'], seed: { start: '2026-09-03', length: 5 }, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      {
+        flowDates: ['2026-10-01'],
+        seed: { start: '2026-09-03', length: 5 },
+        temperatures: {},
+        eggWhiteDates: [],
+        positiveOvulationTests: [],
+        profileCycleLength: 28,
+        profilePeriodLength: 5,
+      },
       '2026-10-02',
     )!;
     expect(cycleSummary(seeded)).toMatchObject({ count: 1, periodMean: null });
@@ -63,7 +114,15 @@ describe('cycleSummary', () => {
 
   it('sem ciclos completos não há resumo', () => {
     const one = buildCycleModel(
-      { flowDates: ['2026-10-10'], seed: null, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      {
+        flowDates: ['2026-10-10'],
+        seed: null,
+        temperatures: {},
+        eggWhiteDates: [],
+        positiveOvulationTests: [],
+        profileCycleLength: 28,
+        profilePeriodLength: 5,
+      },
       TODAY,
     )!;
     expect(cycleSummary(one)).toBeNull();
@@ -106,16 +165,57 @@ describe('symptomFrequency', () => {
       { date: '2026-08-20', category: 'pain', option: 'cramps' },
       { date: '2026-09-01', category: 'pain', option: 'cramps' },
     ];
-    expect(symptomFrequency(model, late, TODAY)).toEqual([{ category: 'pain', option: 'cramps', cycles: 2, total: 2, phase: expect.any(String) }]);
+    expect(symptomFrequency(model, late, TODAY)).toEqual([
+      { category: 'pain', option: 'cramps', cycles: 2, total: 2, phase: expect.any(String) },
+    ]);
   });
 
   it('ignora categorias que não são sintomas (fluxo, coleta, testes, contracepção)', () => {
     expect(symptomFrequency(model, selections, TODAY).some((s) => s.category === 'period')).toBe(false);
   });
 
+  it('conta as opções da v0.2 que são sintomas (coágulos, boca, mamas, inchaço, corrimento acinzentado, humores)', () => {
+    const v02 = [
+      { date: '2026-07-04', category: 'clots', option: 'present' },
+      { date: '2026-07-10', category: 'mouth', option: 'bleeding_gums' },
+      { date: '2026-07-11', category: 'breasts', option: 'nipple_discharge' },
+      { date: '2026-07-12', category: 'swelling', option: 'limbs' },
+      { date: '2026-07-13', category: 'discharge', option: 'gray' },
+      { date: '2026-07-14', category: 'discharge', option: 'clumpy_white' },
+      { date: '2026-07-15', category: 'feelings', option: 'self_critical' },
+    ];
+    expect(symptomFrequency(model, v02, TODAY).map((r) => `${r.category}:${r.option}`)).toEqual(
+      expect.arrayContaining([
+        'clots:present',
+        'mouth:bleeding_gums',
+        'breasts:nipple_discharge',
+        'swelling:limbs',
+        'discharge:gray',
+        'discharge:clumpy_white',
+        'feelings:self_critical',
+      ]),
+    );
+  });
+
+  it('autocuidado e sexo não são sintomas', () => {
+    const notSymptoms = [
+      { date: '2026-07-04', category: 'self_care', option: 'breathing' },
+      { date: '2026-08-01', category: 'sex', option: 'orgasm' },
+    ];
+    expect(symptomFrequency(model, notSymptoms, TODAY)).toEqual([]);
+  });
+
   it('com menos de 2 ciclos completos não calcula', () => {
     const one = buildCycleModel(
-      { flowDates: ['2026-09-26', '2026-10-20'], seed: null, temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], profileCycleLength: 28, profilePeriodLength: 5 },
+      {
+        flowDates: ['2026-09-26', '2026-10-20'],
+        seed: null,
+        temperatures: {},
+        eggWhiteDates: [],
+        positiveOvulationTests: [],
+        profileCycleLength: 28,
+        profilePeriodLength: 5,
+      },
       TODAY,
     )!;
     expect(symptomFrequency(one, selections, TODAY)).toEqual([]);
@@ -126,7 +226,15 @@ describe('bbtChart', () => {
   it('pontos do ciclo, ovulação e linha de cobertura', () => {
     const temps: Record<string, number> = {};
     const lows = [36.3, 36.4, 36.3, 36.5, 36.4, 36.3, 36.4, 36.3];
-    lows.forEach((t, i) => (temps[`2026-09-${String(26 + i).padStart(2, '0')}`.replace('2026-09-31', '2026-10-01').replace('2026-09-32', '2026-10-02').replace('2026-09-33', '2026-10-03')] = t));
+    lows.forEach(
+      (t, i) =>
+        (temps[
+          `2026-09-${String(26 + i).padStart(2, '0')}`
+            .replace('2026-09-31', '2026-10-01')
+            .replace('2026-09-32', '2026-10-02')
+            .replace('2026-09-33', '2026-10-03')
+        ] = t),
+    );
     temps['2026-10-04'] = 36.8;
     temps['2026-10-05'] = 36.8;
     temps['2026-10-06'] = 36.9;

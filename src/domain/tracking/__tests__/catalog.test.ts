@@ -39,6 +39,54 @@ describe('catálogo de categorias', () => {
   });
 });
 
+/** Opções gravadas no banco antes da fase 12: o catálogo só pode crescer depois delas. */
+const BEFORE_V02: Record<string, readonly string[]> = {
+  period: ['light', 'medium', 'heavy', 'very_heavy'],
+  tests: ['ovulation_positive', 'ovulation_negative', 'pregnancy_positive', 'pregnancy_negative'],
+  discharge: ['none', 'sticky', 'creamy', 'egg_white', 'watery', 'atypical'],
+  sex: ['protected', 'unprotected', 'withdrawal', 'high_desire', 'low_desire', 'solo', 'none'],
+  pain: ['cramps', 'headache', 'ovulation', 'tender_breasts', 'back', 'joints'],
+  skin: ['good', 'oily', 'dry', 'breakouts'],
+  feelings: ['happy', 'calm', 'sensitive', 'sad', 'anxious', 'irritable'],
+  medication: ['painkiller', 'anti_inflammatory', 'antihistamine', 'antibiotic', 'supplement'],
+};
+
+describe('catálogo da v0.2 (o que o Flo tem a mais)', () => {
+  const options = (id: string) => {
+    const category = categoryById(id);
+    return category && category.kind !== 'measure' ? category.options : [];
+  };
+
+  it('opções antigas continuam no começo, na mesma ordem', () => {
+    for (const [id, before] of Object.entries(BEFORE_V02)) {
+      expect(options(id).slice(0, before.length)).toEqual(before);
+    }
+  });
+
+  it.each([
+    ['clots', ['present']],
+    ['tests', ['pregnancy_faint', 'ovulation_other_method']],
+    ['discharge', ['gray', 'clumpy_white']],
+    ['sex', ['orgasm', 'oral', 'anal', 'touch', 'toys']],
+    ['pain', ['perineum']],
+    ['skin', ['hyperpigmentation', 'stretch_marks']],
+    ['mouth', ['bleeding_gums', 'burning_mouth']],
+    ['breasts', ['nipple_discharge']],
+    ['swelling', ['limbs', 'face', 'nasal']],
+    ['feelings', ['guilty', 'apathetic', 'confused', 'obsessive_thoughts', 'self_critical']],
+    ['self_care', ['breathing', 'kegel', 'journaling']],
+    ['medication', ['hormone_therapy']],
+  ] as const)('%s tem as opções novas', (id, expected) => {
+    expect(options(id)).toEqual(expect.arrayContaining([...expected]));
+  });
+
+  it('coágulos ficam escondidos onde não há menstruação', () => {
+    expect(defaultVisibleCategories('period', null).map((c) => c.id)).toContain('clots');
+    expect(defaultVisibleCategories('pregnancy', null).map((c) => c.id)).not.toContain('clots');
+    expect(defaultVisibleCategories('no_bleeding', null).map((c) => c.id)).not.toContain('clots');
+  });
+});
+
 describe('visibilidade padrão por modo', () => {
   const visible = (...args: Parameters<typeof defaultVisibleCategories>) => defaultVisibleCategories(...args).map((c) => c.id);
 
