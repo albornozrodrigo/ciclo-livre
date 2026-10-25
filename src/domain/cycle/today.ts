@@ -18,8 +18,9 @@ export type TodayView =
       late: boolean;
       lateDays?: number;
       next: { start: IsoDate; earliest: IsoDate; latest: IsoDate };
-      /** Janela fértil atual, ou a do próximo ciclo se a atual já passou. */
-      fertile: { start: IsoDate; end: IsoDate };
+      /** Janela fértil atual, ou a do próximo ciclo se a atual já passou; null com contracepção hormonal. */
+      fertile: { start: IsoDate; end: IsoDate } | null;
+      fertilityHidden: boolean;
       confidence: Confidence;
       painDays: IsoDate[];
       /** Fase que vem depois da de hoje e em quantos dias ela começa (lobo secundário de Hoje). */
@@ -56,7 +57,8 @@ export function todayCycleView(profile: Profile, signals: CycleSignals, today: I
     late: model.late,
     ...(model.late ? { lateDays: daysBetween(model.expected, today) } : {}),
     next: model.next,
-    fertile,
+    fertile: model.fertilityHidden ? null : fertile,
+    fertilityHidden: model.fertilityHidden,
     confidence: model.confidence,
     painDays: predictPainDays(model.periods, signals.painDates, model.next.start),
     nextPhase: model.late ? null : findNextPhase(model, info.phase, today),

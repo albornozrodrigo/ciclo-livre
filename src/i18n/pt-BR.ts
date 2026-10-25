@@ -77,6 +77,7 @@ export const ptBR = {
       title: 'Temperatura basal do ciclo atual',
       confirmed: (day: number) => `Subida confirmada: ovulação estimada no dia ${day} do ciclo.`,
       notYet: 'Ainda sem subida confirmada neste ciclo.',
+      hormonal: 'Com contracepção hormonal, o app não usa a temperatura para estimar ovulação.',
       empty: 'Registre a temperatura ao acordar, todos os dias, para ver a curva.',
       chartSummary: (count: number, min: string, max: string) => `Temperatura em ${count} dias deste ciclo, de ${min} a ${max} °C.`,
     },
@@ -358,6 +359,7 @@ export const ptBR = {
     leaveDiscard: 'Descartar',
     notContraception: 'A janela fértil é uma estimativa e não serve como contracepção.',
     conceiveNotice: 'Você está no modo Tentar engravidar. Talvez queira desligar este lembrete.',
+    hormonalNotice: 'Com contracepção hormonal, o app não estima a janela fértil. Este lembrete não vai tocar.',
     save: 'Salvar',
     saved: 'Lembrete salvo.',
     saveFailed: 'Não deu para salvar o lembrete. Tente de novo.',
@@ -478,6 +480,7 @@ export const ptBR = {
     noSymptoms: 'Sem sintomas registrados em ciclos completos.',
     bbt: 'Temperatura basal do ciclo atual',
     bbtConfirmed: (day: number) => `Subida confirmada; ovulação estimada no dia ${day} do ciclo.`,
+    bbtHormonal: 'Com contracepção hormonal, a temperatura não é usada para estimar ovulação.',
     bbtNone: 'Sem registros suficientes de temperatura neste ciclo.',
     measures: 'Medições dos últimos 90 dias',
     measureRow: (name: string, last: string, mean: string, count: number) =>
@@ -500,6 +503,7 @@ export const ptBR = {
       follicular: 'fase folicular',
       fertile: 'janela fértil',
       luteal: 'fase lútea',
+      hormonal: 'contracepção hormonal',
     },
     weekdays: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'],
     legend: {
@@ -517,6 +521,7 @@ export const ptBR = {
       follicular: 'Fase folicular',
       fertile: 'Janela fértil',
       luteal: 'Fase lútea',
+      hormonal: 'Contracepção hormonal',
     },
     dayOfCycle: (n: number) => `Dia ${n} do ciclo`,
     nextPhase: (name: string, inDays: number) => `Depois: ${name}, ${inDays === 1 ? 'provavelmente amanhã' : `em cerca de ${inDays} dias`}`,
@@ -531,6 +536,8 @@ export const ptBR = {
     late: (n: number) => (n === 1 ? 'Menstruação atrasada há 1 dia' : `Menstruação atrasada há ${n} dias`),
     lateHint: 'Atrasos acontecem. Se ela não vier ou se você tiver dúvida, um teste de gravidez ou um serviço de saúde podem ajudar.',
     fertile: (from: string, to: string) => `Janela fértil: ${from} a ${to}`,
+    fertilityHidden:
+      'Com contracepção hormonal, o app não estima janela fértil nem ovulação. O sangramento previsto é o da pausa ou de escape.',
     confidence: {
       low: 'Estimativa com poucos dados. Fica mais precisa a cada ciclo registrado.',
       medium: 'Estimativa feita com seus últimos ciclos.',

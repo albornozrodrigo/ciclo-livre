@@ -1,4 +1,12 @@
-import { availableKinds, customMessageAllowed, defaultReminder, needsAnchor, parseOptions, reminderNotice, validTime } from '@/domain/reminders/catalog';
+import {
+  availableKinds,
+  customMessageAllowed,
+  defaultReminder,
+  needsAnchor,
+  parseOptions,
+  reminderNotice,
+  validTime,
+} from '@/domain/reminders/catalog';
 import type { Profile } from '@/domain/profile';
 
 const base: Profile = {

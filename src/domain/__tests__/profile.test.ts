@@ -64,15 +64,11 @@ describe('validateProfile', () => {
 
   describe('última menstruação', () => {
     it('recusa data no futuro', () => {
-      expect(errorsOf({ ...base, lastPeriodStart: '2026-10-23' })).toEqual([
-        { field: 'lastPeriodStart', code: 'in_future' },
-      ]);
+      expect(errorsOf({ ...base, lastPeriodStart: '2026-10-23' })).toEqual([{ field: 'lastPeriodStart', code: 'in_future' }]);
     });
 
     it('recusa data há mais de 365 dias', () => {
-      expect(errorsOf({ ...base, lastPeriodStart: '2025-10-21' })).toEqual([
-        { field: 'lastPeriodStart', code: 'too_old' },
-      ]);
+      expect(errorsOf({ ...base, lastPeriodStart: '2025-10-21' })).toEqual([{ field: 'lastPeriodStart', code: 'too_old' }]);
     });
 
     it('aceita exatamente 365 dias atrás', () => {
@@ -94,9 +90,7 @@ describe('validateProfile', () => {
     });
 
     it('recusa menstruação tão longa quanto o ciclo', () => {
-      expect(errorsOf({ ...base, periodLength: 15, cycleLength: 15 })).toEqual([
-        { field: 'periodLength', code: 'not_shorter_than_cycle' },
-      ]);
+      expect(errorsOf({ ...base, periodLength: 15, cycleLength: 15 })).toEqual([{ field: 'periodLength', code: 'not_shorter_than_cycle' }]);
     });
   });
 
@@ -106,18 +100,12 @@ describe('validateProfile', () => {
     });
 
     it('recusa data prevista no passado ou além de 300 dias', () => {
-      expect(errorsOf({ ...base, mode: 'pregnancy', dueDate: '2026-10-21' })).toEqual([
-        { field: 'dueDate', code: 'out_of_range' },
-      ]);
-      expect(errorsOf({ ...base, mode: 'pregnancy', dueDate: '2027-08-19' })).toEqual([
-        { field: 'dueDate', code: 'out_of_range' },
-      ]);
+      expect(errorsOf({ ...base, mode: 'pregnancy', dueDate: '2026-10-21' })).toEqual([{ field: 'dueDate', code: 'out_of_range' }]);
+      expect(errorsOf({ ...base, mode: 'pregnancy', dueDate: '2027-08-19' })).toEqual([{ field: 'dueDate', code: 'out_of_range' }]);
     });
 
     it('recusa data prevista malformada', () => {
-      expect(errorsOf({ ...base, mode: 'pregnancy', dueDate: '2027-02-30' })).toEqual([
-        { field: 'dueDate', code: 'invalid_date' },
-      ]);
+      expect(errorsOf({ ...base, mode: 'pregnancy', dueDate: '2027-02-30' })).toEqual([{ field: 'dueDate', code: 'invalid_date' }]);
     });
 
     it('aceita data prevista válida', () => {
@@ -165,7 +153,16 @@ describe('validateBirthYear', () => {
 });
 
 describe('validateProfileEdit', () => {
-  const saved = { ...base, lastPeriodStart: '2025-10-25', periodLength: 5, cycleLength: 28, regularity: 'unknown' as const, dueDate: null, tryingSince: null, birthControl: null };
+  const saved = {
+    ...base,
+    lastPeriodStart: '2025-10-25',
+    periodLength: 5,
+    cycleLength: 28,
+    regularity: 'unknown' as const,
+    dueDate: null,
+    tryingSince: null,
+    birthControl: null,
+  };
 
   it('não bloqueia por uma data guardada que envelheceu e não foi mexida', () => {
     expect(validateProfileEdit({ ...saved, mode: 'perimenopause' }, saved, '2026-11-01').ok).toBe(true);

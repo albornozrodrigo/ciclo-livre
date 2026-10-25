@@ -59,10 +59,22 @@ describe('profile-repo', () => {
 
 describe('migration v2 (profile)', () => {
   it.each([
-    ["id 2", "INSERT INTO profile (id, birth_year, mode, period_length, cycle_length, regularity, updated_at) VALUES (2, 1990, 'period', 5, 28, 'unknown', 'x')"],
-    ['modo inválido', "INSERT INTO profile (id, birth_year, mode, period_length, cycle_length, regularity, updated_at) VALUES (1, 1990, 'outro', 5, 28, 'unknown', 'x')"],
-    ['ciclo fora da faixa', "INSERT INTO profile (id, birth_year, mode, period_length, cycle_length, regularity, updated_at) VALUES (1, 1990, 'period', 5, 200, 'unknown', 'x')"],
-    ['data malformada', "INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length, regularity, updated_at) VALUES (1, 1990, 'period', '10/10/2026', 5, 28, 'unknown', 'x')"],
+    [
+      'id 2',
+      "INSERT INTO profile (id, birth_year, mode, period_length, cycle_length, regularity, updated_at) VALUES (2, 1990, 'period', 5, 28, 'unknown', 'x')",
+    ],
+    [
+      'modo inválido',
+      "INSERT INTO profile (id, birth_year, mode, period_length, cycle_length, regularity, updated_at) VALUES (1, 1990, 'outro', 5, 28, 'unknown', 'x')",
+    ],
+    [
+      'ciclo fora da faixa',
+      "INSERT INTO profile (id, birth_year, mode, period_length, cycle_length, regularity, updated_at) VALUES (1, 1990, 'period', 5, 200, 'unknown', 'x')",
+    ],
+    [
+      'data malformada',
+      "INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length, regularity, updated_at) VALUES (1, 1990, 'period', '10/10/2026', 5, 28, 'unknown', 'x')",
+    ],
   ])('recusa %s no próprio banco', async (_label, sql) => {
     const db = await migratedDb();
 

@@ -1,15 +1,6 @@
 import type { Mode } from './profile';
 
-export type Step =
-  | 'welcome'
-  | 'birth_year'
-  | 'mode'
-  | 'due_date'
-  | 'trying_since'
-  | 'last_period'
-  | 'lengths'
-  | 'birth_control'
-  | 'done';
+export type Step = 'welcome' | 'birth_year' | 'mode' | 'due_date' | 'trying_since' | 'last_period' | 'lengths' | 'birth_control' | 'done';
 
 const COMMON: Step[] = ['welcome', 'birth_year', 'mode'];
 

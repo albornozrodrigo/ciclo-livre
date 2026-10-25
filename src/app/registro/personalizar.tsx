@@ -55,7 +55,10 @@ export default function PersonalizarScreen() {
   async function handleSave() {
     if (!items) return;
     try {
-      await saveCategoryPrefs(db, items.map((item, position) => ({ category: item.id, position, hidden: item.hidden })));
+      await saveCategoryPrefs(
+        db,
+        items.map((item, position) => ({ category: item.id, position, hidden: item.hidden })),
+      );
       show(copy.saved);
       if (router.canGoBack()) router.back();
     } catch (error) {
@@ -82,11 +85,21 @@ export default function PersonalizarScreen() {
                 value={!item.hidden}
                 onValueChange={(visible) => setItems(items.map((it) => (it.id === item.id ? { ...it, hidden: !visible } : it)))}
               />
-              <Text className={item.hidden ? 'flex-1 text-base text-ink-muted dark:text-ink-muted-night' : 'flex-1 text-base font-bold text-ink dark:text-ink-night'}>
+              <Text
+                className={
+                  item.hidden
+                    ? 'flex-1 text-base text-ink-muted dark:text-ink-muted-night'
+                    : 'flex-1 text-base font-bold text-ink dark:text-ink-night'
+                }>
                 {label}
               </Text>
               <MoveButton label={copy.moveUp(label)} symbol="↑" disabled={index === 0} onPress={() => setItems(move(items, index, -1))} />
-              <MoveButton label={copy.moveDown(label)} symbol="↓" disabled={index === items.length - 1} onPress={() => setItems(move(items, index, 1))} />
+              <MoveButton
+                label={copy.moveDown(label)}
+                symbol="↓"
+                disabled={index === items.length - 1}
+                onPress={() => setItems(move(items, index, 1))}
+              />
             </View>
           );
         })}

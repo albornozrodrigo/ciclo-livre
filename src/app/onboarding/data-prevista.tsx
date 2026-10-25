@@ -13,7 +13,12 @@ export default function DueDateScreen() {
   const next = nextRoute('due_date', draft.mode);
 
   return (
-    <OnboardingStep step="due_date" title={copy.title} why={copy.why} onPrimary={() => next && router.push(next)} primaryDisabled={!draft.dueDate}>
+    <OnboardingStep
+      step="due_date"
+      title={copy.title}
+      why={copy.why}
+      onPrimary={() => next && router.push(next)}
+      primaryDisabled={!draft.dueDate}>
       <DueDateField value={draft.dueDate} onChange={(dueDate) => update({ dueDate })} />
     </OnboardingStep>
   );

@@ -63,7 +63,10 @@ export function useDayTags(date: IsoDate) {
   const create = useCallback(
     async (raw: string): Promise<CreateResult> => {
       if (!state || creating.current) return 'failed';
-      const result = validateTagName(raw, state.all.map((t) => t.name));
+      const result = validateTagName(
+        raw,
+        state.all.map((t) => t.name),
+      );
       if (!result.ok) return result.error;
       creating.current = true;
       try {

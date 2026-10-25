@@ -122,7 +122,7 @@ function MonthList({ data }: { data: CalendarData }) {
             }}>
             <ScreenHeader screen="calendario" territory="pond" shape={1} />
             <View className="px-5 pb-10 pt-8">
-              <CalendarLegend />
+              <CalendarLegend fertilityHidden={data.model?.fertilityHidden ?? false} />
             </View>
           </View>
         }

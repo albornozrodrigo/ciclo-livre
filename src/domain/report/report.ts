@@ -1,5 +1,5 @@
 import {
-  bbtChart,
+  bbtChartFor,
   type BbtChart,
   cycleHistory,
   type CycleRow,
@@ -55,7 +55,7 @@ export function buildReport({ model, profile, selections, measures, notes, today
       complete,
       current: history[0],
       symptoms: symptomFrequency(model, selections, today).slice(0, MAX_SYMPTOMS),
-      bbt: bbtChart(measures.temperature ?? {}, model.current.start, addDays(model.current.nextStart, -1)),
+      bbt: bbtChartFor(model, measures.temperature ?? {}),
     };
   }
   const from = cycles ? (cycles.complete.at(-1)?.start ?? cycles.current.start) : addDays(today, -MEASURE_WINDOW_DAYS);

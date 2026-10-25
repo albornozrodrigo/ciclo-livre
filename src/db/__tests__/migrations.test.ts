@@ -6,9 +6,7 @@ const userVersion = (db: ReturnType<typeof openMemoryDatabase>) =>
   (db.raw.prepare('PRAGMA user_version').get() as { user_version: number }).user_version;
 
 const tables = (db: ReturnType<typeof openMemoryDatabase>) =>
-  (db.raw.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all() as { name: string }[]).map(
-    (r) => r.name,
-  );
+  (db.raw.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all() as { name: string }[]).map((r) => r.name);
 
 const sample: Migration[] = [
   { version: 1, statements: ['CREATE TABLE a (id INTEGER PRIMARY KEY)'] },
@@ -44,10 +42,7 @@ describe('runMigrations', () => {
 
   it('desfaz só a migration que falhou, mantém a versão anterior e propaga o erro', async () => {
     const db = openMemoryDatabase();
-    const broken: Migration[] = [
-      sample[0],
-      { version: 2, statements: ['CREATE TABLE b (id INTEGER)', 'ISTO NAO E SQL'] },
-    ];
+    const broken: Migration[] = [sample[0], { version: 2, statements: ['CREATE TABLE b (id INTEGER)', 'ISTO NAO E SQL'] }];
 
     await expect(runMigrations(db, broken)).rejects.toThrow();
 

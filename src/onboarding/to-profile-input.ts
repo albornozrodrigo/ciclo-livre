@@ -23,7 +23,7 @@ const STEP_OF_FIELD: Record<ProfileField, Step> = {
 export function toProfileInput(draft: OnboardingDraft): ProfileInput {
   const mode: Mode = draft.mode ?? 'period';
   const asked = new Set(stepsFor(mode));
-  const keep = <T,>(step: Step, value: T, fallback: T): T => (asked.has(step) ? value : fallback);
+  const keep = <T>(step: Step, value: T, fallback: T): T => (asked.has(step) ? value : fallback);
   return {
     birthYear: Number(draft.birthYear),
     mode,

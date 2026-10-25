@@ -11,19 +11,19 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.2 O que o Flo tem a mais — Fase 12 (Catálogo de registro completo)
+**Current focus:** v0.2 O que o Flo tem a mais — Fase 13 (Contracepção hormonal esconde fertilidade)
 
 ## Current Position
 
 Milestone: v0.2 O que o Flo tem a mais
-Phase: 12 of 19 (Catálogo de registro completo)
-Plan: 12-01 completo
+Phase: 13 of 19 (Contracepção hormonal esconde fertilidade)
+Plan: 13-01 completo
 Status: Fase completa
-Last activity: 2026-10-25 — Fase 12 completa (catálogo)
+Last activity: 2026-10-25 — Fase 13 completa
 
 Progress:
 - v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
-- v0.2 O que o Flo tem a mais: [█░░░░░░░░░] 12%
+- v0.2 O que o Flo tem a mais: [██░░░░░░░░] 25%
 
 ## Loop Position
 
@@ -104,9 +104,9 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-10-25
-Stopped at: 2026-10-25 — Fase 12 completa (catálogo)
-Next action: /paul:plan da fase 13
-Resume file: .paul/phases/12-catalogo-de-registro-completo/12-01-SUMMARY.md
+Stopped at: 2026-10-25 — Fase 13 completa
+Next action: /paul:apply da fase 14 (14-01-PLAN pronto)
+Resume file: .paul/phases/14-fase-lutea-informada/14-01-PLAN.md
 
 ---
 *STATE.md — Updated after every significant action*

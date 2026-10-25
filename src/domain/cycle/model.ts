@@ -17,7 +17,8 @@ export type CycleInputs = {
 export type Confidence = 'low' | 'medium' | 'high';
 export type Ovulation = { date: IsoDate; method: OvulationMethod };
 export type CycleSpan = { start: IsoDate; nextStart: IsoDate; periodEnd: IsoDate; ovulation: Ovulation };
-export type Phase = 'menstruation' | 'follicular' | 'fertile' | 'luteal';
+/** `hormonal`: dia sem sangramento com contracepção hormonal (sem estimativa de fertilidade). */
+export type Phase = 'menstruation' | 'follicular' | 'fertile' | 'luteal' | 'hormonal';
 
 export type CycleModel = {
   periods: Period[];
@@ -34,6 +35,8 @@ export type CycleModel = {
   /** Ciclos completos (passados) e o atual. */
   spans: CycleSpan[];
   current: CycleSpan;
+  /** Contracepção hormonal: sem janela fértil nem ovulação em nenhuma tela. Ligado por `cycleModelFor`. */
+  fertilityHidden: boolean;
 };
 
 const DEFAULT_LUTEAL = 14;
@@ -53,9 +56,7 @@ const isOngoing = (period: Period, today: IsoDate) => period.source === 'logged'
 
 function averagePeriodLength(periods: readonly Period[], fallback: number, today: IsoDate): number {
   // A que está em andamento ainda não terminou: entraria encurtada na média.
-  const logged = periods
-    .filter((p) => p.source === 'logged' && !isOngoing(p, today))
-    .map((p) => daysBetween(p.start, p.end) + 1);
+  const logged = periods.filter((p) => p.source === 'logged' && !isOngoing(p, today)).map((p) => daysBetween(p.start, p.end) + 1);
   return logged.length ? Math.round(logged.reduce((a, b) => a + b, 0) / logged.length) : fallback;
 }
 
@@ -98,7 +99,12 @@ export function buildCycleModel(inputs: CycleInputs, today: IsoDate): CycleModel
 
   const spans: CycleSpan[] = periods.slice(0, -1).map((p, i) => {
     const nextStart = periods[i + 1].start;
-    return { start: p.start, nextStart, periodEnd: p.end, ovulation: ovulationFor(inputs, p.start, addDays(nextStart, -1), nextStart, luteal) };
+    return {
+      start: p.start,
+      nextStart,
+      periodEnd: p.end,
+      ovulation: ovulationFor(inputs, p.start, addDays(nextStart, -1), nextStart, luteal),
+    };
   });
 
   const periodLength = averagePeriodLength(periods, inputs.profilePeriodLength, today);
@@ -132,6 +138,7 @@ export function buildCycleModel(inputs: CycleInputs, today: IsoDate): CycleModel
     expected,
     spans: [...spans, current],
     current,
+    fertilityHidden: false,
   };
 }
 
@@ -148,8 +155,9 @@ function predictedSpan(model: CycleModel, date: IsoDate): CycleSpan {
   };
 }
 
-function phaseOf(span: CycleSpan, date: IsoDate): Phase {
+function phaseOf(span: CycleSpan, date: IsoDate, fertilityHidden: boolean): Phase {
   if (date <= span.periodEnd) return 'menstruation';
+  if (fertilityHidden) return 'hormonal';
   const fertile = fertileWindow(span.ovulation.date);
   if (date >= fertile.start && date <= fertile.end) return 'fertile';
   return date < fertile.start ? 'follicular' : 'luteal';
@@ -160,11 +168,12 @@ export type DayInfo = { cycleDay: number; phase: Phase; predicted: boolean; cycl
 /** Dia do ciclo e fase de qualquer data (passada, hoje ou futura, sem limite de horizonte). */
 export function dayInfo(model: CycleModel, date: IsoDate, today: IsoDate): DayInfo | null {
   if (date < model.periods[0].start) return null;
-  const span = date >= model.current.nextStart ? predictedSpan(model, date) : model.spans.find((s) => date >= s.start && date < s.nextStart);
+  const span =
+    date >= model.current.nextStart ? predictedSpan(model, date) : model.spans.find((s) => date >= s.start && date < s.nextStart);
   if (!span) return null;
   return {
     cycleDay: daysBetween(span.start, date) + 1,
-    phase: phaseOf(span, date),
+    phase: phaseOf(span, date, model.fertilityHidden),
     // Previsto: dia futuro ou dentro de um ciclo previsto.
     predicted: date > today || date >= model.current.nextStart,
     cycleStart: span.start,

@@ -42,7 +42,12 @@ export function CycleLengthsFields({ value, onChange }: { value: Values; onChang
       ) : null}
       <View className="gap-3">
         <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{copy.regularity}</Text>
-        <ChoiceList label={copy.regularity} options={regularityOptions} value={value.regularity} onChange={(regularity) => onChange({ regularity })} />
+        <ChoiceList
+          label={copy.regularity}
+          options={regularityOptions}
+          value={value.regularity}
+          onChange={(regularity) => onChange({ regularity })}
+        />
       </View>
     </View>
   );

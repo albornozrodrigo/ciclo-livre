@@ -45,6 +45,7 @@ const base: ContextInput = {
     late: false,
     next: { start: '2026-11-10', earliest: '2026-11-09', latest: '2026-11-11' },
     fertile: { start: '2026-10-20', end: '2026-10-25' },
+    fertilityHidden: false,
     confidence: 'medium',
     painDays: [],
     nextPhase: null,
@@ -59,6 +60,19 @@ const base: ContextInput = {
 
 describe('buildDataContext', () => {
   const out = buildDataContext(base, { cycles: 6, includeNotes: false }, labels);
+
+  it('com contracepção hormonal não fala de janela fértil nem de ovulação estimada', () => {
+    const hormonal: ContextInput = {
+      ...base,
+      todayView: base.todayView?.kind === 'cycle' ? { ...base.todayView, phase: 'hormonal', fertile: null, fertilityHidden: true } : null,
+      history: base.history.map((r) => ({ ...r, ovulation: null })),
+    };
+
+    const text = buildDataContext(hormonal, { cycles: 6, includeNotes: false }, labels).text;
+
+    expect(text).not.toMatch(/Janela fértil estimada|ovulação estimada/);
+    expect(text).toContain('Contracepção hormonal: o app não estima janela fértil nem ovulação.');
+  });
 
   it('resume modo, ciclo atual, ciclos, sintomas e medições em pt-BR', () => {
     expect(out.text).toContain('Modo: Menstruação e ciclo');

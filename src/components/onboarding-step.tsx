@@ -31,10 +31,7 @@ export function OnboardingStep({ step, title, why, children, primaryLabel, onPri
     <KeyboardAvoidingView behavior="padding" style={{ paddingTop: insets.top }} className="flex-1 bg-water dark:bg-water-night">
       {/* Sem lobo atrás da barra de status nos passos: os ícones seguem o tema. */}
       <StatusBar style="auto" />
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingTop: 24, paddingBottom: 24 }}
-        className="flex-1 px-5">
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingTop: 24, paddingBottom: 24 }} className="flex-1 px-5">
         <Progress current={current} total={total} />
         <Text
           accessibilityRole="header"

@@ -95,9 +95,15 @@ const reminder = async (kind: string) => (await listReminders(mockDb)).find((x) 
 
 describe('Lembretes (lista)', () => {
   it('mostra só os tipos do modo, com a janela fértil liberada', async () => {
+    mockProfile = { ...mockProfile, birthControl: 'condom' };
     await render(wrap(<LembretesScreen />));
     expect(await screen.findByRole('switch', { name: REMINDER_NAMES.fertile_soon })).toBeOnTheScreen();
-    expect(screen.getByRole('switch', { name: REMINDER_NAMES.birth_control })).toBeOnTheScreen();
+
+    mockProfile = { ...mockProfile, birthControl: 'pill' };
+    await render(wrap(<LembretesScreen />));
+    expect(await screen.findByRole('switch', { name: REMINDER_NAMES.birth_control })).toBeOnTheScreen();
+    // Com contracepção hormonal não há janela fértil estimada.
+    expect(screen.queryByRole('switch', { name: REMINDER_NAMES.fertile_soon })).toBeNull();
 
     mockProfile = { ...mockProfile, mode: 'pregnancy', dueDate: '2027-03-01' };
     await render(wrap(<LembretesScreen />));

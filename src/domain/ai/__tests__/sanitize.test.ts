@@ -2,7 +2,9 @@ import { sanitizeForPrompt } from '@/domain/ai/sanitize';
 
 describe('sanitizeForPrompt (texto da pessoa vai como dado ao modelo)', () => {
   it('"<" solto não corta o resto do texto', () => {
-    expect(sanitizeForPrompt('Meu ciclo durou <21 dias duas vezes, isso é normal?', 3000)).toBe('Meu ciclo durou ‹21 dias duas vezes, isso é normal?');
+    expect(sanitizeForPrompt('Meu ciclo durou <21 dias duas vezes, isso é normal?', 3000)).toBe(
+      'Meu ciclo durou ‹21 dias duas vezes, isso é normal?',
+    );
     expect(sanitizeForPrompt('cólica <3 dias, tomei chá', 300)).toBe('cólica ‹3 dias, tomei chá');
     expect(sanitizeForPrompt('3<4 e 5>2', 100)).toBe('3‹4 e 5›2');
   });

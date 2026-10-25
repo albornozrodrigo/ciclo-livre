@@ -35,7 +35,12 @@ export default function CycleDataScreen() {
       <CycleLengthsFields value={draft} onChange={update} />
       <View className="gap-3">
         <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{ob.birthControl.title}</Text>
-        <ChoiceList label={ob.birthControl.title} options={birthControlOptions} value={draft.birthControl} onChange={(birthControl) => update({ birthControl })} />
+        <ChoiceList
+          label={ob.birthControl.title}
+          options={birthControlOptions}
+          value={draft.birthControl}
+          onChange={(birthControl) => update({ birthControl })}
+        />
       </View>
     </FormScreen>
   );

@@ -34,7 +34,11 @@ export function LineChart({
   const sy = (y: number) => inset + (1 - (y - yMin) / (yMax - yMin)) * (height - 2 * inset);
 
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={summary} onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}>
+    <View
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={summary}
+      onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}>
       {width > 0 && points.length > 0 ? (
         <Svg width={width} height={height}>
           <Line x1={0} x2={width} y1={height - 1} y2={height - 1} stroke={colors.grid} strokeWidth={1} />
@@ -43,9 +47,17 @@ export function LineChart({
             <Line x1={0} x2={width} y1={sy(referenceY)} y2={sy(referenceY)} stroke={colors.muted} strokeWidth={1} strokeDasharray="4 4" />
           ) : null}
           {markerX != null ? <Line x1={sx(markerX)} x2={sx(markerX)} y1={0} y2={height} stroke={colors.muted} strokeWidth={1} /> : null}
-          <Polyline points={points.map((p) => `${sx(p.x)},${sy(p.y)}`).join(' ')} fill="none" stroke={colors.ink} strokeWidth={2} strokeLinejoin="round" />
+          <Polyline
+            points={points.map((p) => `${sx(p.x)},${sy(p.y)}`).join(' ')}
+            fill="none"
+            stroke={colors.ink}
+            strokeWidth={2}
+            strokeLinejoin="round"
+          />
           {showDots
-            ? points.map((p) => <Circle key={p.x} cx={sx(p.x)} cy={sy(p.y)} r={4} fill={colors.ink} stroke={colors.surface} strokeWidth={2} />)
+            ? points.map((p) => (
+                <Circle key={p.x} cx={sx(p.x)} cy={sy(p.y)} r={4} fill={colors.ink} stroke={colors.surface} strokeWidth={2} />
+              ))
             : null}
         </Svg>
       ) : null}

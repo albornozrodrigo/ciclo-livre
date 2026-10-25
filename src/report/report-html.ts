@@ -63,12 +63,14 @@ export function renderReportHtml(report: Report): string {
           : `<p class="muted">${t.basis(0)}</p>`
       }`);
 
+    // Com contracepção hormonal nenhuma linha tem ovulação: a coluna sai do relatório.
+    const showOvulation = [c.current, ...c.complete].some((r) => r.ovulation !== null);
     const row = (r: (typeof c.complete)[number], isCurrent: boolean) =>
       `<tr><td>${date(r.start)}</td><td>${isCurrent ? t.current : t.days(r.length ?? 0)}</td>
         <td>${r.periodLength === null ? t.notRecorded : t.days(r.periodLength)}</td>
-        <td>${date(r.ovulation.date)} (${isCurrent && r.ovulation.method === 'calendar' ? t.forecast : t.methods[r.ovulation.method]})</td></tr>`;
+        ${showOvulation ? `<td>${r.ovulation === null ? '—' : `${date(r.ovulation.date)} (${isCurrent && r.ovulation.method === 'calendar' ? t.forecast : t.methods[r.ovulation.method]})`}</td>` : ''}</tr>`;
     sections.push(`<h2>${t.cycles}</h2>
-      <table><thead><tr><th scope="col">${t.cols.start}</th><th scope="col">${t.cols.length}</th><th scope="col">${t.cols.period}</th><th scope="col">${t.cols.ovulation}</th></tr></thead>
+      <table><thead><tr><th scope="col">${t.cols.start}</th><th scope="col">${t.cols.length}</th><th scope="col">${t.cols.period}</th>${showOvulation ? `<th scope="col">${t.cols.ovulation}</th>` : ''}</tr></thead>
       <tbody>${row(c.current, true)}${c.complete.map((r) => row(r, false)).join('')}</tbody></table>`);
 
     const symptoms = c.symptoms.map((r) => {
@@ -80,7 +82,7 @@ export function renderReportHtml(report: Report): string {
     sections.push(
       `<h2>${t.bbt}</h2>${
         c.bbt.points.length >= 3
-          ? `${bbtSvg(c.bbt.points, c.bbt.coverLine)}${c.bbt.coverLine !== null ? `<p class="muted">${t.coverLegend}</p>` : ''}<p>${c.bbt.ovulationDay ? t.bbtConfirmed(c.bbt.ovulationDay) : ''}</p>`
+          ? `${bbtSvg(c.bbt.points, c.bbt.coverLine)}${c.bbt.coverLine !== null ? `<p class="muted">${t.coverLegend}</p>` : ''}<p>${c.bbt.fertilityHidden ? t.bbtHormonal : c.bbt.ovulationDay ? t.bbtConfirmed(c.bbt.ovulationDay) : ''}</p>`
           : `<p class="muted">${t.bbtNone}</p>`
       }`,
     );

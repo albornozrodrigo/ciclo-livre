@@ -10,6 +10,7 @@ import { DateField } from '@/components/ui/date-field';
 import { NumberStepper } from '@/components/ui/number-stepper';
 import { useSnackbar } from '@/components/ui/snackbar';
 import { TimeField } from '@/components/ui/time-field';
+import { hidesFertility } from '@/domain/cycle/for-profile';
 import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import {
@@ -43,7 +44,7 @@ const isKind = (v: unknown): v is ReminderKind => typeof v === 'string' && (REMI
 
 /** Variante mostrada na prévia. */
 function previewVariant(kind: ReminderKind, profile: Profile): Variant {
-  if (kind === 'phase_change') return 'phase_follicular';
+  if (kind === 'phase_change') return hidesFertility(profile) ? 'phase_hormonal' : 'phase_follicular';
   if (kind !== 'birth_control') return kind;
   const plan = birthControlPlan(profile.birthControl);
   return plan === 'patch' ? 'patch_change' : plan === 'ring' ? 'ring_insert' : plan === 'injection' ? 'injection_soon' : 'pill';
@@ -145,6 +146,9 @@ function Editor({ initial, profile, discreet, denied, save }: EditorProps) {
       {denied ? <DeniedNotice /> : null}
       {notice === 'conceive_birth_control' ? (
         <Text className="text-base font-bold leading-6 text-ink dark:text-ink-night">{r.conceiveNotice}</Text>
+      ) : null}
+      {notice === 'hormonal_no_fertile' ? (
+        <Text className="text-base font-bold leading-6 text-ink dark:text-ink-night">{r.hormonalNotice}</Text>
       ) : null}
       {draft.kind === 'fertile_soon' ? (
         <Text className="text-base font-bold leading-6 text-ink dark:text-ink-night">{r.notContraception}</Text>

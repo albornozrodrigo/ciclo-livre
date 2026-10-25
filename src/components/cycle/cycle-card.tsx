@@ -14,6 +14,8 @@ export const PHASE_TERRITORY: Record<Phase, Territory> = {
   follicular: 'pond',
   fertile: 'land',
   luteal: 'lilac',
+  // Contracepção hormonal: território neutro (sem cor de fertilidade).
+  hormonal: 'pond',
 };
 
 const CHIP_CLASS: Record<Phase, string> = {
@@ -21,6 +23,7 @@ const CHIP_CLASS: Record<Phase, string> = {
   follicular: 'bg-pond dark:bg-pond-night',
   fertile: 'bg-land dark:bg-land-night',
   luteal: 'bg-lilac dark:bg-lilac-night',
+  hormonal: 'bg-pond dark:bg-pond-night',
 };
 
 export const shortDate = (d: IsoDate) => dateFromIso(d).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
@@ -28,9 +31,7 @@ export const shortDate = (d: IsoDate) => dateFromIso(d).toLocaleDateString('pt-B
 const Muted = ({ children }: { children: string }) => (
   <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">{children}</Text>
 );
-const Line = ({ children }: { children: string }) => (
-  <Text className="text-base leading-6 text-ink dark:text-ink-night">{children}</Text>
-);
+const Line = ({ children }: { children: string }) => <Text className="text-base leading-6 text-ink dark:text-ink-night">{children}</Text>;
 
 /** Parte principal (acima do botão de registrar): fase com cor e nome, dia e próxima menstruação. */
 export function CycleCard({ view }: { view: TodayView }) {
@@ -79,7 +80,7 @@ export function CycleDetails({ view }: { view: TodayView }) {
   if (view.kind !== 'cycle') return null;
   return (
     <View className="gap-4">
-      <Line>{c.fertile(shortDate(view.fertile.start), shortDate(view.fertile.end))}</Line>
+      <Line>{view.fertile ? c.fertile(shortDate(view.fertile.start), shortDate(view.fertile.end)) : c.fertilityHidden}</Line>
       {view.painDays.length > 0 ? <Line>{c.pain(view.painDays.map(shortDate).join(', '))}</Line> : null}
       <View className="gap-1">
         <Muted>{c.confidence[view.confidence]}</Muted>

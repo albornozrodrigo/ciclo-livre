@@ -14,7 +14,7 @@ function spyExecutor(opts: { cipherVersion: string | null }) {
       const m = /PRAGMA user_version = (\d+)/.exec(sql);
       if (m) userVersion = Number(m[1]);
     },
-    getFirstAsync: async <T,>(sql: string) => {
+    getFirstAsync: async <T>(sql: string) => {
       log.push(sql);
       if (sql === 'PRAGMA cipher_version') {
         return (opts.cipherVersion === null ? null : { cipher_version: opts.cipherVersion }) as T | null;
@@ -56,9 +56,7 @@ describe('initDatabase', () => {
   it.each([[null], ['']])('falha sem migrar quando cipher_version é %p', async (cipherVersion) => {
     const { db, log } = spyExecutor({ cipherVersion });
 
-    await expect(initDatabase(db, { getKey: async () => KEY, migrations })).rejects.toBeInstanceOf(
-      DatabaseNotEncryptedError,
-    );
+    await expect(initDatabase(db, { getKey: async () => KEY, migrations })).rejects.toBeInstanceOf(DatabaseNotEncryptedError);
     expect(log.some((l) => l.startsWith('CREATE TABLE'))).toBe(false);
   });
 
@@ -94,8 +92,8 @@ describe('initOrClose', () => {
   it('repropaga o erro original mesmo se fechar também falhar', async () => {
     const failure = new Error('init');
 
-    await expect(
-      initOrClose({ closeAsync: () => Promise.reject(new Error('close')) }, () => Promise.reject(failure)),
-    ).rejects.toBe(failure);
+    await expect(initOrClose({ closeAsync: () => Promise.reject(new Error('close')) }, () => Promise.reject(failure))).rejects.toBe(
+      failure,
+    );
   });
 });

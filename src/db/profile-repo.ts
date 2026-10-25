@@ -33,8 +33,9 @@ export async function getProfile(db: SqlExecutor): Promise<Profile | null> {
 
 /** Grava (ou substitui) o perfil. Espera um perfil já validado por `validateProfile`. */
 export async function saveProfile(db: SqlExecutor, profile: Profile, now = new Date()): Promise<void> {
-  await enqueueWrite(db, () => db.runAsync(
-    `INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length,
+  await enqueueWrite(db, () =>
+    db.runAsync(
+      `INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length,
        regularity, due_date, trying_since, birth_control, updated_at)
      VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT (id) DO UPDATE SET
@@ -42,15 +43,16 @@ export async function saveProfile(db: SqlExecutor, profile: Profile, now = new D
        period_length = excluded.period_length, cycle_length = excluded.cycle_length,
        regularity = excluded.regularity, due_date = excluded.due_date, trying_since = excluded.trying_since,
        birth_control = excluded.birth_control, updated_at = excluded.updated_at`,
-    profile.birthYear,
-    profile.mode,
-    profile.lastPeriodStart,
-    profile.periodLength,
-    profile.cycleLength,
-    profile.regularity,
-    profile.dueDate,
-    profile.tryingSince,
-    profile.birthControl,
-    now.toISOString(),
-  ));
+      profile.birthYear,
+      profile.mode,
+      profile.lastPeriodStart,
+      profile.periodLength,
+      profile.cycleLength,
+      profile.regularity,
+      profile.dueDate,
+      profile.tryingSince,
+      profile.birthControl,
+      now.toISOString(),
+    ),
+  );
 }

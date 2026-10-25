@@ -1,5 +1,5 @@
 import { type IsoDate, isValidDate } from '@/domain/dates';
-import { modeHasCycle } from '@/domain/cycle/for-profile';
+import { hidesFertility, modeHasCycle } from '@/domain/cycle/for-profile';
 import type { BirthControl, Profile } from '@/domain/profile';
 
 export const REMINDER_KINDS = [
@@ -85,13 +85,14 @@ const CYCLE_KINDS: ReminderKind[] = ['period_soon', 'period_due', 'period_late',
 /** Tipos que valem no modo e método atuais, na ordem de exibição. */
 export function availableKinds(profile: Profile): ReminderKind[] {
   if (profile.mode === 'pregnancy') return ['daily_log'];
-  const cycle = modeHasCycle(profile) ? CYCLE_KINDS : [];
+  const cycle = modeHasCycle(profile) ? CYCLE_KINDS.filter((k) => k !== 'fertile_soon' || !hidesFertility(profile)) : [];
   const contraception: ReminderKind[] = birthControlPlan(profile.birthControl) ? ['birth_control'] : [];
   return [...cycle, ...contraception, 'daily_log'];
 }
 
 /** Aviso que a tela mostra junto do lembrete (nunca desliga nada sozinho). */
-export function reminderNotice(profile: Profile, kind: ReminderKind): 'conceive_birth_control' | null {
+export function reminderNotice(profile: Profile, kind: ReminderKind): 'conceive_birth_control' | 'hormonal_no_fertile' | null {
+  if (kind === 'fertile_soon' && hidesFertility(profile)) return 'hormonal_no_fertile';
   return kind === 'birth_control' && profile.mode === 'conceive' ? 'conceive_birth_control' : null;
 }
 

@@ -10,9 +10,8 @@ export function openMemoryDatabase(): SqlExecutor & { raw: DatabaseSync } {
     execAsync: async (source) => {
       raw.exec(source);
     },
-    getFirstAsync: async <T,>(source: string, ...params: SqlParam[]) =>
-      (raw.prepare(source).get(...params) as T | undefined) ?? null,
-    getAllAsync: async <T,>(source: string, ...params: SqlParam[]) => raw.prepare(source).all(...params) as T[],
+    getFirstAsync: async <T>(source: string, ...params: SqlParam[]) => (raw.prepare(source).get(...params) as T | undefined) ?? null,
+    getAllAsync: async <T>(source: string, ...params: SqlParam[]) => raw.prepare(source).all(...params) as T[],
     runAsync: async (source: string, ...params: SqlParam[]) => raw.prepare(source).run(...params),
     withTransactionAsync: async (task) => {
       raw.exec('BEGIN');

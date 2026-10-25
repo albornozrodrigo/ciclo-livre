@@ -18,6 +18,7 @@ const PHASE_CHIP = {
   follicular: 'bg-pond dark:bg-pond-night',
   fertile: 'bg-land dark:bg-land-night',
   luteal: 'bg-lilac dark:bg-lilac-night',
+  hormonal: 'bg-pond dark:bg-pond-night',
 } as const;
 
 export const SectionTitle = ({ children }: { children: string }) => (
@@ -154,7 +155,7 @@ export function Temperature({ chart }: { chart: BbtChart }) {
         summary={a.bbt.chartSummary(values.length, fmt(Math.min(...values), 2), fmt(Math.max(...values), 2))}
       />
       <Text className="text-base text-ink dark:text-ink-night">
-        {chart.ovulationDay ? a.bbt.confirmed(chart.ovulationDay) : a.bbt.notYet}
+        {chart.fertilityHidden ? a.bbt.hormonal : chart.ovulationDay ? a.bbt.confirmed(chart.ovulationDay) : a.bbt.notYet}
       </Text>
     </View>
   );

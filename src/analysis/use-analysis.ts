@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 
 import { getAnalysisData } from '@/db/cycle-repo';
 import {
-  bbtChart,
+  bbtChartFor,
   type BbtChart,
   cycleHistory,
   type CycleRow,
@@ -71,7 +71,7 @@ export function useAnalysis(profile: Profile | null): AnalysisView | null {
                   summary: cycleSummary(model),
                   history: cycleHistory(model),
                   symptoms: symptomFrequency(model, data.selections, today),
-                  bbt: bbtChart(data.measures.temperature ?? {}, model.current.start, addDays(model.current.nextStart, -1)),
+                  bbt: bbtChartFor(model, data.measures.temperature ?? {}),
                   importedTemperature,
                 }
               : {

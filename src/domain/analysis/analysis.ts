@@ -4,7 +4,8 @@ import { isPlausibleCycle } from '@/domain/cycle/stats';
 import { addDays, daysBetween, type IsoDate } from '@/domain/dates';
 
 /** `periodLength` null: menstruação só informada no cadastro, sem dias registrados. */
-export type CycleRow = { start: IsoDate; length: number | null; periodLength: number | null; ovulation: Ovulation };
+/** `ovulation` null com contracepção hormonal (sem estimativa). */
+export type CycleRow = { start: IsoDate; length: number | null; periodLength: number | null; ovulation: Ovulation | null };
 
 /**
  * Histórico de ciclos, do mais recente ao mais antigo. O atual (em curso) não tem duração.
@@ -20,7 +21,7 @@ export function cycleHistory(model: CycleModel): CycleRow[] {
         start: span.start,
         length: isCurrent ? null : daysBetween(span.start, span.nextStart),
         periodLength: period.source === 'seed' ? null : daysBetween(period.start, period.end) + 1,
-        ovulation: span.ovulation,
+        ovulation: model.fertilityHidden ? null : span.ovulation,
       };
     })
     .reverse();
@@ -151,11 +152,23 @@ export function symptomFrequency(model: CycleModel, selections: readonly Selecti
     }));
 }
 
-export type BbtChart = { points: { cycleDay: number; value: number }[]; ovulationDay: number | null; coverLine: number | null };
+export type BbtChart = {
+  points: { cycleDay: number; value: number }[];
+  ovulationDay: number | null;
+  coverLine: number | null;
+  /** Contracepção hormonal: os pontos aparecem, mas sem leitura de ovulação. */
+  fertilityHidden?: boolean;
+};
 
 const COVER_BASELINE_DAYS = 6;
 
 /** Temperaturas do ciclo por dia do ciclo, ovulação (3 sobre 6) e linha de cobertura. */
+/** Gráfico do ciclo atual; com contracepção hormonal não interpreta a subida. */
+export function bbtChartFor(model: CycleModel, temperatures: Record<IsoDate, number>): BbtChart {
+  const chart = bbtChart(temperatures, model.current.start, addDays(model.current.nextStart, -1));
+  return model.fertilityHidden ? { points: chart.points, ovulationDay: null, coverLine: null, fertilityHidden: true } : chart;
+}
+
 export function bbtChart(temperatures: Record<IsoDate, number>, cycleStart: IsoDate, cycleEnd: IsoDate): BbtChart {
   const entries = Object.entries(temperatures)
     .filter(([d]) => d >= cycleStart && d <= cycleEnd)

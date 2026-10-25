@@ -42,7 +42,10 @@ export function DateField({ label, value, placeholder, min, max, initial, onChan
         accessibilityLabel={`${label}: ${value ? formatLongDate(value) : placeholder}`}
         onPress={open}
         className="min-h-16 justify-center rounded-[28px] border-[1.5px] border-ink px-6 active:opacity-70 dark:border-ink-night">
-        <Text className={value ? 'text-xl font-bold text-ink dark:text-ink-night' : 'text-xl font-bold text-ink-muted dark:text-ink-muted-night'}>
+        <Text
+          className={
+            value ? 'text-xl font-bold text-ink dark:text-ink-night' : 'text-xl font-bold text-ink-muted dark:text-ink-muted-night'
+          }>
           {value ? formatLongDate(value) : placeholder}
         </Text>
       </Pressable>

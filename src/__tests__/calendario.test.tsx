@@ -116,7 +116,12 @@ describe('Calendário', () => {
     await renderCalendar();
     const current = list().props.data[12];
 
-    await act(async () => list().props.onViewableItemsChanged({ viewableItems: [{ item: current, index: 12, key: String(current), isViewable: true }], changed: [] }));
+    await act(async () =>
+      list().props.onViewableItemsChanged({
+        viewableItems: [{ item: current, index: 12, key: String(current), isViewable: true }],
+        changed: [],
+      }),
+    );
     expect(screen.queryByRole('button', { name: cal.goToday })).toBeNull();
 
     await act(async () => list().props.onViewableItemsChanged({ viewableItems: [], changed: [] }));

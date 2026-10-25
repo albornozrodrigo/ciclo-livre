@@ -20,6 +20,7 @@ describe('tokens de cor (DESIGN.md) iguais nos três lugares', () => {
   it('theme.ts espelha o @theme (claro e "-night")', () => {
     const theme = block('@theme');
     for (const [key, value] of Object.entries(Palette.light)) expect([key, value.toLowerCase()]).toEqual([key, theme[kebab(key)]]);
-    for (const [key, value] of Object.entries(Palette.dark)) expect([key, value.toLowerCase()]).toEqual([key, theme[`${kebab(key)}-night`]]);
+    for (const [key, value] of Object.entries(Palette.dark))
+      expect([key, value.toLowerCase()]).toEqual([key, theme[`${kebab(key)}-night`]]);
   });
 });

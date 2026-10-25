@@ -27,7 +27,12 @@ export default function BirthYearScreen() {
   }
 
   return (
-    <OnboardingStep step="birth_year" title={copy.title} why={copy.why} onPrimary={handleContinue} primaryDisabled={draft.birthYear.length !== 4}>
+    <OnboardingStep
+      step="birth_year"
+      title={copy.title}
+      why={copy.why}
+      onPrimary={handleContinue}
+      primaryDisabled={draft.birthYear.length !== 4}>
       <View className="gap-2">
         <Text className="text-sm font-bold tracking-[0.28px] text-ink dark:text-ink-night">{copy.label}</Text>
         <TextInput

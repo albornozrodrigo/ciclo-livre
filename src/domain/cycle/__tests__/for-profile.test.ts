@@ -2,8 +2,15 @@ import { cycleModelFor } from '@/domain/cycle/for-profile';
 import type { Profile } from '@/domain/profile';
 
 const profile: Profile = {
-  birthYear: 1995, mode: 'period', lastPeriodStart: '2026-10-10', periodLength: 5, cycleLength: 30,
-  regularity: 'unknown', dueDate: null, tryingSince: null, birthControl: null,
+  birthYear: 1995,
+  mode: 'period',
+  lastPeriodStart: '2026-10-10',
+  periodLength: 5,
+  cycleLength: 30,
+  regularity: 'unknown',
+  dueDate: null,
+  tryingSince: null,
+  birthControl: null,
 };
 const signals = { flowDates: [], temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], painDates: [] };
 

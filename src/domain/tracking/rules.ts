@@ -43,7 +43,10 @@ export function orderCategories(visibleIds: readonly string[], prefs: readonly C
 
   visibleIds.forEach((id, index) => {
     if (known.has(id)) return;
-    const previous = visibleIds.slice(0, index).reverse().find((candidate) => result.includes(candidate));
+    const previous = visibleIds
+      .slice(0, index)
+      .reverse()
+      .find((candidate) => result.includes(candidate));
     result.splice(previous ? result.indexOf(previous) + 1 : 0, 0, id);
   });
   return result;

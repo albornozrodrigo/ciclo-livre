@@ -9,6 +9,9 @@ export function enqueueWrite<T>(db: object, task: () => Promise<T>): Promise<T> 
   const previous = tails.get(db) ?? Promise.resolve();
   // Uma escrita que falhou não impede as próximas.
   const run = previous.catch(() => undefined).then(task);
-  tails.set(db, run.catch(() => undefined));
+  tails.set(
+    db,
+    run.catch(() => undefined),
+  );
   return run;
 }

@@ -49,9 +49,7 @@ describe('getOrCreateDatabaseKey', () => {
     async (corrupted) => {
       const store = memoryStore({ [DATABASE_KEY_NAME]: corrupted });
 
-      await expect(getOrCreateDatabaseKey(store, countingRandom())).rejects.toBeInstanceOf(
-        InvalidStoredKeyError,
-      );
+      await expect(getOrCreateDatabaseKey(store, countingRandom())).rejects.toBeInstanceOf(InvalidStoredKeyError);
       expect(store.data[DATABASE_KEY_NAME]).toBe(corrupted);
     },
   );
@@ -71,10 +69,7 @@ describe('getOrCreateDatabaseKey com chamadas concorrentes', () => {
     const store = memoryStore();
     const random = countingRandom();
 
-    const [a, b] = await Promise.all([
-      getOrCreateDatabaseKey(store, random),
-      getOrCreateDatabaseKey(store, random),
-    ]);
+    const [a, b] = await Promise.all([getOrCreateDatabaseKey(store, random), getOrCreateDatabaseKey(store, random)]);
 
     expect(a).toBe(b);
     expect(random.calls).toBe(1);

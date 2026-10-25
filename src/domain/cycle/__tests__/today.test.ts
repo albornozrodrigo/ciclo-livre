@@ -31,6 +31,7 @@ describe('todayCycleView', () => {
       late: false,
       next: { start: '2026-10-24', earliest: '2026-10-23', latest: '2026-10-25' },
       fertile: { start: '2026-11-02', end: '2026-11-08' },
+      fertilityHidden: false,
       confidence: 'medium',
       painDays: ['2026-10-24'],
       nextPhase: { phase: 'menstruation', inDays: 2 },

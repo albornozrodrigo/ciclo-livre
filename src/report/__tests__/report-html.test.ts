@@ -114,3 +114,19 @@ describe('renderReportHtml', () => {
     expect(out).toContain('Tracejado: linha de cobertura');
   });
 });
+
+it('com contracepção hormonal a coluna de ovulação fica vazia', () => {
+  const hidden = renderReportHtml(
+    buildReport({
+      model: model && { ...model, fertilityHidden: true },
+      profile: { ...profile, birthControl: 'pill' as const },
+      selections: [],
+      measures: {},
+      today: TODAY,
+      includeNotes: false,
+      notes: [],
+    }),
+  );
+
+  expect(hidden).not.toMatch(/\d{2}\/\d{2}\/\d{4} \((calendário|previsão|temperatura)/);
+});

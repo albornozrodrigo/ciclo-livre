@@ -50,7 +50,14 @@ function ArrowChip() {
   return (
     <View testID="capsule-arrow" className="h-10 w-10 items-center justify-center rounded-full bg-ink">
       <Svg width={18} height={18} viewBox="0 0 24 24">
-        <Path d="M4 12h14M12 5l7 7-7 7" stroke={Palette.light.sun} strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <Path
+          d="M4 12h14M12 5l7 7-7 7"
+          stroke={Palette.light.sun}
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+        />
       </Svg>
     </View>
   );

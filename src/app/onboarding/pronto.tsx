@@ -16,7 +16,6 @@ import { useProfile } from '@/profile/profile-context';
 
 const copy = ptBR.onboarding.done;
 
-
 export default function DoneScreen() {
   const { draft } = useOnboardingDraft();
   const { saveProfile } = useProfile();

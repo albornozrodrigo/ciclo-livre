@@ -58,7 +58,9 @@ function currentLines(view: TodayView | null, labels: ContextLabels): string[] {
   return [
     `Ciclo atual: dia ${view.cycleDay}, ${labels.phase(view.phase)}.${late}`,
     `Próxima menstruação prevista entre ${br(view.next.earliest)} e ${br(view.next.latest)} (mais provável ${br(view.next.start)}).`,
-    `Janela fértil estimada: ${br(view.fertile.start)} a ${br(view.fertile.end)}.`,
+    view.fertile
+      ? `Janela fértil estimada: ${br(view.fertile.start)} a ${br(view.fertile.end)}.`
+      : 'Contracepção hormonal: o app não estima janela fértil nem ovulação.',
   ];
 }
 
@@ -72,7 +74,10 @@ function cycleLine(row: CycleRow, labels: ContextLabels): string {
   const length = row.length === null ? 'em andamento' : `${row.length} dias`;
   const period =
     row.periodLength === null ? 'dias de menstruação não registrados (data do cadastro)' : `menstruação ${row.periodLength} dias`;
-  const ovulation = row.length === null ? '' : `; ovulação estimada ${br(row.ovulation.date)} (${labels.method(row.ovulation.method)})`;
+  const ovulation =
+    row.length === null || row.ovulation === null
+      ? ''
+      : `; ovulação estimada ${br(row.ovulation.date)} (${labels.method(row.ovulation.method)})`;
   return `- início ${br(row.start)}: ${length}; ${period}${ovulation}`;
 }
 

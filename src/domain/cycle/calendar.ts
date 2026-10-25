@@ -23,7 +23,13 @@ function lastDayOfMonth(year: number, month: number): IsoDate {
  * Semanas (domingo a sábado) que cobrem o mês, com fase real ou prevista de cada dia.
  * `model` null (gravidez, sem sangramento, sem dados) → só marca hoje e registros.
  */
-export function monthGrid(year: number, month: number, model: CycleModel | null, logged: ReadonlySet<IsoDate>, today: IsoDate): CalendarCell[][] {
+export function monthGrid(
+  year: number,
+  month: number,
+  model: CycleModel | null,
+  logged: ReadonlySet<IsoDate>,
+  today: IsoDate,
+): CalendarCell[][] {
   const first = firstOfMonth(year, month);
   const last = lastDayOfMonth(year, month);
   const start = addDays(first, -weekday(first));
@@ -38,7 +44,7 @@ export function monthGrid(year: number, month: number, model: CycleModel | null,
       inMonth: date.startsWith(prefix),
       phase: info?.phase ?? null,
       predicted: info?.predicted ?? false,
-      ovulation: info !== null && info.ovulation.date === date,
+      ovulation: info !== null && !model?.fertilityHidden && info.ovulation.date === date,
       today: date === today,
       logged: logged.has(date),
     };

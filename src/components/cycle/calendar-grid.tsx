@@ -104,7 +104,8 @@ export function CalendarGrid({
   );
 }
 
-export function CalendarLegend() {
+/** `fertilityHidden`: com contracepção hormonal, sem os itens de janela fértil e ovulação. */
+export function CalendarLegend({ fertilityHidden = false }: { fertilityHidden?: boolean }) {
   const item = (swatch: string, label: string) => (
     <View className="flex-row items-center gap-2">
       <View className="h-5 w-5 items-center justify-center">
@@ -116,8 +117,8 @@ export function CalendarLegend() {
   return (
     <View className="flex-row flex-wrap gap-x-5 gap-y-3">
       {item('h-5 w-5 bg-coral dark:bg-coral-night', cal.legend.menstruation)}
-      {item('h-5 w-5 bg-land dark:bg-land-night', cal.legend.fertile)}
-      {item('h-5 w-5 border-[2.5px] border-ink dark:border-ink-night', cal.legend.ovulation)}
+      {fertilityHidden ? null : item('h-5 w-5 bg-land dark:bg-land-night', cal.legend.fertile)}
+      {fertilityHidden ? null : item('h-5 w-5 border-[2.5px] border-ink dark:border-ink-night', cal.legend.ovulation)}
       {item('h-5 w-5 bg-coral border-2 border-dashed border-ink dark:bg-coral-night dark:border-ink-night', cal.legend.predicted)}
       {item('h-1.5 w-1.5 bg-ink dark:bg-ink-night', cal.legend.logged)}
       <View className="flex-row items-center gap-2">

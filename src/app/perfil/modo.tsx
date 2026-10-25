@@ -15,7 +15,12 @@ export default function ChangeModeScreen() {
   if (!draft) return null;
 
   return (
-    <FormScreen title={ptBR.profile.modeTitle} hint={ptBR.profile.modeHint} actionLabel={ptBR.profile.save} onAction={save} actionDisabled={!canSave}>
+    <FormScreen
+      title={ptBR.profile.modeTitle}
+      hint={ptBR.profile.modeHint}
+      actionLabel={ptBR.profile.save}
+      onAction={save}
+      actionDisabled={!canSave}>
       <ChoiceList label={ptBR.profile.modeTitle} options={modeOptions} value={draft.mode} onChange={(mode) => update({ mode })} />
       {draft.mode === 'pregnancy' ? <DueDateField value={draft.dueDate} onChange={(dueDate) => update({ dueDate })} /> : null}
       {draft.mode === 'conceive' ? (

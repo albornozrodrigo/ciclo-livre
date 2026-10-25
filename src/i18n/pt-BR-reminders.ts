@@ -37,6 +37,10 @@ const DEFAULTS: Record<Variant, (r: Reminder) => { title: string; body: string }
     title: 'Nova fase: lútea',
     body: 'A janela fértil estimada terminou.',
   }),
+  phase_hormonal: () => ({
+    title: 'Fim do sangramento',
+    body: 'Pela previsão, o sangramento terminou.',
+  }),
   pill: () => ({ title: 'Hora da pílula', body: 'Tome a pílula de hoje.' }),
   patch_change: () => ({
     title: 'Dia de trocar o adesivo',
