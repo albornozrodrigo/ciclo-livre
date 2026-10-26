@@ -2,7 +2,7 @@
   "expo": {
     "name": "Ciclo Livre",
     "slug": "ciclo-livre",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icons/padrao-full.png",
     "scheme": "ciclolivre",
@@ -35,7 +35,7 @@
         "com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE",
         "android.permission.DETECT_SCREEN_CAPTURE"
       ],
-      "versionCode": 1
+      "versionCode": 2
     },
     "web": {
       "output": "single",
