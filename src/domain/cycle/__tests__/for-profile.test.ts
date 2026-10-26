@@ -16,6 +16,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 const signals = { flowDates: [], temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], painDates: [] };
 

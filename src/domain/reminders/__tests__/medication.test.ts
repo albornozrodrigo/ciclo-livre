@@ -18,6 +18,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 const meds = [
   { name: 'Ferro', times: ['08:00', '20:00'], until: '2026-10-30' },

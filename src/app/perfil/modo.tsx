@@ -2,6 +2,7 @@ import { FormScreen } from '@/components/form-screen';
 import { ChoiceList } from '@/components/ui/choice-list';
 import { BabyBirthField } from '@/components/fields/baby-birth-field';
 import { DueDateField } from '@/components/fields/due-date-field';
+import { FinalPeriodField } from '@/components/fields/final-period-field';
 import { SwitchRow } from '@/components/reminders/switch-row';
 import { MODES, TRYING_SINCE } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
@@ -29,6 +30,9 @@ export default function ChangeModeScreen() {
         <SwitchRow label={ptBR.profile.twins} value={draft.twins} onValueChange={(twins) => update({ twins })} />
       ) : null}
       {draft.mode === 'postpartum' ? <BabyBirthField value={draft.babyBirth} onChange={(babyBirth) => update({ babyBirth })} /> : null}
+      {draft.mode === 'menopause' ? (
+        <FinalPeriodField value={draft.finalPeriod} onChange={(finalPeriod) => update({ finalPeriod })} />
+      ) : null}
       {draft.mode === 'conceive' ? (
         <ChoiceList
           label={ptBR.onboarding.tryingSince.title}

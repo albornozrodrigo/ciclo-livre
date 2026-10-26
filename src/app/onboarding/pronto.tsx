@@ -46,7 +46,11 @@ export default function DoneScreen() {
         <View className="rounded-[28px] border-[1.5px] border-ink p-5 dark:border-ink-night">
           <Text className="text-lg font-bold leading-7 text-ink dark:text-ink-night">{copy.disclaimer}</Text>
         </View>
-        {draft.lastPeriodStart === null && draft.mode !== 'pregnancy' && draft.mode !== 'no_bleeding' && draft.mode !== 'postpartum' ? (
+        {draft.lastPeriodStart === null &&
+        draft.mode !== 'pregnancy' &&
+        draft.mode !== 'no_bleeding' &&
+        draft.mode !== 'postpartum' &&
+        draft.mode !== 'menopause' ? (
           <Text className="text-base leading-6 text-ink-muted dark:text-ink-muted-night">
             {ptBR.onboarding.lastPeriod.dontRememberNote}
           </Text>

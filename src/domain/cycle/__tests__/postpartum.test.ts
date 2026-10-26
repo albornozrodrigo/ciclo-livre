@@ -20,6 +20,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: '2026-10-05',
   twins: false,
+  finalPeriod: null,
 };
 const signals = { flowDates: ['2026-08-01'], temperatures: {}, eggWhiteDates: [], positiveOvulationTests: [], painDates: [] };
 

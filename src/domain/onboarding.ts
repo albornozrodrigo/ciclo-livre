@@ -1,7 +1,17 @@
 import type { Mode } from './profile';
 
 export type Step =
-  'welcome' | 'birth_year' | 'mode' | 'due_date' | 'baby_birth' | 'trying_since' | 'last_period' | 'lengths' | 'birth_control' | 'done';
+  | 'welcome'
+  | 'birth_year'
+  | 'mode'
+  | 'due_date'
+  | 'baby_birth'
+  | 'final_period'
+  | 'trying_since'
+  | 'last_period'
+  | 'lengths'
+  | 'birth_control'
+  | 'done';
 
 const COMMON: Step[] = ['welcome', 'birth_year', 'mode'];
 
@@ -13,6 +23,8 @@ const BY_MODE: Record<Mode, Step[]> = {
   conceive: ['trying_since', 'last_period', 'lengths'],
   pregnancy: ['due_date'],
   postpartum: ['baby_birth', 'birth_control'],
+  // Sem contracepção: depois de 12 meses sem menstruar ela deixa de ser pergunta do onboarding.
+  menopause: ['final_period'],
 };
 
 export function stepsFor(mode: Mode | null): Step[] {

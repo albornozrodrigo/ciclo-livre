@@ -12,11 +12,11 @@ source = "https://chrisai.cv/skool"
 name = "v0.2 O que o Flo tem a mais"
 version = "0.2.0"
 status = "in_progress"
-phases = 8
+phases = 9
 
 [phase]
-number = 19
-name = "Pós-parto + encerrar gravidez"
+number = 20
+name = "Modo Menopausa"
 status = "complete"
 plans_completed = 0
 
@@ -27,6 +27,6 @@ position = "IDLE"
 groom = true
 
 [stats]
-total_plans = 28
-total_phases = 19
-last_activity = "2026-10-25T00:00:00Z"
+total_plans = 29
+total_phases = 20
+last_activity = "2026-10-26T00:00:00Z"

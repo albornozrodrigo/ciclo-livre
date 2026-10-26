@@ -15,6 +15,7 @@ export type OnboardingDraft = {
   tryingSince: TryingSince | null;
   birthControl: BirthControl | null;
   babyBirth: IsoDate | null;
+  finalPeriod: IsoDate | null;
 };
 
 const initialDraft: OnboardingDraft = {
@@ -28,6 +29,7 @@ const initialDraft: OnboardingDraft = {
   tryingSince: null,
   birthControl: null,
   babyBirth: null,
+  finalPeriod: null,
 };
 
 type DraftContextValue = {

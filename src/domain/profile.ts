@@ -1,6 +1,6 @@
 import { daysBetween, type IsoDate, isValidDate, yearOf } from './dates';
 
-export const MODES = ['period', 'no_bleeding', 'conceive', 'pregnancy', 'perimenopause', 'postpartum'] as const;
+export const MODES = ['period', 'no_bleeding', 'conceive', 'pregnancy', 'perimenopause', 'postpartum', 'menopause'] as const;
 export type Mode = (typeof MODES)[number];
 
 export const REGULARITIES = ['regular', 'irregular', 'unknown'] as const;
@@ -35,6 +35,8 @@ export const LIMITS = {
   dueDateMaxDaysAhead: 300,
   /** Pós-parto: a data do parto vale por até um ano. */
   babyBirthMaxDaysAgo: 365,
+  /** Menopausa: a última menstruação pode ter sido há muitos anos. */
+  finalPeriodMaxYearsAgo: 50,
 } as const;
 
 export type Profile = {
@@ -55,6 +57,8 @@ export type Profile = {
   babyBirth: IsoDate | null;
   /** Gravidez de gêmeos (só neste modo). */
   twins: boolean;
+  /** Menopausa: data aproximada da última menstruação (só neste modo; null = não lembro). */
+  finalPeriod: IsoDate | null;
 };
 
 export type ProfileInput = Pick<Profile, 'birthYear' | 'mode' | 'lastPeriodStart'> &
@@ -95,6 +99,7 @@ function withDefaults(input: ProfileInput): Profile {
     includeAtypical: input.includeAtypical ?? false,
     babyBirth: input.mode === 'postpartum' ? (input.babyBirth ?? null) : null,
     twins: input.mode === 'pregnancy' ? (input.twins ?? false) : false,
+    finalPeriod: input.mode === 'menopause' ? (input.finalPeriod ?? null) : null,
   };
 }
 
@@ -141,9 +146,22 @@ function checkLengths({ periodLength, cycleLength, lutealLength }: Profile): Pro
   return errors;
 }
 
+/** Data mais antiga aceita para a última menstruação na menopausa (mesmo dia, 50 anos antes). */
+export const finalPeriodOldest = (today: IsoDate): IsoDate => `${yearOf(today) - LIMITS.finalPeriodMaxYearsAgo}${today.slice(4)}`;
+
+/** Opcional; datas AAAA-MM-DD comparadas como texto. */
+function checkFinalPeriod(value: IsoDate | null, today: IsoDate): ProfileError[] {
+  if (value === null) return [];
+  if (!isValidDate(value)) return [{ field: 'finalPeriod', code: 'invalid_date' }];
+  if (value > today) return [{ field: 'finalPeriod', code: 'in_future' }];
+  if (value < finalPeriodOldest(today)) return [{ field: 'finalPeriod', code: 'too_old' }];
+  return [];
+}
+
 function checkModeFields(profile: Profile, today: IsoDate): ProfileError[] {
   if (profile.mode === 'conceive' && profile.tryingSince === null) return [{ field: 'tryingSince', code: 'required' }];
   if (profile.mode === 'postpartum') return checkBabyBirth(profile.babyBirth, today);
+  if (profile.mode === 'menopause') return checkFinalPeriod(profile.finalPeriod, today);
   if (profile.mode !== 'pregnancy') return [];
   if (profile.dueDate === null) return [{ field: 'dueDate', code: 'required' }];
   if (!isValidDate(profile.dueDate)) return [{ field: 'dueDate', code: 'invalid_date' }];
@@ -165,6 +183,7 @@ const TIME_DEPENDENT: Partial<Record<ProfileField, ProfileErrorCode[]>> = {
   lastPeriodStart: ['too_old'],
   dueDate: ['out_of_range'],
   babyBirth: ['too_old'],
+  finalPeriod: ['too_old'],
 };
 
 /**

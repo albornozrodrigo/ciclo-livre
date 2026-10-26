@@ -50,6 +50,7 @@ beforeEach(async () => {
       includeAtypical: false,
       babyBirth: null,
       twins: false,
+      finalPeriod: null,
     },
     NOW,
   );

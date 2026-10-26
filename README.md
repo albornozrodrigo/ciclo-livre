@@ -10,8 +10,8 @@ Este repositório é aberto para a comunidade. A ideia é que pessoas desenvolve
 
 ## O que o app faz
 
-- **Registro diário:** 46 categorias (sangramento, dor, humor, sono, temperatura basal, muco, sexo, testes e outras), notas e tags sem limite, categorias reordenáveis.
-- **Cinco modos, todos livres:** Período, Sem sangramento, Tentando engravidar, Gravidez e Perimenopausa.
+- **Registro diário:** 53 categorias (sangramento, dor, humor, sono, temperatura basal, muco, sexo, testes e outras), notas e tags sem limite, categorias reordenáveis.
+- **Sete modos, todos livres:** Período, Sem sangramento, Tentando engravidar, Gravidez, Pós-parto, Perimenopausa e Menopausa.
 - **Previsões no aparelho:** próxima menstruação, janela fértil e ovulação (usa temperatura basal e muco quando você registra), calendário sem limite de datas.
 - **Análise:** duração e variação do ciclo, sintomas frequentes, temperatura, sono, peso e batimentos.
 - **Lembretes locais**, inclusive o da janela fértil, com texto discreto por padrão.

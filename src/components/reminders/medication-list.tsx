@@ -73,6 +73,14 @@ export function MedicationList({ meds, error, onChange }: { meds: Med[]; error: 
       {meds.length < MED_LIMITS.meds ? (
         <CapsuleButton variant="outline" label={m.add} onPress={() => onChange([...meds, { name: '', times: ['08:00'], until: null }])} />
       ) : null}
+      {/* Atalho para a terapia hormonal (pensado para peri e menopausa, aparece em todo modo), sem repetir o nome. */}
+      {meds.length < MED_LIMITS.meds && !meds.some((med) => med.name.trim() === m.hormoneTherapy) ? (
+        <CapsuleButton
+          variant="outline"
+          label={m.addHormoneTherapy}
+          onPress={() => onChange([...meds, { name: m.hormoneTherapy, times: ['08:00'], until: null }])}
+        />
+      ) : null}
       {error ? (
         <Text accessibilityLiveRegion="polite" className="text-base font-bold leading-6 text-ink dark:text-ink-night">
           {error}

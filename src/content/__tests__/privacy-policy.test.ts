@@ -15,6 +15,10 @@ describe('política de privacidade', () => {
     for (const part of ['modo de uso', 'método contraceptivo', 'fase do ciclo', 'últimas mensagens']) expect(text).toContain(part);
   });
 
+  it('cita as datas que cada modo guarda no perfil', () => {
+    for (const part of ['data prevista do parto', 'data do parto', 'última menstruação']) expect(text).toContain(part);
+  });
+
   it('não declara permissão que o app.json bloqueia', () => {
     const app = JSON.parse(readFileSync(join(__dirname, '../../../app.json'), 'utf8'));
     expect(app.expo.android.blockedPermissions).toEqual(

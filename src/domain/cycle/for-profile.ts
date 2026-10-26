@@ -4,9 +4,9 @@ import type { BirthControl, Profile } from '@/domain/profile';
 import { buildCycleModel, type CycleModel } from './model';
 import type { CycleSignals } from './signals';
 
-/** Modos que acompanham ciclo menstrual (gravidez e sem sangramento não têm previsão de ciclo). */
+/** Modos que acompanham ciclo menstrual (gravidez, sem sangramento, pós-parto e menopausa não têm previsão de ciclo). */
 export const modeHasCycle = (profile: Profile) =>
-  profile.mode !== 'pregnancy' && profile.mode !== 'no_bleeding' && profile.mode !== 'postpartum';
+  profile.mode !== 'pregnancy' && profile.mode !== 'no_bleeding' && profile.mode !== 'postpartum' && profile.mode !== 'menopause';
 
 /** Métodos que mudam ou suprimem a ovulação: o app não estima fertilidade com eles. */
 export const HORMONAL_METHODS = [

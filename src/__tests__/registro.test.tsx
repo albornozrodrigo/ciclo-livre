@@ -30,6 +30,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 let mockProfile: Profile = profile;
 jest.mock('@/profile/profile-context', () => ({ useProfile: () => ({ state: { status: 'ready', profile: mockProfile } }) }));

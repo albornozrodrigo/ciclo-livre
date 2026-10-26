@@ -30,6 +30,7 @@ const profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 
 const html = renderReportHtml(

@@ -94,6 +94,7 @@ beforeEach(async () => {
     includeAtypical: false,
     babyBirth: null,
     twins: false,
+    finalPeriod: null,
   };
 });
 
@@ -252,6 +253,19 @@ describe('Lembrete (detalhe)', () => {
     const saved = await reminder('medication');
     expect(saved.options.meds).toEqual([{ name: 'Ferro', times: ['08:00', '12:00'], until: null }]);
     expect((await listTags(mockDb)).map((t) => t.name)).toContain('Ferro');
+  });
+
+  it('atalho da terapia hormonal acrescenta o remédio com o nome e some depois', async () => {
+    mockTipo = 'medication';
+    mockGranted = true;
+    await render(wrap(<LembreteScreen />));
+
+    await fireEvent.press(await screen.findByRole('button', { name: r.meds.addHormoneTherapy }));
+    expect(screen.queryByRole('button', { name: r.meds.addHormoneTherapy })).toBeNull();
+    await fireEvent(screen.getByRole('switch', { name: r.enabled }), 'valueChange', true);
+    await fireEvent.press(screen.getByRole('button', { name: r.save }));
+
+    expect((await reminder('medication')).options.meds).toEqual([{ name: 'Terapia hormonal', times: ['08:00'], until: null }]);
   });
 
   it('remédio sem nome mostra o erro e não salva', async () => {

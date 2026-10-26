@@ -32,6 +32,7 @@ export type Category = ChoiceCategory | MeasureCategory;
 
 const BLEEDING: readonly Mode[] = ['pregnancy', 'no_bleeding'];
 const PREGNANCY: readonly Mode[] = ['pregnancy'];
+const MENOPAUSE: readonly Mode[] = ['perimenopause', 'menopause'];
 
 /**
  * Inventário funcional baseado no estudo de referência; ids, agrupamento e rótulos são próprios.
@@ -55,7 +56,7 @@ export const CATALOG: readonly Category[] = [
     options: ['cramps', 'headache', 'ovulation', 'tender_breasts', 'back', 'joints', 'perineum'],
   },
   { id: 'pain_intensity', group: 'cycle', kind: 'single', options: ['mild', 'moderate', 'severe'] },
-  { id: 'pms', group: 'cycle', kind: 'single', options: ['present'], hiddenIn: BLEEDING },
+  { id: 'pms', group: 'cycle', kind: 'single', options: ['present'], hiddenIn: [...BLEEDING, 'menopause'] },
   {
     id: 'discharge',
     group: 'cycle',
@@ -94,7 +95,7 @@ export const CATALOG: readonly Category[] = [
       'ovulation_other_method',
     ],
   },
-  { id: 'hot_flashes', group: 'cycle', kind: 'multi', options: ['hot_flash', 'night_sweats', 'chills'], onlyIn: ['perimenopause'] },
+  { id: 'hot_flashes', group: 'cycle', kind: 'multi', options: ['hot_flash', 'night_sweats', 'chills'], onlyIn: MENOPAUSE },
   { id: 'clots', group: 'cycle', kind: 'single', options: ['present'], hiddenIn: BLEEDING },
   { id: 'lochia', group: 'cycle', kind: 'single', options: ['none', 'bright_red', 'brown_pink', 'yellow_white'], onlyIn: ['postpartum'] },
   // Corpo
@@ -120,6 +121,13 @@ export const CATALOG: readonly Category[] = [
     kind: 'multi',
     options: ['engorgement', 'lump', 'pain', 'redness', 'cracked_nipples', 'leaking'],
     onlyIn: ['postpartum'],
+  },
+  {
+    id: 'menopause_body',
+    group: 'body',
+    kind: 'multi',
+    options: ['vaginal_dryness', 'painful_sex', 'urinary_urgency', 'urine_leaks', 'palpitations'],
+    onlyIn: MENOPAUSE,
   },
   // Mente
   {

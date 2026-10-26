@@ -36,5 +36,6 @@ describe('nextStep / previousStep', () => {
 describe('onboarding › pós-parto', () => {
   it('data do parto e contracepção, sem última menstruação nem durações', () => {
     expect(stepsFor('postpartum')).toEqual(['welcome', 'birth_year', 'mode', 'baby_birth', 'birth_control', 'done']);
+    expect(stepsFor('menopause')).toEqual(['welcome', 'birth_year', 'mode', 'final_period', 'done']);
   });
 });

@@ -30,7 +30,7 @@ Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios co
 Referência: `../estudo-rea-clue/00-resumo-executivo.md` e `notas/02-mapa-de-gating.md`. Tudo o que lá aparece como "Clue Plus" aqui é padrão.
 
 - **Registro diário:** 40+ categorias (sangramento, dor com intensidade, humor, sono, BBT etc.), tags personalizadas ilimitadas, categorias personalizáveis e reordenáveis.
-- **Modos:** Período, Sem sangramento, Tentando engravidar, Gravidez (com conteúdo semanal) e Perimenopausa. Todos livres.
+- **Modos:** Período, Sem sangramento, Tentando engravidar, Gravidez (com conteúdo semanal), Pós-parto, Perimenopausa e Menopausa. Todos livres.
 - **Previsões e calendário:** próxima menstruação, janela fértil/ovulação e previsões de dor, sem limite de horizonte.
 - **Análise completa:** duração e variação do ciclo, fluxo, dor, sentimentos, BBT, sono, peso, frequência cardíaca, histórico e visão geral por ciclo.
 - **Extras liberados:**
@@ -49,6 +49,7 @@ Referência: `../estudo-rea-clue/00-resumo-executivo.md` e `notas/02-mapa-de-gat
 - ✓ Onboarding por modo (5 modos livres), 18+ conservador, perfil criptografado; trocar modo e editar dados em Mais — Phase 2
 - ✓ Registro diário: 46 categorias, medições, nota, tags ilimitadas, personalizar/reordenar, outros dias — Phase 3
 - ✓ Motor de previsão local (BBT 3-sobre-6, teste, muco, calendário), Hoje com fase e calendário sem limite — Phase 4
+- ✓ Modo Menopausa: meses sem menstruar, Calores e categoria Menopausa, aviso de sangramento depois da menopausa — Phase 20
 
 ### Active (In Progress)
 None yet.
@@ -81,6 +82,7 @@ Fonte: `../estudo-rea-flo/notas/05-o-que-trazer-ao-ciclo-livre.md` (estudo REA d
 6. "Pode aparecer hoje";
 7. lembretes de DIU, implante, injeção e remédios;
 8. Pós-parto e encerrar gravidez.
+9. Modo Menopausa (fase 20, pedido da pessoa usuária em 2026-10-26).
 
 ### Out of Scope (v0.1)
 - iOS e web: Android primeiro, por decisão do usuário (2026-10-22).
@@ -186,4 +188,4 @@ Fonte: `../estudo-rea-flo/notas/05-o-que-trazer-ao-ciclo-livre.md` (estudo REA d
 
 ---
 *PROJECT.md — Updated when requirements or context change*
-*Last updated: 2026-10-22 after Phase 4*
+*Last updated: 2026-10-26 after Phase 20*

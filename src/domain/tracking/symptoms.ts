@@ -20,6 +20,7 @@ const SYMPTOM_CATEGORIES = new Set([
   'swelling',
   'lochia',
   'lactation',
+  'menopause_body',
 ]);
 /** Estados neutros ou bons: aparecem no registro, mas não são sintomas. */
 const NOT_SYMPTOMS = new Set([

@@ -194,4 +194,17 @@ describe('buildDataContext', () => {
     );
     expect(preg.text).toContain('Gravidez: semana 20');
   });
+
+  it('menopausa: meses sem menstruar, sem previsão, e o sangramento registrado', () => {
+    const ctx = (todayView: ContextInput['todayView']) =>
+      buildDataContext({ ...base, profile: { ...base.profile, mode: 'menopause' }, todayView }, { cycles: 6, includeNotes: false }, labels)
+        .text;
+    const view = { kind: 'menopause', since: '2024-07-10', months: 27, years: 2, confirmed: true, bleedingAfter: false } as const;
+    expect(ctx(view)).toContain('Menopausa: 2 anos e 3 meses sem menstruar (sem previsão de ciclo).');
+    expect(ctx({ ...view, months: 8, years: 0, confirmed: false })).toContain('Menopausa: 8 meses sem menstruar');
+    expect(ctx({ ...view, bleedingAfter: true })).toContain('sangramento registrado depois de 12 meses sem menstruar');
+    expect(ctx({ ...view, since: null, months: 0, years: 0, confirmed: false })).toContain(
+      'Menopausa: data da última menstruação não informada',
+    );
+  });
 });

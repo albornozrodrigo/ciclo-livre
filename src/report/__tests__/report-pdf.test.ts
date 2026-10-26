@@ -28,6 +28,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 
 describe('createReportPdf', () => {

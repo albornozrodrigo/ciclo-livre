@@ -11,19 +11,19 @@ about: "ciclo-livre"
 See: .paul/PROJECT.md (updated 2026-10-22)
 
 **Core value:** Qualquer pessoa registra o ciclo e recebe previsões, análises e relatórios completos sem pagar e sem entregar dados de saúde reprodutiva a ninguém.
-**Current focus:** v0.2 O que o Flo tem a mais — Fase 19 (Pós-parto + encerrar gravidez)
+**Current focus:** v0.2 O que o Flo tem a mais — fases completas (incluindo a 20, Modo Menopausa)
 
 ## Current Position
 
 Milestone: v0.2 O que o Flo tem a mais
-Phase: 19 of 19 (Pós-parto + encerrar gravidez)
-Plan: 19-01 e 19-02 completos
+Phase: 20 of 20 (Modo Menopausa) — Complete
+Plan: 20-01 completo
 Status: Fase completa
-Last activity: 2026-10-25 — Fase 19 completa; milestone v0.2 com as 8 fases prontas
+Last activity: 2026-10-26 — Fase 20 completa (1031 testes, tsc e lint ok; S21 FE ok; revisão com 2 correções)
 
 Progress:
 - v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
-- v0.2 O que o Flo tem a mais: [██████████] 100% (8 de 8 fases; falta teste no aparelho e push)
+- v0.2 O que o Flo tem a mais: [██████████] 100% (9 de 9 fases; fase 20 ainda sem push)
 
 ## Loop Position
 
@@ -75,6 +75,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Site em site/ na Vercel (raiz do projeto = site/, deploy a cada push na main); política do site gerada do app | 11-05 | Mudou a política → `node scripts/build-site.mjs` e push |
 | Milestone v0.2 = 8 itens de prioridade 1 do estudo do Flo (`../estudo-rea-flo/notas/05`), tudo local e grátis | v0.2 | Comparação de gating do Flo vem de um APK modificado (isPremium forçado); usar só o inventário |
 | Calendário: lista vertical de meses (passado acima, futuro sem limite, abre no mês atual) no lugar das setas | 2026-10-25 | getItemLayout com alturas fixas por mês |
+| Fase 20 acrescentada: Modo Menopausa | 19 | Amplia a v0.2 (pedido da pessoa usuária) |
+| Menopausa: `finalPeriod` opcional; contagem por meses de calendário; sangramento ≥ 12 meses depois da referência avisa por 180 dias e não reinicia a contagem; sem referência não afirma os 12 meses | 20 | Texto de saúde calmo, sem alarme falso |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
@@ -95,6 +97,8 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Cartão "teste positivo" pode aparecer nas semanas seguintes a uma perda (não guardamos a data do fim) | 19-02 | S | Decisão de produto |
 | Artigo próprio sobre perda gestacional (cuidado editorial) | 19-02 | M | Quando houver revisão |
 | Revisão de código da v0.2 por subagente focado no diff (o /code-review comparava com base antiga por falta de push) | v0.2 | S | Rodar /code-review depois do push |
+| Artigo próprio sobre menopausa (conteúdo editorial) | 20 | M | Quando houver revisão |
+| Pré-preencher a última menstruação ao trocar de Perimenopausa para Menopausa | 20 | S | Só se pedido |
 | /cso da fase 10 ficou parcial (finish encadeado após submit recusado); coberto por revisão manual | 10 | S | /cso completo antes do release |
 
 ### Blockers/Concerns
@@ -107,10 +111,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-10-25
-Stopped at: 2026-10-25 — Fase 19 completa; milestone v0.2 com as 8 fases prontas
-Next action: /paul:complete-milestone (v0.1 e v0.2); v0.2 testada no S21 FE e publicada (push 36a3da4)
-Resume file: .paul/ROADMAP.md
+Last session: 2026-10-26
+Stopped at: Fase 20 completa (commit local, sem push)
+Next action: push quando a pessoa usuária pedir; depois /paul:complete-milestone (v0.1 e v0.2)
+Resume file: .paul/phases/20-modo-menopausa/20-01-SUMMARY.md
 
 ---
 *STATE.md — Updated after every significant action*

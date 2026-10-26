@@ -12,6 +12,7 @@ const draft: OnboardingDraft = {
   tryingSince: '4_6m',
   birthControl: 'pill',
   babyBirth: '2026-09-15',
+  finalPeriod: '2024-05-01',
 };
 
 describe('toProfileInput', () => {
@@ -27,6 +28,7 @@ describe('toProfileInput', () => {
       tryingSince: null,
       birthControl: null,
       babyBirth: null,
+      finalPeriod: null,
     });
   });
 
@@ -42,6 +44,7 @@ describe('toProfileInput', () => {
       tryingSince: null,
       birthControl: 'pill',
       babyBirth: null,
+      finalPeriod: null,
     });
   });
 });
@@ -65,5 +68,22 @@ describe('fixStepFor', () => {
 
   it('cai na escolha de modo se o passo do campo não existe no fluxo', () => {
     expect(fixStepFor('periodLength', 'pregnancy')).toBe('mode');
+  });
+});
+
+describe('toProfileInput › menopausa', () => {
+  it('leva só a última menstruação; descarta contracepção e o resto', () => {
+    expect(toProfileInput({ ...draft, mode: 'menopause' })).toMatchObject({
+      mode: 'menopause',
+      finalPeriod: '2024-05-01',
+      birthControl: null,
+      lastPeriodStart: null,
+      babyBirth: null,
+    });
+  });
+
+  it('erro na data leva de volta ao passo dela', () => {
+    expect(fixStepFor('finalPeriod', 'menopause')).toBe('final_period');
+    expect(fixStepFor('finalPeriod', 'period')).toBe('mode');
   });
 });

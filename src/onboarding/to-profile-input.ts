@@ -19,6 +19,7 @@ const STEP_OF_FIELD: Record<ProfileField, Step> = {
   includeAtypical: 'lengths',
   babyBirth: 'baby_birth',
   twins: 'due_date',
+  finalPeriod: 'final_period',
 };
 
 /**
@@ -40,6 +41,7 @@ export function toProfileInput(draft: OnboardingDraft): ProfileInput {
     tryingSince: keep('trying_since', draft.tryingSince, null),
     birthControl: keep('birth_control', draft.birthControl, null),
     babyBirth: keep('baby_birth', draft.babyBirth, null),
+    finalPeriod: keep('final_period', draft.finalPeriod, null),
   };
 }
 

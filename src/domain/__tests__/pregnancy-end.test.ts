@@ -15,6 +15,7 @@ const pregnant: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: true,
+  finalPeriod: null,
 };
 
 describe('encerrar a gravidez', () => {
@@ -25,6 +26,7 @@ describe('encerrar a gravidez', () => {
       babyBirth: '2026-10-20',
       dueDate: null,
       twins: false,
+      finalPeriod: null,
     });
   });
 
@@ -34,6 +36,7 @@ describe('encerrar a gravidez', () => {
       mode: 'period',
       dueDate: null,
       twins: false,
+      finalPeriod: null,
       lastPeriodStart: null,
     });
   });

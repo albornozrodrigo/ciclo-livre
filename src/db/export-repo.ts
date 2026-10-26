@@ -74,8 +74,8 @@ export async function importAll(db: SqlExecutor, raw: unknown, now: Date = new D
       if (p) {
         await db.runAsync(
           `INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length,
-             regularity, due_date, trying_since, birth_control, luteal_length, include_atypical, baby_birth, twins, updated_at)
-           VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+             regularity, due_date, trying_since, birth_control, luteal_length, include_atypical, baby_birth, twins, final_period, updated_at)
+           VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           p.birthYear,
           p.mode,
           p.lastPeriodStart,
@@ -89,6 +89,7 @@ export async function importAll(db: SqlExecutor, raw: unknown, now: Date = new D
           p.includeAtypical ? 1 : 0,
           p.babyBirth,
           p.twins ? 1 : 0,
+          p.finalPeriod,
           now.toISOString(),
         );
       }

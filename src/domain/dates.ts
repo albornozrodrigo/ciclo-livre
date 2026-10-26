@@ -72,3 +72,9 @@ export function addDays(value: IsoDate, days: number): IsoDate {
 export function todayIso(now: Date = new Date()): IsoDate {
   return isoFromDate(now);
 }
+
+/** Meses completos de calendário entre duas datas (0 se `to` vem antes). */
+export function monthsBetween(from: IsoDate, to: IsoDate): number {
+  const months = (Number(to.slice(0, 4)) - Number(from.slice(0, 4))) * 12 + Number(to.slice(5, 7)) - Number(from.slice(5, 7));
+  return Math.max(0, Number(to.slice(8, 10)) < Number(from.slice(8, 10)) ? months - 1 : months);
+}

@@ -19,6 +19,7 @@ const pregnant: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: true,
+  finalPeriod: null,
 };
 
 const mockSave = jest.fn();

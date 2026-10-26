@@ -49,6 +49,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 const on = (kind: ReminderKind, patch: Partial<Reminder> = {}, options: Partial<Reminder['options']> = {}): Reminder => {
   const r = defaultReminder(kind);
@@ -212,6 +213,7 @@ describe('planSchedule — regras gerais', () => {
       includeAtypical: false,
       babyBirth: null,
       twins: false,
+      finalPeriod: null,
     });
     expect(fires).toHaveLength(61 + 61 + 3);
     expect(fires.at(-1)?.date).toBe('2026-12-21');
@@ -226,6 +228,7 @@ describe('planSchedule — regras gerais', () => {
       includeAtypical: false,
       babyBirth: null,
       twins: false,
+      finalPeriod: null,
     });
     expect(fires.length).toBeLessThanOrEqual(MAX_FIRES);
     expect(new Set(fires.map((f) => f.key)).size).toBe(fires.length);

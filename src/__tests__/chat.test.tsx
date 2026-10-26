@@ -30,6 +30,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 
 let mockDb: ReturnType<typeof openMemoryDatabase>;

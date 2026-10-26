@@ -13,7 +13,7 @@ async function migratedDb() {
 }
 
 describe('getCycleSignals', () => {
-  it('lê fluxo, temperaturas, muco, testes positivos e dor; ignora escape', async () => {
+  it('lê fluxo, temperaturas, muco, testes positivos e dor; escape fica à parte (fora do fluxo)', async () => {
     const db = await migratedDb();
     await setSelection(db, '2026-09-26', 'period', ['heavy']);
     await setSelection(db, '2026-09-27', 'period', ['medium']);
@@ -27,6 +27,7 @@ describe('getCycleSignals', () => {
 
     await expect(getCycleSignals(db)).resolves.toEqual({
       flowDates: ['2026-09-26', '2026-09-27'],
+      spottingDates: ['2026-09-20'],
       temperatures: { '2026-10-01': 36.4 },
       eggWhiteDates: ['2026-10-09'],
       positiveOvulationTests: ['2026-10-08'],
@@ -55,6 +56,7 @@ describe('getCycleSignals', () => {
 
     await expect(getCycleSignals(db)).resolves.toEqual({
       flowDates: [],
+      spottingDates: [],
       temperatures: {},
       eggWhiteDates: [],
       positiveOvulationTests: [],

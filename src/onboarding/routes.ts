@@ -9,6 +9,7 @@ export const STEP_ROUTES: Record<Step, Href> = {
   mode: '/onboarding/objetivo',
   due_date: '/onboarding/data-prevista',
   baby_birth: '/onboarding/parto',
+  final_period: '/onboarding/menopausa',
   trying_since: '/onboarding/tentando',
   last_period: '/onboarding/ultima-menstruacao',
   lengths: '/onboarding/duracoes',

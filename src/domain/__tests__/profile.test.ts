@@ -35,6 +35,7 @@ describe('validateProfile', () => {
           includeAtypical: false,
           babyBirth: null,
           twins: false,
+          finalPeriod: null,
         },
       });
     });
@@ -117,6 +118,30 @@ describe('validateProfile', () => {
       expect(
         errorsOf({ ...base, cycleLength: 16, periodLength: 3, lutealLength: 16, includeAtypical: false, babyBirth: null, twins: false }),
       ).toEqual([]);
+    });
+  });
+
+  describe('menopausa', () => {
+    it('a última menstruação é opcional (não lembro)', () => {
+      expect(errorsOf({ ...base, mode: 'menopause', lastPeriodStart: null })).toEqual([]);
+    });
+
+    it('aceita de hoje até 50 anos atrás', () => {
+      expect(errorsOf({ ...base, mode: 'menopause', finalPeriod: TODAY })).toEqual([]);
+      expect(errorsOf({ ...base, mode: 'menopause', finalPeriod: '1976-10-22' })).toEqual([]);
+    });
+
+    it('recusa data no futuro, de mais de 50 anos e inválida', () => {
+      expect(errorsOf({ ...base, mode: 'menopause', finalPeriod: '2026-10-23' })).toEqual([{ field: 'finalPeriod', code: 'in_future' }]);
+      expect(errorsOf({ ...base, mode: 'menopause', finalPeriod: '1976-10-21' })).toEqual([{ field: 'finalPeriod', code: 'too_old' }]);
+      expect(errorsOf({ ...base, mode: 'menopause', finalPeriod: '2026-02-30' })).toEqual([{ field: 'finalPeriod', code: 'invalid_date' }]);
+    });
+
+    it('a data só vale no modo menopausa', () => {
+      const result = validateProfile({ ...base, mode: 'perimenopause', finalPeriod: '2025-01-01' }, TODAY);
+      expect(result.ok && result.profile.finalPeriod).toBeNull();
+      const kept = validateProfile({ ...base, mode: 'menopause', finalPeriod: '2025-01-01' }, TODAY);
+      expect(kept.ok && kept.profile.finalPeriod).toBe('2025-01-01');
     });
   });
 
@@ -217,6 +242,7 @@ describe('validateProfileEdit', () => {
     includeAtypical: false,
     babyBirth: null,
     twins: false,
+    finalPeriod: null,
   };
 
   it('não bloqueia por uma data guardada que envelheceu e não foi mexida', () => {

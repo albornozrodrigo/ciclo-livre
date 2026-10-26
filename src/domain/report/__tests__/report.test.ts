@@ -35,6 +35,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 const notes = [
   { date: '2026-10-16', text: 'Cólica forte' },

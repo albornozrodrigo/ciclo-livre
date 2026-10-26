@@ -319,6 +319,8 @@ export const ptBR = {
       hint: 'Cada remédio vira uma tag no registro do dia, para você marcar quando tomar.',
       name: (n: number) => `Remédio ${n}`,
       namePlaceholder: 'Nome do remédio',
+      hormoneTherapy: 'Terapia hormonal',
+      addHormoneTherapy: 'Adicionar terapia hormonal',
       time: (n: number) => `Horário ${n}`,
       timeChange: (name: string, time: string) => `${name}: horário ${time}. Toque para mudar`,
       addTime: 'Adicionar horário',
@@ -588,6 +590,22 @@ export const ptBR = {
       periodBack: 'Você registrou menstruação depois do parto.',
       switch: 'Voltar para Menstruação e ciclo',
     },
+    menopause: {
+      title: (months: number, years: number) => {
+        const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+        if (years === 0) return `${plural(months, 'mês', 'meses')} sem menstruar`;
+        const rest = months % 12;
+        const time = rest === 0 ? plural(years, 'ano', 'anos') : `${plural(years, 'ano', 'anos')} e ${plural(rest, 'mês', 'meses')}`;
+        return `Menopausa: ${time} sem menstruar`;
+      },
+      unknown: 'Menopausa',
+      unknownHint: 'Conte a data aproximada da sua última menstruação para o app contar os meses sem menstruar.',
+      addDate: 'Informar a data',
+      pending: 'A menopausa se confirma depois de 12 meses seguidos sem menstruar. Se sangrar antes disso, registre: a contagem recomeça.',
+      confirmed: 'Registre calores, sono e humor para ver como eles mudam com o tempo.',
+      bleeding:
+        'Você registrou sangramento depois de 12 meses sem menstruar. Sangramento depois da menopausa precisa ser avaliado. Procure um serviço de saúde.',
+    },
     likelyToday: {
       title: 'Pode aparecer hoje',
       row: (label: string, cycles: number, total: number) => `${label}: em ${cycles} dos ${total} ciclos com registro`,
@@ -766,7 +784,15 @@ export const ptBR = {
         pregnancy: { label: 'Gravidez', detail: 'Semana a semana até a data prevista.' },
         perimenopause: { label: 'Perimenopausa', detail: 'Ciclos que mudam, ondas de calor, sono.' },
         postpartum: { label: 'Pós-parto', detail: 'Semanas desde o parto, lóquios e amamentação.' },
+        menopause: { label: 'Menopausa', detail: 'Para quem já parou de menstruar: calores, sono e meses sem menstruar.' },
       },
+    },
+    finalPeriod: {
+      title: 'Quando foi sua última menstruação?',
+      why: 'Uma data aproximada serve. Usamos para contar os meses sem menstruar. Dá para mudar depois.',
+      label: 'Última menstruação',
+      pick: 'Escolher data',
+      dontRemember: 'Não lembro',
     },
     babyBirth: {
       title: 'Quando foi o parto?',

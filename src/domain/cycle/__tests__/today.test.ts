@@ -16,6 +16,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 const signals = {
   flowDates: ['2026-08-01', '2026-08-02', '2026-08-29', '2026-08-30', '2026-09-26', '2026-09-27'],

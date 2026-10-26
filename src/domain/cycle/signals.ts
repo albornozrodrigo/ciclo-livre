@@ -4,6 +4,8 @@ import { isSymptom } from '@/domain/tracking/symptoms';
 /** Sinais registrados que alimentam o motor de previsão. */
 export type CycleSignals = {
   flowDates: IsoDate[];
+  /** Dias com escape (fora da menstruação). Só o modo menopausa usa. */
+  spottingDates?: IsoDate[];
   temperatures: Record<IsoDate, number>;
   eggWhiteDates: IsoDate[];
   positiveOvulationTests: IsoDate[];
@@ -27,6 +29,7 @@ export function signalsFromAnalysis(data: LogRows): CycleSignals {
     );
   return {
     flowDates: where('period'),
+    spottingDates: where('spotting'),
     temperatures: { ...(data.measures.temperature ?? {}) },
     eggWhiteDates: where('discharge', 'egg_white'),
     positiveOvulationTests: where('tests', 'ovulation_positive'),

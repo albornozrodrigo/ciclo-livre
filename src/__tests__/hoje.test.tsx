@@ -5,7 +5,7 @@ import HojeScreen from '@/app/(tabs)/index';
 import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
 import { setSelection } from '@/db/log-repo';
 import { MIGRATIONS, runMigrations } from '@/db/migrations';
-import { addDays, todayIso } from '@/domain/dates';
+import { addDays, monthsBetween, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 
@@ -52,6 +52,7 @@ beforeEach(async () => {
     includeAtypical: false,
     babyBirth: null,
     twins: false,
+    finalPeriod: null,
   };
 });
 
@@ -181,6 +182,35 @@ describe('Hoje › Pós-parto', () => {
 
     expect(await screen.findByText(ptBR.cycle.postpartum.weeks(8, 6))).toBeOnTheScreen();
     await fireEvent.press(screen.getByRole('button', { name: ptBR.cycle.postpartum.switch }));
+    expect(mockPush).toHaveBeenCalledWith('/perfil/modo');
+  });
+});
+
+describe('Hoje › Menopausa', () => {
+  it('conta os meses sem menstruar, sem previsão de ciclo', async () => {
+    mockProfile = { ...mockProfile, mode: 'menopause', finalPeriod: addDays(todayIso(), -800) };
+    await renderHoje();
+
+    const months = monthsBetween(addDays(todayIso(), -800), todayIso());
+    expect(await screen.findByText(ptBR.cycle.menopause.title(months, Math.floor(months / 12)))).toBeOnTheScreen();
+    expect(screen.getByText(ptBR.cycle.menopause.confirmed)).toBeOnTheScreen();
+    expect(screen.queryByText(ptBR.cycle.menopause.bleeding)).toBeNull();
+  });
+
+  it('escape registrado depois de 12 meses sem menstruar: pede avaliação no serviço de saúde', async () => {
+    mockProfile = { ...mockProfile, mode: 'menopause', finalPeriod: addDays(todayIso(), -800) };
+    await setSelection(mockDb, addDays(todayIso(), -3), 'spotting', ['brown']);
+    await renderHoje();
+
+    expect(await screen.findByText(ptBR.cycle.menopause.bleeding)).toBeOnTheScreen();
+  });
+
+  it('sem a data: convida a informar em Mais', async () => {
+    mockProfile = { ...mockProfile, mode: 'menopause', finalPeriod: null };
+    await renderHoje();
+
+    expect(await screen.findByText(ptBR.cycle.menopause.unknown)).toBeOnTheScreen();
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.cycle.menopause.addDate }));
     expect(mockPush).toHaveBeenCalledWith('/perfil/modo');
   });
 });

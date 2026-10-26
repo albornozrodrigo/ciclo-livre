@@ -18,6 +18,7 @@ const full: Profile = {
   includeAtypical: true,
   babyBirth: null,
   twins: true,
+  finalPeriod: null,
 };
 
 async function migratedDb() {
@@ -108,9 +109,45 @@ describe('migration v10 (modo pós-parto)', () => {
       includeAtypical: true,
       babyBirth: null,
       twins: false,
+      finalPeriod: null,
     });
     const postpartum = { ...full, mode: 'postpartum' as const, dueDate: null, babyBirth: '2026-09-15', twins: false };
     await saveProfile(db, postpartum);
     await expect(getProfile(db)).resolves.toEqual(postpartum);
+  });
+});
+
+describe('migration v12 (modo menopausa)', () => {
+  it('mantém o perfil salvo antes (inclui parto e gêmeos) e passa a aceitar a menopausa', async () => {
+    const db = openMemoryDatabase();
+    await runMigrations(
+      db,
+      MIGRATIONS.filter((m) => m.version <= 11),
+    );
+    db.raw.exec(
+      "INSERT INTO profile (id, birth_year, mode, last_period_start, period_length, cycle_length, regularity, due_date, birth_control, luteal_length, include_atypical, baby_birth, twins, updated_at) VALUES (1, 1980, 'pregnancy', '2026-08-01', 6, 31, 'irregular', '2027-05-08', 'none', 13, 1, NULL, 1, 'x')",
+    );
+
+    await runMigrations(db, MIGRATIONS);
+
+    await expect(getProfile(db)).resolves.toEqual({
+      birthYear: 1980,
+      mode: 'pregnancy',
+      lastPeriodStart: '2026-08-01',
+      periodLength: 6,
+      cycleLength: 31,
+      regularity: 'irregular',
+      dueDate: '2027-05-08',
+      tryingSince: null,
+      birthControl: 'none',
+      lutealLength: 13,
+      includeAtypical: true,
+      babyBirth: null,
+      twins: true,
+      finalPeriod: null,
+    });
+    const menopause = { ...full, mode: 'menopause' as const, dueDate: null, twins: false, finalPeriod: '2024-03-10' };
+    await saveProfile(db, menopause);
+    await expect(getProfile(db)).resolves.toEqual(menopause);
   });
 });

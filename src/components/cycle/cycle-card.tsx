@@ -57,6 +57,29 @@ export function CycleCard({ view }: { view: TodayView }) {
       </View>
     );
   }
+  if (view.kind === 'menopause') {
+    const m = c.menopause;
+    return (
+      <View className="gap-3">
+        <Text accessibilityRole="header" className="text-[32px] font-bold leading-[34px] tracking-[-0.96px] text-ink dark:text-ink-night">
+          {view.since ? m.title(view.months, view.years) : m.unknown}
+        </Text>
+        {view.bleedingAfter ? (
+          <View accessibilityLiveRegion="polite" className="rounded-[28px] border-[1.5px] border-ink p-5 dark:border-ink-night">
+            <Text className="text-base font-bold leading-6 text-ink dark:text-ink-night">{m.bleeding}</Text>
+          </View>
+        ) : null}
+        {view.since ? (
+          <Muted>{view.confirmed ? m.confirmed : m.pending}</Muted>
+        ) : (
+          <View className="gap-2">
+            <Muted>{m.unknownHint}</Muted>
+            <CapsuleButton variant="outline" label={m.addDate} onPress={() => router.push('/perfil/modo')} />
+          </View>
+        )}
+      </View>
+    );
+  }
   if (view.kind === 'pregnancy') {
     return (
       <View className="gap-2">

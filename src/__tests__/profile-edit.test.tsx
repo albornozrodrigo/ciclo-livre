@@ -20,6 +20,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 
 const mockSave = jest.fn();
@@ -72,6 +73,16 @@ describe('Trocar modo', () => {
 
     expect(screen.getByRole('button', { name: new RegExp(ptBR.onboarding.dueDate.label) })).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: ptBR.profile.save })).toBeDisabled();
+  });
+
+  it('menopausa mostra a última menstruação, opcional: salva sem a data', async () => {
+    await wrap(<ChangeModeScreen />);
+
+    await fireEvent.press(screen.getByRole('radio', { name: /^Menopausa/ }));
+
+    expect(screen.getByRole('button', { name: new RegExp(ptBR.onboarding.finalPeriod.label) })).toBeOnTheScreen();
+    await save();
+    await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, mode: 'menopause', finalPeriod: null }));
   });
 
   it('tentar engravidar pede há quanto tempo', async () => {

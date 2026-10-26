@@ -59,6 +59,19 @@ function currentLines(view: TodayView | null, labels: ContextLabels): string[] {
       `Pós-parto: ${time} desde o parto (sem previsão de ciclo).${view.periodBack ? ' Já houve menstruação registrada depois do parto.' : ''}`,
     ];
   }
+  if (view.kind === 'menopause') {
+    if (view.since === null) return ['Menopausa: data da última menstruação não informada (sem previsão de ciclo).'];
+    const rest = view.months % 12;
+    const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+    const time =
+      view.years === 0
+        ? plural(view.months, 'mês', 'meses')
+        : rest === 0
+          ? plural(view.years, 'ano', 'anos')
+          : `${plural(view.years, 'ano', 'anos')} e ${plural(rest, 'mês', 'meses')}`;
+    const bleeding = view.bleedingAfter ? ' Há sangramento registrado depois de 12 meses sem menstruar.' : '';
+    return [`Menopausa: ${time} sem menstruar (sem previsão de ciclo).${bleeding}`];
+  }
   if (view.kind === 'pregnancy') {
     const twins = view.twins ? ' Gestação de gêmeos.' : '';
     return [`Gravidez: semana ${view.week}, dia ${view.day}; ${view.daysToDue} dias até a data prevista do parto.${twins}`];

@@ -153,6 +153,16 @@ export const trackingPtBR = {
         leaking: 'Vazamento',
       },
     },
+    menopause_body: {
+      label: 'Menopausa',
+      options: {
+        vaginal_dryness: 'Secura vaginal',
+        painful_sex: 'Dor na relação',
+        urinary_urgency: 'Urgência para urinar',
+        urine_leaks: 'Escape de urina',
+        palpitations: 'Palpitações',
+      },
+    },
     feelings: {
       label: 'Sentimentos',
       options: {

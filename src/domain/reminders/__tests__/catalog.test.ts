@@ -23,6 +23,7 @@ const base: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 
 describe('availableKinds', () => {
@@ -58,6 +59,7 @@ describe('availableKinds', () => {
         includeAtypical: false,
         babyBirth: null,
         twins: false,
+        finalPeriod: null,
       }),
     ).toEqual(['birth_control', 'medication', 'daily_log']);
   });
@@ -167,6 +169,7 @@ describe('customMessageAllowed', () => {
         includeAtypical: false,
         babyBirth: null,
         twins: false,
+        finalPeriod: null,
       }),
     ).toBe(true);
     expect(customMessageAllowed('phase_change', base)).toBe(false);
@@ -178,6 +181,7 @@ describe('customMessageAllowed', () => {
         includeAtypical: false,
         babyBirth: null,
         twins: false,
+        finalPeriod: null,
       }),
     ).toBe(false);
   });

@@ -17,6 +17,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 // Ciclos de 28, 29, 27, 45 e 28 dias.
 const starts = ['2026-03-01'];

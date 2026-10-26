@@ -15,8 +15,8 @@ App Android de acompanhamento de ciclo com paridade de funcionalidades com o Clu
 
 ## Current Milestone
 **v0.2 O que o Flo tem a mais** (v0.2.0)
-Status: ✅ Fases completas (falta testar no S21 FE, push e /paul:complete-milestone)
-Phases: 8 of 8 complete
+Status: ✅ Fases completas (falta /paul:complete-milestone)
+Phases: 9 of 9 complete
 
 Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `notas/05-o-que-trazer-ao-ciclo-livre.md`). São os 8 itens de prioridade 1: tudo roda no aparelho e é grátis. No Flo, parte deles é paga (chance de engravidar) ou depende do servidor (previsões, sintomas do dia).
 
@@ -30,6 +30,7 @@ Fonte: estudo REA do Flo 9.73.1 (`../estudo-rea-flo/00-resumo-executivo.md` e `n
 | 17 | "Pode aparecer hoje" | 1 | ✅ Complete | 2026-10-25 |
 | 18 | Lembretes de DIU, implante, injeção e remédios | 2 | ✅ Complete | 2026-10-25 |
 | 19 | Pós-parto + encerrar gravidez | 2 | ✅ Complete | 2026-10-25 |
+| 20 | Modo Menopausa | 1 | ✅ Complete | 2026-10-26 |
 
 ### Phase 12: Catálogo de registro completo
 **Goal:** Acrescentar ao registro diário as opções que o Flo tem e o Ciclo Livre não:
@@ -98,6 +99,20 @@ Plans: TBD (defined during /paul:plan)
 **Depends on:** Phases 12 e 18
 **Research:** Likely (conteúdo e linguagem para perda gestacional; regras de retorno da menstruação no pós-parto)
 Plans: TBD (defined during /paul:plan)
+
+### Phase 20: Modo Menopausa
+**Goal:** Novo modo `menopause` para quem já parou de menstruar (pedido da pessoa usuária em 2026-10-26; até aqui só havia Perimenopausa):
+- data aproximada da última menstruação e contador de meses sem menstruar, com o marco dos 12 meses;
+- sem previsão de ciclo;
+- Calores (onda de calor, suor noturno, calafrios) e sintomas típicos no registro (secura vaginal, sono, humor, articulações);
+- aviso para procurar o serviço de saúde se houver sangramento depois da menopausa;
+- terapia hormonal nos lembretes de remédio;
+- chat, backup, onboarding e troca de modo.
+**Depends on:** Phases 12, 18 e 19 (padrão do modo Pós-parto)
+**Research:** Unlikely (12 meses sem menstruar = menopausa; sangramento pós-menopausa pede avaliação)
+
+**Plans:**
+- [x] 20-01: Modo Menopausa (perfil, migration v12, motor, telas, política)
 
 ---
 
@@ -235,4 +250,4 @@ Phases: 11 of 11 complete
 
 ---
 *Roadmap created: 2026-10-22*
-*Last updated: 2026-10-25 (milestone v0.2 criado)*
+*Last updated: 2026-10-26 (fase 20 Modo Menopausa acrescentada)*

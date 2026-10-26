@@ -36,6 +36,7 @@ describe('security-settings-repo', () => {
         includeAtypical: false,
         babyBirth: null,
         twins: false,
+        finalPeriod: null,
       },
       NOW,
     );

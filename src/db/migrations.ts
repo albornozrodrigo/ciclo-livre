@@ -156,6 +156,36 @@ export const MIGRATIONS: Migration[] = [
     version: 11,
     statements: ['ALTER TABLE profile ADD COLUMN twins INTEGER NOT NULL DEFAULT 0 CHECK (twins IN (0, 1))'],
   },
+  {
+    // Modo menopausa: reconstrói a tabela para o CHECK de `mode` (como a v10). Mais a última menstruação.
+    version: 12,
+    statements: [
+      `CREATE TABLE profile_v12 (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        birth_year INTEGER NOT NULL CHECK (birth_year BETWEEN 1900 AND 2100),
+        mode TEXT NOT NULL CHECK (mode IN ('period','no_bleeding','conceive','pregnancy','perimenopause','postpartum','menopause')),
+        last_period_start TEXT CHECK (last_period_start GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        period_length INTEGER NOT NULL CHECK (period_length BETWEEN 1 AND 15),
+        cycle_length INTEGER NOT NULL CHECK (cycle_length BETWEEN 15 AND 90),
+        regularity TEXT NOT NULL CHECK (regularity IN ('regular','irregular','unknown')),
+        due_date TEXT CHECK (due_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        trying_since TEXT CHECK (trying_since IN ('lt_1m','1_3m','4_6m','7_9m','10_12m','gt_12m')),
+        birth_control TEXT CHECK (birth_control IN ('none','pill','iud_hormonal','iud_copper','implant','injection','ring','patch','condom','other','prefer_not_to_say')),
+        updated_at TEXT NOT NULL,
+        luteal_length INTEGER CHECK (luteal_length IS NULL OR luteal_length BETWEEN 9 AND 18),
+        include_atypical INTEGER NOT NULL DEFAULT 0 CHECK (include_atypical IN (0, 1)),
+        baby_birth TEXT CHECK (baby_birth GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+        twins INTEGER NOT NULL DEFAULT 0 CHECK (twins IN (0, 1)),
+        final_period TEXT CHECK (final_period GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
+      ) STRICT`,
+      `INSERT INTO profile_v12 (id, birth_year, mode, last_period_start, period_length, cycle_length, regularity, due_date,
+         trying_since, birth_control, updated_at, luteal_length, include_atypical, baby_birth, twins)
+       SELECT id, birth_year, mode, last_period_start, period_length, cycle_length, regularity, due_date,
+         trying_since, birth_control, updated_at, luteal_length, include_atypical, baby_birth, twins FROM profile`,
+      'DROP TABLE profile',
+      'ALTER TABLE profile_v12 RENAME TO profile',
+    ],
+  },
 ];
 
 function assertWellFormed(migrations: Migration[]) {

@@ -26,6 +26,7 @@ const profile: Profile = {
   includeAtypical: false,
   babyBirth: null,
   twins: false,
+  finalPeriod: null,
 };
 
 async function migratedDb() {
@@ -52,7 +53,7 @@ async function seeded() {
 describe('exportAll', () => {
   it('formato aberto e versionado, com tudo da pessoa', async () => {
     const data = await exportAll(await seeded(), NOW);
-    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 11, profile });
+    expect(data).toMatchObject({ format: 'ciclo-livre', version: 1, exportedAt: NOW.toISOString(), schema: 12, profile });
     expect(data.selections).toEqual([
       { date: '2026-10-12', category: 'pain', option: 'back' },
       { date: '2026-10-12', category: 'pain', option: 'cramps' },
@@ -202,6 +203,29 @@ describe('backup de antes da fase lútea', () => {
     delete data.profile.twins;
 
     expect(parseExport(data).profile?.twins).toBe(false);
+  });
+
+  it('perfil sem finalPeriod (antes da menopausa) é aceito e fica null', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    delete data.profile.finalPeriod;
+
+    expect(parseExport(data).profile?.finalPeriod).toBeNull();
+  });
+
+  it('menopausa com a última menstruação volta igual; data inválida recusa o arquivo', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    data.profile = { ...data.profile, mode: 'menopause', dueDate: null, twins: false, finalPeriod: '2024-03-10' };
+    expect(parseExport(data).profile?.finalPeriod).toBe('2024-03-10');
+
+    data.profile.finalPeriod = '2024-13-10';
+    expect(() => parseExport(data)).toThrow(IMPORT_ERROR);
+  });
+
+  it('última menstruação da menopausa fora do modo vira null', async () => {
+    const data = JSON.parse(JSON.stringify(await exportAll(await seeded(), NOW)));
+    data.profile = { ...data.profile, finalPeriod: '2024-03-10' };
+
+    expect(parseExport(data).profile?.finalPeriod).toBeNull();
   });
 
   it('pós-parto sem data do parto recusa o arquivo', async () => {
