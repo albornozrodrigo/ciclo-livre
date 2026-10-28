@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getApiKey } from '@/ai/key-store';
 import { type ChatOutcome, requestChat } from '@/ai/request-chat';
+import { ReportResponse } from '@/components/ai/report-response';
 import { confirmClearChat } from '@/components/chat/confirm-clear';
 import { AttentionNotice } from '@/components/ui/attention-notice';
 import { CapsuleButton } from '@/components/ui/capsule-button';
@@ -39,9 +40,13 @@ function Bubble({ turn }: { turn: ChatTurn }) {
   }
   // Resposta: texto corrido, sem quadro, com rótulo pequeno.
   return (
-    <View accessible accessibilityLabel={`${c.claude}: ${turn.text}`} className="gap-1">
-      <Text className="text-sm font-bold tracking-[0.28px] text-ink-muted dark:text-ink-muted-night">{c.claude}</Text>
-      <Text className="text-[17px] leading-7 text-ink dark:text-ink-night">{turn.text}</Text>
+    <View className="gap-1">
+      {/* Texto lido como um bloco; o botão de denúncia fica fora para o leitor de tela alcançá-lo. */}
+      <View accessible accessibilityLabel={`${c.claude}: ${turn.text}`} className="gap-1">
+        <Text className="text-sm font-bold tracking-[0.28px] text-ink-muted dark:text-ink-muted-night">{c.claude}</Text>
+        <Text className="text-[17px] leading-7 text-ink dark:text-ink-night">{turn.text}</Text>
+      </View>
+      <ReportResponse kind="chat" text={turn.text} />
     </View>
   );
 }

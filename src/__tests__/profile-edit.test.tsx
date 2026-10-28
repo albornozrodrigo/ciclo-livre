@@ -3,6 +3,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import CycleDataScreen from '@/app/perfil/ciclo';
 import ChangeModeScreen from '@/app/perfil/modo';
+import { openMemoryDatabase } from '@/db/__tests__/node-sqlite-adapter';
+import { setSelection } from '@/db/log-repo';
+import { MIGRATIONS, runMigrations } from '@/db/migrations';
+import { addDays, todayIso } from '@/domain/dates';
 import type { Profile } from '@/domain/profile';
 import { ptBR } from '@/i18n/pt-BR';
 
@@ -23,6 +27,8 @@ const profile: Profile = {
   finalPeriod: null,
 };
 
+let mockDb: ReturnType<typeof openMemoryDatabase>;
+jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDb }));
 const mockSave = jest.fn();
 jest.mock('@/profile/profile-context', () => ({
   useProfile: () => ({ state: { status: 'ready', profile }, saveProfile: mockSave }),
@@ -40,7 +46,9 @@ const metrics = { frame: { x: 0, y: 0, width: 390, height: 844 }, insets: { top:
 const wrap = (node: React.ReactNode) => render(<SafeAreaProvider initialMetrics={metrics}>{node}</SafeAreaProvider>);
 const save = () => fireEvent.press(screen.getByRole('button', { name: ptBR.profile.save }));
 
-beforeEach(() => {
+beforeEach(async () => {
+  mockDb = openMemoryDatabase();
+  await runMigrations(mockDb, MIGRATIONS);
   mockSave.mockReset().mockResolvedValue(undefined);
   mockShow.mockReset();
   mockBack.mockReset();
@@ -83,6 +91,19 @@ describe('Trocar modo', () => {
     expect(screen.getByRole('button', { name: new RegExp(ptBR.onboarding.finalPeriod.label) })).toBeOnTheScreen();
     await save();
     await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, mode: 'menopause', finalPeriod: null }));
+  });
+
+  it('menopausa sugere o último sangramento registrado como última menstruação', async () => {
+    const lastBleed = addDays(todayIso(), -200);
+    await setSelection(mockDb, addDays(todayIso(), -230), 'period', ['medium']);
+    await setSelection(mockDb, lastBleed, 'spotting', ['brown']);
+    await wrap(<ChangeModeScreen />);
+
+    await fireEvent.press(screen.getByRole('radio', { name: /^Menopausa/ }));
+
+    expect(await screen.findByText(ptBR.onboarding.finalPeriod.suggested)).toBeOnTheScreen();
+    await save();
+    await waitFor(() => expect(mockSave).toHaveBeenCalledWith({ ...profile, mode: 'menopause', finalPeriod: lastBleed }));
   });
 
   it('tentar engravidar pede há quanto tempo', async () => {

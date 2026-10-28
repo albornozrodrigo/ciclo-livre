@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { AccessibilityInfo, Alert } from 'react-native';
+import { AccessibilityInfo, Alert, Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import AnaliseScreen from '@/app/(tabs)/analise';
@@ -52,6 +52,8 @@ jest.mock('expo-secure-store', () => ({
   setItemAsync: async (k: string, v: string) => void mockStore.set(k, v),
   deleteItemAsync: async (k: string) => void mockStore.delete(k),
 }));
+const mockCopy = jest.fn();
+jest.mock('expo-clipboard', () => ({ setStringAsync: (...a: unknown[]) => mockCopy(...a) }));
 const mockFetch = jest.fn();
 global.fetch = mockFetch as unknown as typeof fetch;
 const answer = (text: string) => ({
@@ -222,5 +224,63 @@ describe('Conversa', () => {
   it('tela "O que é enviado" mostra o mesmo resumo', async () => {
     await render(wrap(<ChatContextScreen />));
     expect(await screen.findByText(/Modo: Menstruação e ciclo/)).toBeOnTheScreen();
+  });
+});
+
+describe('Denunciar resposta da IA', () => {
+  const r = ptBR.aiReport;
+  const question = 'Minha menstruação atrasou 10 dias, é normal?';
+
+  beforeEach(async () => {
+    mockStore.set('anthropic_api_key', KEY);
+    await setChatConsent(mockDb, true);
+  });
+
+  async function answered() {
+    await render(wrap(<ChatScreen />));
+    await fireEvent.changeText(await screen.findByLabelText(c.input), question);
+    await fireEvent.press(screen.getByRole('button', { name: c.send }));
+    await screen.findByText('Seus ciclos variam pouco.');
+  }
+
+  it('o motivo é escolhido no app e o e-mail leva a resposta, sem a pergunta', async () => {
+    const open = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+    await answered();
+
+    await fireEvent.press(screen.getByRole('button', { name: r.open }));
+    expect(screen.getByRole('button', { name: r.send })).toBeDisabled();
+    await fireEvent.press(screen.getByRole('radio', { name: 'Perigosa para a saúde' }));
+    await fireEvent.press(screen.getByRole('button', { name: r.send }));
+
+    const url = decodeURIComponent(String(open.mock.calls[0][0]));
+    expect(url.startsWith('mailto:af.rodrigo@proton.me?')).toBe(true);
+    expect(url).toContain('Motivo: Perigosa para a saúde');
+    expect(url).toContain('Seus ciclos variam pouco.');
+    expect(url).not.toContain(question);
+    expect(await screen.findByText(r.thanks)).toBeOnTheScreen();
+  });
+
+  it('sem app de e-mail: copia a denúncia e avisa para onde mandar', async () => {
+    jest.spyOn(Linking, 'openURL').mockRejectedValue(new Error('no activity'));
+    mockCopy.mockResolvedValue(undefined);
+    await answered();
+
+    await fireEvent.press(screen.getByRole('button', { name: r.open }));
+    await fireEvent.press(screen.getByRole('radio', { name: 'Ofensiva ou de ódio' }));
+    await fireEvent.press(screen.getByRole('button', { name: r.send }));
+
+    await waitFor(() => expect(mockShow).toHaveBeenCalledWith(r.copied('af.rodrigo@proton.me')));
+    expect(String(mockCopy.mock.calls[0][0])).toContain('Seus ciclos variam pouco.');
+  });
+
+  it('cancelar fecha o formulário sem abrir nada', async () => {
+    const open = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+    await answered();
+
+    await fireEvent.press(screen.getByRole('button', { name: r.open }));
+    await fireEvent.press(screen.getByRole('button', { name: r.cancel }));
+
+    expect(open).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: r.open })).toBeOnTheScreen();
   });
 });

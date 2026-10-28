@@ -1,4 +1,4 @@
-import { getAnalysisData, getCycleSignals, getLoggedDates } from '@/db/cycle-repo';
+import { getAnalysisData, getCycleSignals, getLastBleedDate, getLoggedDates } from '@/db/cycle-repo';
 import { signalsFromAnalysis } from '@/domain/cycle/signals';
 import { setMeasure, setNote, setSelection } from '@/db/log-repo';
 import { createTag, setDayTags } from '@/db/tag-repo';
@@ -91,5 +91,21 @@ describe('getAnalysisData', () => {
 
     expect(data.selections).toEqual([{ date: '2026-10-01', category: 'pain', option: 'cramps' }]);
     expect(data.measures).toEqual({ weight: { '2026-10-01': 60 }, temperature: { '2026-10-02': 36.5 } });
+  });
+});
+
+describe('getLastBleedDate', () => {
+  it('é o último dia com menstruação ou escape até hoje', async () => {
+    const db = await migratedDb();
+    await setSelection(db, '2026-09-01', 'period', ['medium']);
+    await setSelection(db, '2026-10-03', 'spotting', ['brown']);
+    await setSelection(db, '2026-10-20', 'pain', ['cramps']);
+    await setSelection(db, '2026-11-02', 'period', ['light']);
+
+    await expect(getLastBleedDate(db, '2026-10-27')).resolves.toBe('2026-10-03');
+  });
+
+  it('sem sangramento registrado devolve null', async () => {
+    await expect(getLastBleedDate(await migratedDb(), '2026-10-27')).resolves.toBeNull();
   });
 });

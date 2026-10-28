@@ -15,6 +15,7 @@ let mockKey: string | null = null;
 const mockDb = { getAllAsync: async () => (mockConsent ? [{ key: 'ai_consent', value: '1' }] : []) };
 jest.mock('expo-sqlite', () => ({ useSQLiteContext: () => mockDb }));
 jest.mock('@/ai/key-store', () => ({ getApiKey: async () => mockKey }));
+jest.mock('@/components/ui/snackbar', () => ({ useSnackbar: () => ({ show: jest.fn() }) }));
 const mockFetch = jest.fn();
 global.fetch = mockFetch as unknown as typeof fetch;
 jest.mock('expo-router', () => ({

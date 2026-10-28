@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { Alert } from 'react-native';
+import { Alert, Linking } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import ExplorarScreen from '@/app/(tabs)/explorar';
@@ -200,6 +200,23 @@ describe('Resumo no Explorar', () => {
     expect(await screen.findByText('Calor e movimento ajudam.')).toBeOnTheScreen();
     expect(screen.getByText(t.summaryDisclaimer)).toBeOnTheScreen();
     expect(screen.getByRole('header', { name: t.basedOn })).toBeOnTheScreen();
+  });
+
+  it('o resumo também pode ser denunciado por e-mail, com o resumo no texto', async () => {
+    const open = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
+    mockKey = KEY;
+    await setAiConsent(mockDb, true);
+    mockSummarize.mockResolvedValue({ ok: true, text: 'Calor e movimento ajudam.', cited: [] });
+    await search('colica');
+    await fireEvent.press(await screen.findByRole('button', { name: t.summarize }));
+
+    await fireEvent.press(await screen.findByRole('button', { name: ptBR.aiReport.open }));
+    await fireEvent.press(screen.getByRole('radio', { name: 'Informação errada' }));
+    await fireEvent.press(screen.getByRole('button', { name: ptBR.aiReport.send }));
+
+    const url = decodeURIComponent(String(open.mock.calls[0][0]));
+    expect(url).toContain('Onde: resumo dos artigos');
+    expect(url).toContain('Calor e movimento ajudam.');
   });
 
   it('erro vira mensagem em pt-BR', async () => {

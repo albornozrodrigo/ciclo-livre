@@ -9,7 +9,7 @@ export type PolicyBlock = Block | { kind: 'sub'; text: string };
  */
 export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyBlock[] } = {
   title: 'Política de privacidade do Ciclo Livre',
-  effective: '26 de outubro de 2026',
+  effective: '27 de outubro de 2026',
   blocks: [
     { kind: 'h', text: 'Em resumo' },
     {
@@ -50,6 +50,11 @@ export const PRIVACY_POLICY: { title: string; effective: string; blocks: PolicyB
     {
       kind: 'p',
       text: 'A Anthropic trata esses dados conforme a política dela para a API, e o custo cai na sua conta lá. Em Mais › IA com sua chave você retira o consentimento ou apaga a chave quando quiser. Retirar o consentimento do chat apaga a conversa guardada.',
+    },
+    { kind: 'sub', text: 'Denunciar uma resposta da IA' },
+    {
+      kind: 'p',
+      text: 'Abaixo de cada resposta da IA há "Denunciar resposta". Você escolhe o motivo e o app abre o seu e-mail com o motivo, a versão do app e o texto da resposta, endereçado a af.rodrigo@proton.me. A sua pergunta não vai junto. Você pode editar tudo, e nada é enviado se você não mandar o e-mail.',
     },
     { kind: 'sub', text: 'Exportar e compartilhar' },
     {

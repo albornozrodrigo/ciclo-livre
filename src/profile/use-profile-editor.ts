@@ -17,7 +17,9 @@ export function useProfileEditor() {
   const [draft, setDraft] = useState<Profile | null>(initial);
   const [saving, setSaving] = useState(false);
 
-  const update = (patch: Partial<Profile>) => setDraft((current) => (current ? { ...current, ...patch } : current));
+  /** Aceita um patch ou uma função do rascunho atual (para respostas que chegam depois, sem pisar no que a pessoa mudou). */
+  const update = (patch: Partial<Profile> | ((current: Profile) => Partial<Profile>)) =>
+    setDraft((current) => (current ? { ...current, ...(typeof patch === 'function' ? patch(current) : patch) } : current));
 
   // Datas guardadas que envelheceram sozinhas não travam a edição de outros campos.
   const validation = draft && initial ? validateProfileEdit(draft, initial, todayIso()) : null;

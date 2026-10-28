@@ -39,3 +39,12 @@ export async function getAnalysisData(db: SqlExecutor): Promise<AnalysisData> {
   for (const m of measureRows) (measures[m.category] ??= {})[m.date] = m.value;
   return { selections, measures };
 }
+
+/** Último dia com menstruação ou escape registrado até `today` (sugestão da última menstruação na menopausa). */
+export async function getLastBleedDate(db: SqlExecutor, today: IsoDate): Promise<IsoDate | null> {
+  const row = await db.getFirstAsync<{ last: string | null }>(
+    "SELECT MAX(date) AS last FROM log_selection WHERE category IN ('period', 'spotting') AND date <= ?",
+    today,
+  );
+  return row?.last ?? null;
+}

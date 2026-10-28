@@ -1,5 +1,5 @@
 import { todayIso } from '@/domain/dates';
-import { type ProfileInput, validateBirthYear, validateProfile, validateProfileEdit } from '@/domain/profile';
+import { type ProfileInput, suggestFinalPeriod, validateBirthYear, validateProfile, validateProfileEdit } from '@/domain/profile';
 
 const TODAY = '2026-10-22';
 
@@ -266,5 +266,17 @@ describe('validateProfileEdit', () => {
 describe('todayIso', () => {
   it('é a data local de hoje', () => {
     expect(todayIso(new Date(2026, 9, 22, 23, 30))).toBe('2026-10-22');
+  });
+});
+
+describe('suggestFinalPeriod', () => {
+  it('sugere o último sangramento registrado', () => {
+    expect(suggestFinalPeriod('2026-03-10', TODAY)).toBe('2026-03-10');
+  });
+
+  it('não sugere sem sangramento, no futuro ou fora do limite de 50 anos', () => {
+    expect(suggestFinalPeriod(null, TODAY)).toBeNull();
+    expect(suggestFinalPeriod('2026-10-23', TODAY)).toBeNull();
+    expect(suggestFinalPeriod('1970-01-01', TODAY)).toBeNull();
   });
 });

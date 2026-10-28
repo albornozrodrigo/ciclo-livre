@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 
 import { requestSummary, type SummaryOutcome } from '@/ai/request-summary';
 import { useAi } from '@/ai/use-ai';
+import { ReportResponse } from '@/components/ai/report-response';
 import { CapsuleButton } from '@/components/ui/capsule-button';
 import { ListRow } from '@/components/ui/list-row';
 import type { Article } from '@/content/search';
@@ -90,6 +91,7 @@ export function AiSummary({ query, articles }: { query: string; articles: Articl
             </View>
           ) : null}
           <Text className="text-sm leading-5 text-ink-muted dark:text-ink-muted-night">{t.summaryDisclaimer}</Text>
+          <ReportResponse kind="summary" text={result.text} />
         </View>
       ) : null}
     </View>

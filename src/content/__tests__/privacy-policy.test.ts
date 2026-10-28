@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import { REPORT_EMAIL } from '@/constants/support';
 import { PRIVACY_POLICY } from '@/content/privacy-policy';
 import { ptBR } from '@/i18n/pt-BR';
 
@@ -17,6 +18,11 @@ describe('política de privacidade', () => {
 
   it('cita as datas que cada modo guarda no perfil', () => {
     for (const part of ['data prevista do parto', 'data do parto', 'última menstruação']) expect(text).toContain(part);
+  });
+
+  it('diz para onde vai a denúncia de resposta da IA, o mesmo endereço do app', () => {
+    expect(text).toContain(REPORT_EMAIL);
+    expect(text).toContain('Denunciar resposta');
   });
 
   it('não declara permissão que o app.json bloqueia', () => {

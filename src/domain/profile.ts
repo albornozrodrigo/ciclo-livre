@@ -149,6 +149,11 @@ function checkLengths({ periodLength, cycleLength, lutealLength }: Profile): Pro
 /** Data mais antiga aceita para a última menstruação na menopausa (mesmo dia, 50 anos antes). */
 export const finalPeriodOldest = (today: IsoDate): IsoDate => `${yearOf(today) - LIMITS.finalPeriodMaxYearsAgo}${today.slice(4)}`;
 
+/** Ao trocar para a menopausa: o último sangramento registrado vira a sugestão da última menstruação, se couber no limite. */
+export function suggestFinalPeriod(lastBleed: IsoDate | null, today: IsoDate): IsoDate | null {
+  return lastBleed && checkFinalPeriod(lastBleed, today).length === 0 ? lastBleed : null;
+}
+
 /** Opcional; datas AAAA-MM-DD comparadas como texto. */
 function checkFinalPeriod(value: IsoDate | null, today: IsoDate): ProfileError[] {
   if (value === null) return [];

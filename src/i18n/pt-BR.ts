@@ -222,6 +222,16 @@ export const ptBR = {
     copied: 'Chave Pix copiada. É só colar no app do seu banco.',
     copyFailed: 'Não deu para copiar. A chave está na tela para copiar à mão.',
   },
+  aiReport: {
+    open: 'Denunciar resposta',
+    title: 'Por que você quer denunciar?',
+    hint: 'O app abre o seu e-mail com o motivo e o texto desta resposta, sem a sua pergunta. Você revisa antes de enviar.',
+    send: 'Enviar por e-mail',
+    cancel: 'Cancelar',
+    thanks: 'Obrigado. A denúncia foi aberta no seu e-mail; ela só chega se você enviar.',
+    copied: (to: string) => `Não achamos um app de e-mail. A denúncia foi copiada: cole num e-mail para ${to}.`,
+    failed: (to: string) => `Não deu para abrir o e-mail. Escreva para ${to}.`,
+  },
   chat: {
     entry: 'Perguntar sobre meus dados',
     entryDetail: 'O Claude responde a partir de um resumo dos seus registros. Você vê o texto antes de enviar.',
@@ -793,6 +803,7 @@ export const ptBR = {
       label: 'Última menstruação',
       pick: 'Escolher data',
       dontRemember: 'Não lembro',
+      suggested: 'Preenchida com o último sangramento que você registrou. Ajuste se não for essa.',
     },
     babyBirth: {
       title: 'Quando foi o parto?',
