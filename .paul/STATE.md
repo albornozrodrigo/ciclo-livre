@@ -19,7 +19,7 @@ Milestone: v0.2 O que o Flo tem a mais
 Phase: 20 of 20 (Modo Menopausa) — Complete
 Plan: 20-01 completo
 Status: Fase completa
-Last activity: 2026-10-26 — Fase 20 completa (1031 testes, tsc e lint ok; S21 FE ok; revisão com 2 correções)
+Last activity: 2026-10-27 — 0.1.3 (versionCode 4): denúncia da IA, sugestão da data na menopausa, Expo 58.0.20; 1048 testes
 
 Progress:
 - v0.1 Initial Release: [██████████] 100% (falta publicar na Play e /paul:complete-milestone)
@@ -77,28 +77,23 @@ PLAN ──▶ APPLY ──▶ UNIFY
 | Calendário: lista vertical de meses (passado acima, futuro sem limite, abre no mês atual) no lugar das setas | 2026-10-25 | getItemLayout com alturas fixas por mês |
 | Fase 20 acrescentada: Modo Menopausa | 19 | Amplia a v0.2 (pedido da pessoa usuária) |
 | Menopausa: `finalPeriod` opcional; contagem por meses de calendário; sangramento ≥ 12 meses depois da referência avisa por 180 dias e não reinicia a contagem; sem referência não afirma os 12 meses | 20 | Texto de saúde calmo, sem alarme falso |
+| 0.1.3: denúncia de resposta da IA por e-mail (af.rodrigo@proton.me), motivo escolhido no app, sem a pergunta | 2026-10-27 | Política da Play para IA generativa; política de privacidade atualizada |
 | North Star "O Mapa do Corpo" | 01-01 | Provisório — confirmar com a pessoa usuária |
 
 ### Deferred Issues
 | Issue | Origin | Effort | Revisit |
 |-------|--------|--------|---------|
-| Botão "denunciar resposta" no chat de IA, se a revisão da Play pedir (política de IA generativa) | 11-05 | S | Na revisão da Play |
-| /cso completo antes do release (runs da fase 8 parciais pelo teto de tempo; OWASP manual feito em 2026-10-23) | 08 | S | Antes do release |
-| KDF nativo (scrypt em JS limita N a 2^13–2^15) | 08-04 | M | Fase 11 |
-| Build de release assinado com a chave de debug; permissões SYSTEM_ALERT_WINDOW/armazenamento | OWASP 08 | S | Fase 11 |
-| KDF nativo para backup < 3 s (hoje scrypt 2^13 em JS ≈ 6,7 s no S21 FE) | 07 | M | Fase 11 |
+| /cso completo antes do release: run 1793152149401-927c02ecb19a7924 (2026-10-27) parcial, sem achados; Gitleaks sem imagem local e superfícies antigas não relidas | 08 / 0.1.3 | S | Com a imagem do Gitleaks e mais tempo |
 | Backup automático no Drive (OAuth/Drive API) | 07 plan | L | Só se pedido |
 | Visibilidade SECRET por notificação: Android ignora a do canal (comprovado no S21 FE); só com patch no nativo do expo-notifications | 06 / 11-03 | M | Só se pedido |
 | Teste instável `readZipEntry › ZipCrypto` (1 falha em 4 rodadas completas) | 11-04 | S | Investigar |
 | `npm audit`: 33 high de `braces`/`node-forge` só em ferramentas de build, sem correção publicada | OWASP 08 | S | Reavaliar a cada atualização do SDK |
-| Trava do app (biometria/PIN) + FLAG_SECURE / ocultar miniatura em Recentes | /cso + OWASP 08 | M | Fase 11 |
 | Prova de conversa real do chat no aparelho (falta chave da Anthropic no S21 FE) | 09-02 | S | Quando houver chave |
 | Ciclos fora do padrão e "Pode aparecer hoje" não puderam ser vistos no S21 FE (só 2 ciclos de teste); cobertos por testes e emulador | v0.2 | S | Quando houver mais ciclos registrados |
 | Cartão "teste positivo" pode aparecer nas semanas seguintes a uma perda (não guardamos a data do fim) | 19-02 | S | Decisão de produto |
 | Artigo próprio sobre perda gestacional (cuidado editorial) | 19-02 | M | Quando houver revisão |
 | Revisão de código da v0.2 por subagente focado no diff (o /code-review comparava com base antiga por falta de push) | v0.2 | S | Rodar /code-review depois do push |
 | Artigo próprio sobre menopausa (conteúdo editorial) | 20 | M | Quando houver revisão |
-| Pré-preencher a última menstruação ao trocar de Perimenopausa para Menopausa | 20 | S | Só se pedido |
 | /cso da fase 10 ficou parcial (finish encadeado após submit recusado); coberto por revisão manual | 10 | S | /cso completo antes do release |
 
 ### Blockers/Concerns
